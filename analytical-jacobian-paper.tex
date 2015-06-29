@@ -1,0 +1,1112 @@
+\pdfminorversion=4 % necessary for EES
+%% This template can be used to write a paper for
+%% Computer Physics Communications using LaTeX.
+%% For authors who want to write a computer program description,
+%% an example Program Summary is included that only has to be
+%% completed and which will give the correct layout in the
+%% preprint and the journal.
+%% The `elsarticle' style is used and more information on this style
+%% can be found at 
+%% http://www.elsevier.com/wps/find/authorsview.authors/elsarticle.
+%%
+%%
+\documentclass[preprint,12pt]{elsarticle}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Place any additional packages needed here.  Only include packages
+%% which are essential, to avoid problems later.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[margin=1in]{geometry}
+
+\usepackage[hyphens]{url}
+%\usepackage{natbib}
+\biboptions{sort&compress, square, comma}
+\usepackage[breaklinks=true, linkcolor=blue, citecolor=blue, colorlinks=true]{hyperref}
+
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usepackage[version=3]{mhchem} % Formula subscripts using \ce{}, e.g., \ce{H2SO4}
+\usepackage{bm}
+\usepackage{latexsym, amsmath,amssymb}
+
+\usepackage{mathtools}
+% for larger sums
+\usepackage{exscale, relsize}
+\usepackage[retainorgcmds]{IEEEtrantools}
+
+\usepackage{nicefrac}
+
+\usepackage{booktabs,multicol}
+\usepackage[retainorgcmds]{IEEEtrantools}
+
+% for math cancellation lines
+\usepackage{cancel}
+% to get nice text superscripts
+\usepackage[super]{nth}
+
+%better printing of numbers
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\usepackage{textcomp}
+
+%my additions
+%psuedo-code
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+%abs and norm
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}% 
+%fix to dcases from here:http://tex.stackexchange.com/questions/252410/centering-in-dcases-environment/252414
+\MHInternalSyntaxOn
+\renewcommand{\dcases}
+ {
+  \MT_start_cases:nnnn
+    {\quad}
+    {$\m@th\displaystyle##$\hfil}
+    {$\m@th\displaystyle##$\hfil}
+    {\lbrace}
+ }
+\MHInternalSyntaxOff
+
+% Swap the definition of \abs* and \norm*, so that \abs
+% and \norm resizes the size of the brackets, and the 
+% starred version does not.
+\makeatletter
+\let\oldabs\abs
+\def\abs{\@ifstar{\oldabs}{\oldabs*}}
+%
+\let\oldnorm\norm
+\def\norm{\@ifstar{\oldnorm}{\oldnorm*}}
+\makeatother
+
+
+\usepackage{siunitx}
+\sisetup{group-separator={,},
+		 detect-all,
+		 binary-units,
+		 list-units = single,
+		 range-units = single,
+		 tophrase = --, 
+		 per-mode = symbol-or-fraction,
+		 separate-uncertainty = true
+%		 scientific-notation = fixed
+}
+\DeclareSIUnit\atm{atm}
+
+\usepackage{fixltx2e}
+
+\hyphenation{FORTRAN Fortran DRG-EP-SA DRG-ASA DRG-EP SEN-KIN CHEM-KIN}
+
+% C++ macro
+\def\CC{{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\footnotesize ++}}}
+% derivative macros
+\newcommand{ \ddt } [1] { \frac{ \partial #1 }{ \partial t } }
+\newcommand{ \ddx } [1] { \frac{ \partial }{ \partial #1 } }
+\newcommand{ \dydx } [2] { \frac{ \partial #1 }{ \partial #2 } }
+\newcommand{ \ddydxx } [2] { \frac{ \partial^2 #1 }{ \partial #2^2 } }
+\newcommand{\pluseq}{\mathrel{+}=}
+\newcommand{\asteq}{\mathrel{*}=}
+
+%\usepackage[textsize=small,textwidth=2.5cm]{todonotes}
+
+%to highlight text
+%\usepackage{soul}
+\usepackage[usenames, dvipsnames]{color}
+%\newcommand{\hly}[1]{{\sethlcolor{yellow}\hl{#1}}}
+%\newcommand{\hlb}[1]{{\sethlcolor{SkyBlue}\hl{#1}}}
+%\newcommand{\hlg}[1]{{\sethlcolor{green}\hl{#1}}}
+
+
+% line numbers
+%\usepackage{lineno}
+%\newcommand*\patchAmsMathEnvironmentForLineno[1]{%
+%  \expandafter\let\csname old#1\expandafter\endcsname\csname #1\endcsname
+%  \expandafter\let\csname oldend#1\expandafter\endcsname\csname end#1\endcsname
+%  \renewenvironment{#1}%
+%     {\linenomath\csname old#1\endcsname}%
+%     {\csname oldend#1\endcsname\endlinenomath}}% 
+%\newcommand*\patchBothAmsMathEnvironmentsForLineno[1]{%
+%  \patchAmsMathEnvironmentForLineno{#1}%
+%  \patchAmsMathEnvironmentForLineno{#1*}}%
+%\AtBeginDocument{%
+%\patchBothAmsMathEnvironmentsForLineno{equation}%
+%\patchBothAmsMathEnvironmentsForLineno{align}%
+%\patchBothAmsMathEnvironmentsForLineno{flalign}%
+%\patchBothAmsMathEnvironmentsForLineno{alignat}%
+%\patchBothAmsMathEnvironmentsForLineno{gather}%
+%\patchBothAmsMathEnvironmentsForLineno{multline}%
+
+%}
+
+%% This list environment is used for the references in the
+%% Program Summary
+%%
+\newcounter{bla}
+\newenvironment{refnummer}{%
+\list{[\arabic{bla}]}%
+{\usecounter{bla}%
+ \setlength{\itemindent}{0pt}%
+ \setlength{\topsep}{0pt}%
+ \setlength{\itemsep}{0pt}%
+ \setlength{\labelsep}{2pt}%
+ \setlength{\listparindent}{0pt}%
+ \settowidth{\labelwidth}{[9]}%
+ \setlength{\leftmargin}{\labelwidth}%
+ \addtolength{\leftmargin}{\labelsep}%
+ \setlength{\rightmargin}{0pt}}}
+ {\endlist}
+
+\journal{Computer Physics Communications}
+
+\begin{document}
+\begin{frontmatter}
+
+\title{\texttt{pyJac}: analytical Jacobian generator for chemical kinetics}
+
+\author[osu]{Kyle~E.\ Niemeyer\corref{cor1}}
+\ead{Kyle.Niemeyer@oregonstate.edu}
+
+\author[uconn]{Nicholas~J.\ Curtis}
+\author[uconn]{Chih-Jen Sung}
+
+% addresses
+\address[osu]{School of Mechanical, Industrial, and Manufacturing Engineering\\
+	Oregon State University, Corvallis, OR 97331, USA}
+\address[uconn]{Department of Mechanical Engineering\\
+	University of Connecticut, Storrs, CT, 06269, USA}
+
+\cortext[cor1]{Corresponding author}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+
+\end{abstract}
+
+\begin{keyword}
+Chemical kinetics \sep Jacobian
+\end{keyword}
+
+\end{frontmatter}
+
+%\linenumbers
+%\renewcommand\linenumberfont{\normalfont\tiny}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Computer program descriptions should contain the following
+% PROGRAM SUMMARY.
+
+{\bf PROGRAM SUMMARY}
+  %Delete as appropriate.
+
+\begin{small}
+\noindent
+{\em Manuscript Title:}                                       \\
+{\em Authors:} Kyle E.\ Niemeyer, Nicholas J.\ Curtis, Chih-Jen Sung \\
+{\em Program Title:} pyJac                                    \\
+{\em Journal Reference:}                                      \\
+  %Leave blank, supplied by Elsevier.
+{\em Catalogue identifier:}                                   \\
+  %Leave blank, supplied by Elsevier.
+{\em Licensing provisions:}                                   \\
+  %enter "none" if CPC non-profit use license is sufficient.
+{\em Programming language:} Python                            \\
+{\em Computer:} Any                                              \\
+  %Computer(s) for which program has been designed.
+{\em Operating system:} Any (Linux, OS X, Windows)            \\
+  %Operating system(s) for which program has been designed.
+{\em RAM:} bytes                                              \\
+  %RAM in bytes required to execute program with typical data.
+%{\em Number of processors used:}                              \\
+%  %If more than one processor.
+%{\em Supplementary material:}                                 \\
+%  % Fill in if necessary, otherwise leave out.
+{\em Keywords:} Chemical kinetics, Jacobian  \\
+  % Please give some freely chosen keywords that we can use in a
+  % cumulative keyword index.
+{\em Classification:} 16.12, 4.3                                \\
+  %Classify using CPC Program Library Subject Index, see (
+  % http://cpc.cs.qub.ac.uk/subjectIndex/SUBJECT_index.html)
+  %e.g. 4.4 Feynman diagrams, 5 Computer Algebra.
+{\em External routines/libraries:}                            \\
+  % Fill in if necessary, otherwise leave out.
+%{\em Subprograms used:}                                       \\
+%  %Fill in if necessary, otherwise leave out.
+{\em Nature of problem:}\\
+  %Describe the nature of the problem here.
+   \\
+{\em Solution method:}\\
+  %Describe the method solution here.
+   \\
+%{\em Restrictions:}\\
+%  %Describe any restrictions on the complexity of the problem here.
+%   \\
+%{\em Unusual features:}\\
+%  %Describe any unusual features of the program/problem here.
+%   \\
+{\em Additional comments:}\\
+  %Provide any additional comments here.
+   \\
+{\em Running time:}\\
+  %Give an indication of the typical running time here.
+   \\
+
+%\begin{thebibliography}{0}
+%\bibitem{1}Reference 1         % This list should only contain those items referenced in the                 
+%\bibitem{2}Reference 2         % Program Summary section.   
+%\bibitem{3}Reference 3         % Type references in text as [1], [2], etc.
+%                               % This list is different from the bibliography at the end of 
+%                               % the Long Write-Up.
+%\end{thebibliography}
+%* Items marked with an asterisk are only required for new versions
+%of programs previously published in the CPC Program Library.\\
+\end{small}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+\label{sec:intro}
+
+In the past, regular computational power increases could be counted on to enable previously inaccessible simulations.  
+This trend has been disrupted recently due to power consumption and heat dissipation issues, slowing the pace of processor speed increases.
+While the central processing unit (CPU) market has seen performance gains via multi-core parallelism, single-instruction multiple data processors (SIMD), e.g. graphics processing units (GPUs),  have emerged as a low cost, low power, massively parallel high-performance computing alternative. 
+GPUs---originally developed for graphics/video processing and display purposes---consist of many hundreds to thousands of cores compared to tens of cores found on a typical CPU.
+Recognizing that the SIMD parallelism model fits well with the operator-split chemistry integration, which forms the basis of most reactive-flow codes~\cite{oran2005numerical}, a number of studies in recent years \cite{niemeyer_accelerating_2014,niemeyer_turbulence-chemistry_2011,shi_accelerating_2012,shi_redesigning_2011,spafford_accelerating_2010,stone_techniques_2013} have explored the use of SIMD processors to accelerate reactive-flow codes.
+To our knowledge there is currently no open-source analytical chemical Jacobian tool capable of generating code specifically optimized for SIMD processors.
+To this end, pyJac is capable of generating species / reaction rate, and analytical chemical Jacobian subroutines for the CUDA programming language~\cite{Nickolls:2008:SPP:1365490.1365500}, a widely used language for NVIDIA GPUs.
+Additionally, the programming paradigm to achieve efficient code evaluation for SIMD processors is quite different than that of normal CPUs, optimization strategies specifically targeted at accelerating Jacobian evaluation on GPUs will be laid out and tested.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Theory}
+
+This section describes the theoretical background of the analytical Jacobian generator, first in terms of the governing equations and then the various components of the Jacobian matrix itself.
+Greater explanation of development of the governing equations may be found in the literature~\cite{Law:2006tu,Warnatz:2006tq,Glassman:2008tq}, but we include the necessary details here for completeness.
+
+\subsection{Governing equations}
+\label{sec:goveq}
+
+The initial value problem to be solved, whether in the context of a single homogeneous reacting system (e.g., autoignition, perfectly stirred reactor) or the chemistry portion of an operator-split multidimensional reactive-flow simulation~\cite{Oran:2001aa}, is described using an ordinary differential equation for the thermochemical composition vector:
+\begin{equation}
+\label{e:vars}
+\Phi = \left \lbrace T, Y_1, Y_2, \dotsc, Y_{N_{\text{sp}}} \right \rbrace^{\intercal}
+\end{equation}
+where $T$ is the temperature, $Y_i$ are the species mass fractions, and $N_{\text{sp}}$ is the number of species. 
+In multidimensional simulations where the equations for chemical kinetics are coupled to conservation of energy (or enthalpy), temperature can be determined algebraically in a straightforward manner~\cite{Oran:2001aa}.
+Pressure ($p$) and density ($\rho$) are also state variables, related to temperature through the ideal equation of state:
+\begin{equation}
+\label{e:state}
+p = \rho \frac{\mathcal{R}}{W} T = \mathcal{R} T \sum_{k=1}^{N_{\text{sp}}} [X_k] ,
+\end{equation}
+where $\mathcal{R}$ is the universal gas constant, $W$ is the average molecular weight of the mixture, and $[X_k]$ is the molar concentration of the $k$th species.
+The average molecular weight is defined by:
+\begin{equation}
+W = \frac{1}{\sum_{k=1}^{N_{\text{sp}}} Y_k / W_k} = \frac{\rho \mathcal{R} T}{p}
+\end{equation}
+and the molar concentrations by:
+\begin{equation}
+[X_k] = \rho \frac{Y_k}{W_k} .
+\end{equation}
+
+The system of ODEs governing the change in thermochemical composition corresponding to Eq.~\eqref{e:vars} is then $ f = \partial \Phi/ \partial t$:
+\begin{equation}
+f = \ddt{\Phi} = \left \lbrace \ddt{T}, \ddt{Y_1}, \ddt{Y_2}, \dotsc, \ddt{Y_{N_{\text{sp}}}} \right \rbrace^{\intercal}
+\label{e:ode}
+\end{equation}
+where
+\begin{align}
+\ddt{T} &= \frac{-1}{\rho c_p} \sum_{k=1}^{N_{\text{sp}}} h_k W_k \dot{\omega}_k , \\
+\ddt{Y_k} &= \frac{W_k}{\rho} \dot{\omega}_k \quad k = 1, \dotsc, N_{\text{sp}}, 
+\end{align}
+$\rho$ is the density, $c_p$ is the mass-averaged constant-pressure specific heat, $h_k$ is the enthalpy of the $k$th species in mass units, $W_k$ is the molecular weight of the $k$th species, and $\dot{\omega}_k$ is the $k$th species overall production rate.
+
+\subsection{Thermodynamic properties}
+
+The standard-state thermodynamic properties (in molar units) for a gaseous species $k$ is defined using the seven-coefficient polynomial standard of Gordon and McBride~\cite{Gordon:1976wp}:
+\begin{align}
+\frac{C_{p,k}^{\circ}}{\mathcal{R}} &= a_{0,k} + T \left( a_{1,k} + T \left( a_{2,k} + T \left( a_{3,k} + a_{4,k} T \right) \right) \right) \label{e:cpk} \\
+\frac{H_k^{\circ}}{\mathcal{R}} &= T \left( a_{0,k} + T \left( \frac{a_{1,k}}{2} + T \left( \frac{a_{2,k}}{3} + T \left( \frac{a_{3,k}}{4} + \frac{a_{4,k}}{5} T \right) \right) \right) \right) + a_{5,k} \label{e:hk} \\
+\frac{S_k^{\circ}}{\mathcal{R}} &= a_{0,k} \ln T + T \left( a_{1,k} + T \left( \frac{a_{2,k}}{2} + T \left( \frac{a_{3,k}}{3} + T \left( \frac{a_{3,k}}{3} + \frac{a_{4,k}}{4} T \right) \right) \right) \right) + a_{6,k} \label{e:sk}
+\end{align}
+where $C_{p,l}$ is the constant-pressure specific heat in molar units, $H_k$ is the enthalpy in molar units, $S_k$ is the entropy in molar units, and the ${}^{\circ}$ indicates standard-state one atmosphere.
+For a calorically perfect gas, the standard-state specific heats, enthalpies, and internal energies are also the actual values.
+
+The mass-specific specific heat and enthalpy are then defined as
+\begin{align}
+c_{p,k} &= \frac{C_{p,k}}{W_k} \text{ and} \\
+h_k &= \frac{H_k}{W_k} \;,
+\end{align}
+and the mixture-averaged specific heat is
+\begin{equation}
+c_p = \sum_{k=1}^{N_{\text{sp}}} Y_k c_{p,k} \;.
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Reaction rate expressions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Next, define the species rates of production and related kinetic terms:
+\begin{equation}
+\dot{\omega}_k = \sum_{i=1}^{N_{\text{reac}}} \nu_{k i} q_i
+\end{equation}
+where $N_{\text{reac}}$ is the number of reactions, $\nu_{k i}$ is the overall stoichiometric coefficient for species $k$ in reaction $i$, and $q_i$ is the rate-of-progress for reaction $i$.
+These are defined by:
+\begin{align}
+\nu_{k i} &= \nu_{k i}^{\prime \prime} - \nu_{k i}^{\prime}  \\
+q_i &= c_i R_i ,
+\end{align}
+where $\nu_{k i}^{\prime \prime}$ and $\nu_{k i}^{\prime}$ are the product and reactant stoichiometric coefficients (respectively) of species $k$ in reaction $i$.
+The base rate-of-progress for a reversible reaction is:
+\begin{align}
+R_i &= R_{f, i} - R_{r, i} \\
+R_{f, i} &= k_{f, i} \prod_{j = 1}^{N_{\text{sp}}} [X_j]^{\nu_{j i}^{\prime}} \\
+R_{r, i} &= k_{r, i} \prod_{j = 1}^{N_{\text{sp}}} [X_j]^{\nu_{j i}^{\prime \prime}}
+\end{align}
+and the third-body\slash pressure modification $c_i$ is given by:
+
+\begin{equation}
+c_i = \begin{dcases}
+	1 &\text{Pressure-independent reaction} \\
+	[X]_i &\text{\nth{3}-body enhanced reaction, no pressure dependence} \\
+	\frac{P_{r i}}{1 + P_{r i}} F_i &\text{unimolecular/recombination falloff reaction} \\
+	\frac{1}{1 + P_{r i}} F_i &\text{chemically-activated bimolecular reaction}
+	\end{dcases}
+\label{e:rxn_pressure}
+\end{equation}
+
+The forward reaction rate coefficient $k_{f, i}$ is given by the Arrhenius expression:
+\begin{equation}
+\label{e:arrhenius}
+	k_{f, i} = A_i T^{\beta_i} \exp \left( - \frac{T_{a, i}}{T} \right),
+\end{equation}
+where $A_i$ is the pre-exponential factor, $\beta_i$ is the temperature exponent, and $T_{a, i}$ is the activation temperature given by $T_{a, i} = E_{a, i} / \mathcal{R}$.
+
+As given by Lu and Law~\cite{Lu:2009gh}, depending on the value of the Arrhenius parameters, $k_f$ can be calculated in different ways to minimize the computational cost:
+\begin{equation}
+\label{e:kf_cost}
+	k_f = 
+	\begin{dcases}
+	A	& \text{if } \beta = 0 \text{ and } T_a = 0 \\
+	\exp \left( \log A + \beta \log T \right)		& \text{if } \beta \neq 0 \text{ and } \text{if } T_a = 0 \\
+	\exp \left( \log A + \beta \log T - T_a / T \right)	& \text{if } \beta \neq 0 \text{ and } T_a \neq 0 \\
+	\exp \left( \log A - T_a / T \right)	& \text{if } \beta = 0 \text{ and } T_a \neq 0 \\
+	A \prod^b T	& \text{if } T_a = 0 \text{ and } b \in \mathbb{Z} \text{ (integers) }
+	\end{dcases}
+\end{equation}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Reverse rate coefficient}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+If the reaction is irreversible, then $k_{r, i}$ is zero.
+If the reaction is reversible, then it has a nonzero reverse rate coefficient $k_{r, i}$.
+This may be defined with explicit reverse Arrhenius parameters and therefore use the same expression as Eq.~\eqref{e:arrhenius}.
+Otherwise, the reverse rate coefficient is related to the forward coefficient through the equilibrium constant:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+k_{r, i} &=& \frac{k_{f, i}}{K_{c, i}} \label{e:kri} \\
+K_{c, i} &=& K_{p, i} \left( \frac{p_{\text{atm}}}{\mathcal{R} T} \right)^{\sum_{k=1}^{N_{\text{sp}}} \nu_{k i}} \\
+K_{p, i} &=& \exp \left( \frac{\Delta S_i^{\circ}}{\mathcal{R}} - \frac{\Delta H_i^{\circ}}{\mathcal{R} T} \right) = \exp \left( \sum_{k=1}^{N_{\text{sp}}} \nu_{k i} \left( \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T} \right) \right)
+\end{IEEEeqnarray}}%
+where $p_{\text{atm}}$ is the pressure of one standard atmosphere in the appropriate units.
+
+By combining the expressions for $K_{c, i}$ and $K_{p, i}$, the following can be obtained:
+\begin{align}
+K_{c, i} &= \left( \frac{p_{\text{atm}}}{\mathcal{R} T} \right)^{\sum_{k=1}^{N_{\text{sp}}} \nu_{k i}} \exp \left( \sum_{k=1}^{N_{\text{sp}}} \nu_{k i} \left( \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T} \right) \right) 	\nonumber \\
+	&= \left( \frac{p_{\text{atm}}}{\mathcal{R}} \right)^{\sum_{k=1}^{N_{\text{sp}}} \nu_{k i}} \left( \frac{1}{T} \right)^{\sum_{k=1}^{N_{\text{sp}}} \nu_{k i}} \exp \left( \sum_{k=1}^{N_{\text{sp}}} \nu_{k i} \left( \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T} \right) \right)	   \nonumber  \\
+	&= \left( \frac{p_{\text{atm}}}{\mathcal{R}} \right)^{\sum_{k=1}^{N_{\text{sp}}} \nu_{k i}} \exp \left( \sum_{k=1}^{N_{\text{sp}}} \nu_{k i} \left( -\ln T + \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T} \right) \right)   \nonumber   \\
+K_{c, i} &= \left( \frac{p_{\text{atm}}}{\mathcal{R}} \right)^{\sum_{k=1}^{N_{\text{sp}}} \nu_{k i}} \exp \left( \sum_{k=1}^{N_{\text{sp}}} \nu_{k i} B_k \right)
+\end{align}
+where, expanding the polynomial expressions for $S_k^{\circ}$ and $H_k^{\circ}$ from Eqs.~\eqref{e:sk} and \eqref{e:hk}, respectively:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+B_k & = & -\ln T + \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T}  \nonumber  \\
+	& = & a_{6,k} - a_{0,k} + \left( a_{0,k} - 1 \right) \ln T \nonumber \\
+	& & +\: T \left( \frac{a_{1,k}}{2} + T \left( \frac{a_{2,k}}{6} + T \left( \frac{a_{3,k}}{12} + \frac{a_{4,k}}{20} T \right) \right) \right) - \frac{a_{5,k}}{T}  \IEEEeqnarraynumspace
+\end{IEEEeqnarray}}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Third-body effects}
+
+A three-body reaction contains ``$+ \text{M}$'' in the reaction line description.
+In this case,
+\begin{equation}
+c_i = [X]_i = \sum_{j=1}^{N_{\text{sp}}} \alpha_{i j} [X_j] \;,
+\end{equation}
+where $\alpha_{i j}$ is the third-body efficiency of species $j$ in the $i$th reaction.
+If all species in the mixture contribute equally as third bodies, the default, then $\alpha_{i j} = 1$ for all species.
+In this case,
+\begin{equation}
+[X]_i = [M] = \sum_{j=1}^{N_{\text{sp}}} [X_j] = \frac{p}{\mathcal{R} T} = \frac{\rho}{W} \;.
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Falloff reactions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Pressure-dependent falloff reactions have low- ($k_{0, i}$) and high-pressure-limit ($k_{\infty,i}$) rate coefficients, with corresponding Arrhenius parameters, expressed using Eq.~\eqref{e:arrhenius}.
+These are used to define a reduced pressure, depending on whether the third body is a specific species (e.g.\ ``$(+\text{Y}_m)$'') or the mixture as a whole (including any efficiencies $\alpha_{i j}$):
+\begin{equation}
+P_{r,i} = \begin{dcases}
+\frac{k_{0,i}}{k_{\infty,i}} [X]_i &\text{if ``(+M)''} \\
+\frac{k_{0,i}}{k_{\infty,i}} [X_m] &\text{if ``} (+\text{Y}_m\text{)''}
+\end{dcases}
+\label{e:pr_i}
+\end{equation}
+
+The falloff factor $F_i$ used in Eq.~\eqref{e:rxn_pressure} is determined based on one of three representations: the Lindemann~\cite{Lindemann:1922cz}, Troe~\cite{Gilbert:1983bb}, and so-called SRI~\cite{Stewart:1989gj} falloff approaches
+\begin{equation}
+F_i = \begin{dcases}
+1 &\text{for Lindemann,} \\
+F_{\text{cent}}^{ \left( 1 + ( A / B )^2 \right)^{-1} } &\text{for Troe, } \\
+d T^e \left( a \cdot \exp \left( -\frac{b}{T} \right) + \exp \left( -\frac{T}{c} \right) \right)^X &\text{for SRI.}
+\end{dcases}
+\end{equation}
+
+For the Troe representation,
+\begin{align}
+F_{\text{cent}} &= (1 - a) \exp \left( -\frac{T}{T^{***}} \right) + a\cdot \exp \left( -\frac{T}{T^*} \right) + \exp \left( -\frac{T^{**}}{T} \right) \\
+A &= \log_{10} P_{r,i} - 0.67 \log_{10} F_{\text{cent}} - 0.4 \\
+B &= 0.806 - 1.1762 \log_{10} F_{\text{cent}} - 0.14 \log_{10} P_{r,i}
+\end{align}
+where $a$, $T^{***}$, $T^*$, and $T^{**}$ are specified parameters. $T^{**}$ is optional, and, if it is not used, the final term of $F_{\text{cent}}$ is omitted.
+
+For the SRI representation,
+\begin{equation}
+X = \left( 1 + \left( \log_{10} P_{r,i} \right)^2 \right)^{-1}
+\end{equation}
+where $a$, $b$, and $c$ are required parameters. The parameters $d$ and $e$ are optional; if not specified, $d = 1$ and $e = 0$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Pressure-dependent reactions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In addition to the falloff approach given previously, two additional formulations can be used to describe the pressure dependence of reactions that do not follow the modification factor $c_i$ approach.
+The first involves logarithmic interpolation between Arrhenius rates at two pressures~\cite{chemkin:2012,Goodwin:2014aa}, each evaluated using Eq.~\eqref{e:arrhenius}:
+\begin{align}
+k_1 (T) &= A_1 T^{\beta_1} \exp \left( -\frac{T_{a, 1}}{T} \right) \text{ at } p_1 \text{ and} \label{e:plog_k1} \\
+k_2 (T) &= A_2 T^{\beta_2} \exp \left( -\frac{T_{a, 2}}{T} \right) \text{ at } p_2 \;, \label{e:plog_k2}
+\end{align}
+where the Arrhenius coefficients are given for each pressure $p_1$ and $p_2$.
+Then, the reaction rate coefficient at a particular pressure $p$ between $p_1$ and $p_2$ can be determined through logarithmic interpolation:
+\begin{equation}
+\log k(T, p) = \log k_1 (T) + \left( \log k_2 (T) - \log k_1 (T) \right) \frac{\log p - \log p_1}{\log p_2 - \log p_1} \;. \label{e:plog}
+\end{equation}
+
+In addition, the pressure dependence of a reaction can be expressed through a bivariate Chebyshev polynomial fit~\cite{Venkatesh:1997hv,Venkatesh:1997ik,Venkatesh:2000gj,chemkin:2012,Goodwin:2014aa}:
+\begin{equation}
+\log_{10} k(T, p) = \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \phi_i (\tilde{T}) \phi_j \left(\tilde{p}\right) \label{e:cheb} \;,
+\end{equation}
+where $\alpha_{ij}$ is the coefficient corresponding to the grid points $i$ and $j$, $N_T$ and $N_p$ are the numbers of grid points for temperature and pressure, respectively, and $\phi_n$ is the Chebyshev polynomial of the first kind of degree $n - 1$ typically expressed as
+\begin{equation}
+\phi_n (x) = T_{n-1} (x) = \cos \left( (n - 1) \arccos (x) \right) \quad \text{for } |x| \leq 1 \;.
+\end{equation}
+The reduced temperature $\tilde{T}$ and pressure $\tilde{p}$ are given by 
+\begin{align}
+\tilde{T} &\equiv \frac{2 T^{-1} - T^{-1}_{\min} - T^{-1}_{\max}}{T^{-1}_{\max} - T^{-1}_{\min}} \quad\text{and} \\
+\tilde{p} &\equiv \frac{2\log_{10} p - \log_{10} p_{\min} - \log_{10} p_{\max}}{\log_{10} p_{\max} - \log_{10} p_{\min}} \;,
+\end{align}
+where $T_{\min} \leq T \leq T_{\max}$ and $p_{\min} \leq p \leq p_{\max}$ describe the ranges of validity for temperature and pressure.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Jacobian matrix}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Let $\mathcal{J}$ denote the Jacobian matrix corresponding to the vector of ODEs given by Eq.~\eqref{e:ode}. $\mathcal{J}$ is filled by the partial derivatives $\partial f / \partial \Phi$, such that
+\begin{equation}
+\mathcal{J}_{i,j} = \dydx{f_i}{\Phi_j} .
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{Partial derivatives of energy equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The first line of $\mathcal{J}$ is filled with partial derivatives of the energy equation, or
+\begin{equation}
+\mathcal{J}_{1,j} = \dydx{T}{\Phi_j} \quad j = 1, \dotsc, N_{\text{sp}} + 1.
+\end{equation}
+The components of $\mathcal{J}_{1,j}$ are:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\mathcal{J}_{1,1} &=& \dydx{f_1}{T} = \ddx{T} \left( -\frac{\sum_{k=1}^{N_{\text{sp}}} h_k W_k \dot{\omega}_k}{\rho c_p} \right) = -\sum_{k=1}^{N_{\text{sp}}} \ddx{T} \left(\frac{h_k}{c_p} \frac{W_k \dot{\omega}_k}{\rho} \right) \nonumber \\
+&=& -\sum_{k=1}^{N_{\text{sp}}} \left[ \ddx{T} \left( \frac{h_k}{c_p} \right) \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{T} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] \nonumber \\
+&=& \frac{-1}{c_p} \sum_{k=1}^{N_{\text{sp}}} \left[ \left( \dydx{h_k}{T} - h_k \dydx{c_p}{T} \right) \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{T} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] , \IEEEeqnarraynumspace \\
+%
+\mathcal{J}_{1, j+1} &=& \dydx{f_1}{Y_j} = \ddx{Y_j} \left( -\frac{\sum h_k W_k \dot{\omega}_k}{\rho c_p} \right) = -\sum_{k=1}^{N_{\text{sp}}} \ddx{Y_j} \left(\frac{h_k}{c_p} \frac{W_k \dot{\omega}_k}{\rho} \right) \nonumber \\
+&=& -\sum_{k=1}^{N_{\text{sp}}} \left[ \ddx{Y_j} \left( \frac{h_k}{c_p} \right) \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{Y_j} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] \nonumber \\
+&=& \frac{-1}{c_p} \sum_{k=1}^{N_{\text{sp}}} \left[ \left( \dydx{h_k}{Y_j} - h_k \dydx{c_p}{Y_j} \right) \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{Y_j} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] , \IEEEeqnarraynumspace
+\end{IEEEeqnarray}}%
+for $j = 1, \dotsc, N_{\text{sp}}$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{Partial derivatives of species equations}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The remaining lines of $\mathcal{J}$ (2--$N_{\text{sp}}+1$) are filled with the partial derivatives of the species equations, with the components
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\mathcal{J}_{k+1, 1} & = & \dydx{f_{k+1}}{T} = \ddx{T} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \nonumber \\
+& = & \frac{W_k}{\rho} \left(\dydx{\dot{\omega}_k}{T} - \frac{\dot{\omega}_k}{\rho} \dydx{\rho}{T} \right) , \IEEEeqnarraynumspace \\
+\mathcal{J}_{k+1, j+1} & = & \dydx{f_{k+1}}{Y_j} = \ddx{Y_j} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \nonumber \\
+& = & \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{Y_j} - \frac{\dot{\omega}_k}{\rho} \dydx{\rho}{Y_j} \right) , \IEEEeqnarraynumspace
+\end{IEEEeqnarray}}%
+for $k = 1, \dotsc, N_{\text{sp}}$ and $j = 1, \dotsc, N_{\text{sp}}$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{Remaining partial derivatives}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The following partial derivatives need to be evaluated: $\dydx{\rho}{T}$, $\dydx{\rho}{Y_j}$, $\dydx{c_p}{T}$, $\dydx{c_p}{Y_j}$, $\dydx{h_k}{T}$, $\dydx{h_k}{Y_j}$, $\dydx{\dot{\omega}_k}{T}$, and $\dydx{\dot{\omega}_k}{Y_j}$. The partial derivatives of density are:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{\rho}{T} & = & \ddx{T} \left( \frac{p W}{\mathcal{R} T} \right) = \frac{p W}{\mathcal{R}} \ddx{T} \left(\frac{1}{T}\right) = - \frac{p W}{\mathcal{R}} \frac{1}{T^2} \nonumber \\
+& = & -\frac{\rho}{T} \\
+\dydx{\rho}{Y_j} & = & \ddx{Y_j} \left( \frac{p W}{\mathcal{R} T} \right) = \frac{p}{\mathcal{R} T} \dydx{W}{Y_j} = \frac{p}{\mathcal{R} T} \frac{-W^2}{W_j} \nonumber \\
+& = & -\rho \frac{W}{W_j}
+\end{IEEEeqnarray}}%
+
+The partial derivative of species specific enthalpy with respect to temperature is simply constant-pressure specific heat, and the partial derivative with respect to species mass fraction is zero:
+\begin{align}
+\dydx{h_k}{T} &= c_{p,k} \\
+\dydx{h_k}{Y_j} &= 0
+\end{align}
+
+Next, the derivatives of specific heat:
+\begin{align}
+\dydx{c_p}{T} &= \sum Y_k \dydx{c_{p,k}}{T} \label{E:dcpdT} \\
+\dydx{c_{p,k}}{T} &= \frac{\mathcal{R}}{W_k} \left( a_{1,k} + T \left( 2 a_{2,k} + T \left( 3 a_{3,k} + 4 a_{4,k} T \right) \right) \right) \\
+\dydx{c_p}{Y_j} &= \ddx{Y_j} \sum Y_k c_{p,k} = c_{p,j}
+\end{align}
+
+Next, the derivatives of species rate-of-production $\dot{\omega}_k \left(T, [X]_1, \dotsc , [X]_{N_{\text{sp}}} \right)$ are determined.
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{\dot{\omega}_k}{T} & = & \sum_{i=1}^{N_{\text{reac}}} \nu_{k i} \dydx{q_i}{T} = \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} \left( \dydx{c_i}{T} R_i + c_i \dydx{R_i}{T} \right) \\
+\dydx{\dot{\omega}_k}{Y_j} &=& \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} \dydx{q_i}{Y_j} = \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} \left( \dydx{c_i}{Y_j} R_i + c_i \dydx{R_i}{Y_j} \right)
+\end{IEEEeqnarray}}%
+
+The partial derivatives of species concentration are
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{[X_j]}{T} &=& \frac{Y_j}{W_j} \dydx{\rho}{T} = -\frac{Y_j}{W_j} \frac{\rho}{T} = -\frac{[X_j]}{T} \\
+\dydx{[X_l]}{Y_j} &=& \frac{Y_l}{W_l} \dydx{\rho}{Y_j} + \frac{\rho}{W_l} \dydx{Y_l}{Y_j} = \frac{\rho}{W_l} \left(-Y_l \frac{W}{W_j} + \delta_{l j} \right) \nonumber \\
+&=& -[X_l] \frac{W}{W_j} + \frac{\rho}{W_l} \delta_{lj}
+\end{IEEEeqnarray}}%
+
+The partial derivatives of $R_i$ for: 
+\begin{itemize}
+\item{Irreversible reactions}
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{R_{f, i}}{T} &=& \dydx{k_{f, i}}{T} \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} \right) \nonumber \\
+&=& \dydx{k_{f, i}}{T} \frac{1}{k_{f, i}} R_{f, i} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} \right) \label{E:dRfdT-orig} \\
+\dydx{R_{f, i}}{Y_j} &=& k_{f, i} \ddx{Y_j} \left( \prod_{k=1}^{N_{\text{sp}}} [X_k]^{\nu_{ki}^{\prime}} \right) \label{E:dRfdY-orig}
+\end{IEEEeqnarray}}%
+Theoretically, $ \dydx{R_{f, i}}{[X_j]} $ could be further simplified to $ \frac{\nu_{ji}^{\prime}}{ [X_j] } R_{f, i} $, but practically this should be avoided since $ [X_j] $ could be zero. The partial derivatives of the molar concentration product terms above are:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\ddx{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} \right) &=& \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} [X_j]^{\nu_{ji}^{\prime} - 1} \left( \frac{-[X_j]}{T} \right) \prod_{\substack{k=1 \\ k \ne j}}^{N_{\text{sp}}} [X_k]^{\nu_{ki}^{\prime}} \nonumber \\
+&=& -\frac{1}{T} \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} [X_j]^{\nu_{ji}^{\prime}} \prod_{\substack{k=1 \\ k \ne j}}^{N_{\text{sp}}} [X_k]^{\nu_{ki}^{\prime}} \nonumber \\
+&=& -\frac{1}{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} \right) \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \\
+\ddx{Y_j} \left( \prod_{k=1}^{N_{\text{sp}}} [X_k]^{\nu_{ki}^{\prime}} \right) &=& \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime} [X_k]^{\nu_{ki}^{\prime} - 1} \left( \dydx{[X_k]}{Y_j} \right) \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime}} \nonumber \\
+&=& \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime} [X_k]^{\nu_{ki}^{\prime} - 1} \left( -[X_k] \frac{W}{W_j} + \frac{\rho}{W_k} \delta_{kj}  \right) \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime}} \nonumber \\
+&=& \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime} \left( -[X_k]^{\nu_{ki}^{\prime}} \frac{W}{W_j} + \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime} - 1} \delta_{kj} \right) \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime}} \IEEEeqnarraynumspace
+\end{IEEEeqnarray}}%
+and the partial derivative of forward reaction rate coefficient is:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+	\dydx{k_{f, i}}{T} & = & \ddx{T} \left( A_i \exp \left( \beta_i \ln T - \frac{T_{a,i}}{T} \right) \right) \nonumber \\
+	& = & A_i \left( \frac{\beta_i}{T} + \frac{T_{a,i}}{T^2} \right) \exp \left( \beta_i \ln T - \frac{T_{a,i}}{T} \right) \\
+	& = & \frac{k_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} \right) \nonumber
+\label{e:dkfdT}
+\end{IEEEeqnarray}}%
+Inserting these into Eqs.~\eqref{E:dRfdT-orig} and \eqref{E:dRfdY-orig} gives
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{R_{f, i}}{T} &=& \frac{1}{T} \left( \beta_i \frac{T_{a,i}}{T} \right) R_{f,i} - \frac{k_{f,i}}{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} \right) \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \nonumber \\
+&=& \frac{R_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \right) \label{E:dRfdT} \\
+\dydx{R_{f,i}}{Y_j} &=& \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime} \left( -\frac{W}{W_j} R_{f,i} + k_{f,i} \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime} - 1} \delta_{kj} \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime}} \right) \label{E:dRfdY} \IEEEeqnarraynumspace
+\end{IEEEeqnarray}}%
+
+\item{Reversible reactions}
+
+For reactions with explicit reverse Arrhenius coefficients,
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{R_i}{T} & = & \dydx{k_{f, i}}{T} \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime\prime}} \right) \nonumber \\
+&& -\: \dydx{k_{r, i}}{T} \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime \prime}} - k_{r, i} \ddx{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime\prime}} \right) \label{e:dRdT_explicit_rev_general} \\
+&=& \frac{R_{f,i}}{T} \left( \beta_{f,i} + \frac{T_{af,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \right) - \frac{R_{r,i}}{T} \left( \beta_{r,i} + \frac{T_{ar,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} \right) \IEEEeqnarraynumspace \\
+\end{IEEEeqnarray}}%
+Similarly, $ \frac{1}{ [X_j] } \left( \nu_{ji}^{\prime} R_{f, i} - \nu_{ji}^{\prime \prime} R_{r, i} \right) $ should be avoided since $ [X_j] $ could be zero.
+\end{itemize}
+
+The partial derivative of the reverse reaction rate coefficient, when evaluated using the forward rate coefficient and equilibrium constant using Eq.~\eqref{e:kri}, is more complicated:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+	\dydx{k_{r, i}}{T} & = & \ddx{T} \left( \frac{k_{f, i}}{K_{c, i}} \right) = \frac{ \dydx{k_{f, i}}{T} K_{c, i} - \dydx{K_{c, i}}{T} k_{f, i} }{K_{c, i}^2} \label{e:dkrdT_general} \\
+	& = & \frac{k_{f, i}}{K_{c, i}} \frac{1}{T} \left( \beta_i + \frac{T_{a, i}}{T} \right) - \frac{1}{K_{c, i}} \dydx{K_{c, i}}{T} \frac{k_{f, i}}{K_{c, i}} \\
+	\dydx{K_{c, i}}{T} & = & \left( \frac{p_{\text{atm}}}{\mathcal{R}} \right)^{\sum \nu_{ki}} \left( \sum_{k=1}^{N_{\text{sp}}} \nu_{ki} \dydx{B_k}{T} \right) \exp \left( \sum_{k=1}^{N_{\text{sp}}} \nu_{ki} B_k \right) \nonumber \\
+	& = & K_{c, i} \sum_{k=1}^{N_{\text{sp}}} \nu_{ki} \dydx{B_k}{T} \\
+	\therefore \dydx{k_{r, i}}{T} & = & k_{r, i} \left( \frac{1}{T} \left( \beta_i + \frac{T_{a, i}}{T} \right) - \sum_{k=1}^{N_{\text{sp}}} \nu_{ki} \dydx{B_k}{T} \right)
+\end{IEEEeqnarray}}%
+where
+\begin{equation}
+	\dydx{B_k}{T} = \frac{1}{T} \left( a_{0,k} - 1 + \frac{a_{5,k}}{T} \right) + \frac{a_{1,k}}{2} + T \left( \frac{a_{2,k}}{3} + T \left( \frac{a_{3,k}}{4} + \frac{a_{4,k}}{5} T \right) \right)
+\end{equation}
+Now, the partial derivative of $R_i$ with respect to temperature is
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{R_i}{T} &=& \frac{R_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \right) \nonumber \\
+&& -\: k_{r,i} \left( \frac{1}{T} \left( \beta_i + \frac{T_{a,i}}{T} \right) - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji} \dydx{B_j}{T} \right) \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime\prime}} + \frac{R_{r,i}}{T} \prod_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} \nonumber \\
+&=& \frac{R_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \right) \nonumber \\
+&& -\: R_{r,i} \left[ \frac{1}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \prod_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} \right) - \prod_{j=1}^{N_{\text{sp}}} \nu_{ji} \dydx{B_j}{T} \right] \IEEEeqnarraynumspace
+\end{IEEEeqnarray}}%
+
+For all reversible reactions,
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{R_i}{Y_j} &=& \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime} \left( -\frac{W}{W_j} R_{f,i} + k_{f,i} \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime} - 1} \delta_{kj} \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime}} \right) \nonumber \\
+&& -\: \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime\prime} \left( -\frac{W}{W_j} R_{r,i} + k_{r,i} \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime\prime} - 1} \delta_{kj} \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime\prime}} \right)
+\end{IEEEeqnarray}}%
+
+The partial derivatives of $c_i$ depend on the type of reaction:
+\begin{itemize}
+\item{Basic reaction}
+\begin{align}
+\dydx{c_i}{T} &= 0 \\
+\dydx{c_i}{Y_j} &= 0
+\end{align}
+
+\item{Third-body-enhanced reaction}
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{c_i}{T} &=& \dydx{[X]_i}{T} = \frac{-1}{T} \sum_{j=1}^{N_{\text{sp}}} \alpha_{ij} [X_j] = -\frac{c_i}{T} \;, \\
+\dydx{c_i}{Y_j} &=& \sum_{k=1}^{N_{\text{sp}}} \alpha_{i k} \left( -[X_k] \frac{W}{W_j} + \frac{\rho}{W_k} \delta_{kj} \right) \nonumber \\
+&=& -\frac{W}{W_j} [X]_i + \rho \sum_{k=1}^{N_{\text{sp}}} \frac{\alpha_{ik}}{W_k} \delta_{kj}
+= -\frac{W}{W_j} [X]_i + \frac{\rho}{W_j} \alpha_{ij}
+\end{IEEEeqnarray}}%
+
+Note that in the case that all species contribute equally (i.e., $\alpha_{ij} = 1$ for all species $j$), the latter partial derivative simplifies to
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{c_i}{Y_j} = \ddx{Y_j} \left( \frac{p}{\mathcal{R} T} \right) = 0 \;,
+\label{e:dcdyequalzero}
+\end{IEEEeqnarray}}%
+because $\dydx{p}{Y_j} = 0$ (shown in \ref{A:pres_deriv}).
+
+\item{Unimolecular/recombination fall-off reaction}
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+	\dydx{c_i}{T} & = & \ddx{T} \left( \frac{P_{r,i}}{1+P_{r,i}} \right) F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{T} \nonumber \\
+	& = & \frac{1}{(1+P_{r,i})^2} \dydx{P_{r,i}}{T} F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{T} \\
+	\dydx{c_i}{Y_j} & = & \ddx{Y_j} \left( \frac{P_{r,i}}{1+P_{r,i}} \right) F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{Y_j} \nonumber \\
+	& = & \frac{1}{(1+P_{r,i})^2} \dydx{P_{r,i}}{Y_j} F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{Y_j} \nonumber \\
+	&=& c_i \left( \frac{1}{P_{r,i}} \frac{1}{1 + P_{r,i}} \dydx{P_{r,i}}{Y_j} + \frac{1}{F_i} \dydx{F_i}{Y_j} \right)
+\end{IEEEeqnarray}}%
+
+The partial derivatives for $P_{r,i}$ are
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{P_{r,i}}{T} &=& \frac{1}{k_{\infty,i}} \left( \dydx{k_{0,i}}{T} [X]_i + k_{0,i} \dydx{[X]_i}{T} - \frac{k_{0,i}}{k_{\infty,i}} [X]_i \dydx{k_{\infty,i}}{T} \right) \nonumber \\
+&=&  \frac{1}{T} \frac{k_{0,i}}{k_{\infty,i}} \left( \beta_{0,i} + \frac{T_{a0,i}}{T} \right) [X]_i - \frac{k_{0,i}}{k_{\infty,i}} \frac{[X]_i}{T} - \frac{P_{r,i}}{T} \frac{k_{\infty,i}}{k_{\infty,i}} \left( \beta_{\infty,i} + \frac{T_{a \infty, i}}{T} \right) \nonumber \IEEEeqnarraynumspace \\
+&=& \frac{P_{r,i}}{T} \left( \beta_{0,i} - \beta_{\infty,i} + \frac{T_{a 0, i} - T_{a \infty,i}}{T} - 1 \right) \label{E:dPridT} \\
+\dydx{P_{r,i}}{Y_j} &=& \begin{dcases}
+-P_{r,i} \frac{W}{W_j} + \frac{k_{0,i}}{k_{\infty,i}} \frac{\rho}{W_j} \alpha_{ij} , \; \text{ if ``(+M)'', or} \\
+-P_{r,i} \frac{W}{W_j} + \frac{k_{0,i}}{k_{\infty,i}} \frac{\rho}{W_m} \delta_{mj} , \; \text{ if ``(+Y${}_m$)'',}
+\end{dcases} \nonumber \\
+&=& \begin{dcases}
+P_{r,i} \left( -\frac{W}{W_j} + \frac{1}{[X]_i} \frac{\rho}{W_j} \alpha_{ij} \right) , \; \text{ if ``(+M)'', or} \\
+P_{r,i} \left( -\frac{W}{W_j} + \frac{1}{Y_m} \delta_{mj} \right) , \; \text{ if ``(+Y${}_m$)'',}
+\end{dcases}
+\label{E:dPridY}
+\end{IEEEeqnarray}}%
+where $\delta_{mj}$ is the Kronecker delta, so the above derivatives for $c_i$ can be simplified to:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{c_i}{T} &=& c_i \left[ \frac{1}{1 + P_{r,i}} \frac{1}{T} \left( \beta_{0,i} - \beta_{\infty,i} + \frac{T_{a0,i} - T_{a \infty,i}}{T} - 1 \right) + \frac{1}{F_i} \dydx{F_i}{T} \right] \\
+\dydx{c_i}{Y_j} &=& \begin{dcases}
+c_i \left[ \frac{1}{1 + P_{r,i}} \left( -\frac{W}{W_j} + \frac{1}{[X]_i} \frac{\rho}{W_j} \alpha_{ij} \right) + \frac{1}{F_i} \dydx{F_i}{Y_j} \right] , \text{ if ``(+M)'', or} \\
+c_i \left[ \frac{1}{1 + P_{r,i}} \left( -\frac{W}{W_j} + \frac{1}{Y_m} \delta_{mj} \right) + \frac{1}{F_i} \dydx{F_i}{Y_j} \right] ,  \text{ if ``(+Y${}_m$)''.}\label{dCidY_falloff}
+\end{dcases} \IEEEeqnarraynumspace
+\end{IEEEeqnarray}}%
+
+\item{Chemically-activated bimolecular reaction}
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{c_i}{T} &=& \frac{-1}{(1+P_{r,i})^2} \dydx{P_{r,i}}{T} F_i + \frac{1}{1+P_{r,i}} \dydx{F_i}{T} \nonumber \\
+&=& c_i \left[ -\frac{P_{r,i}}{T} \left( \beta_{0,i} - \beta_{\infty,i} + \frac{T_{a0,i} - T_{a \infty,i}}{T} - 1 \right) + \frac{1}{F_i} \dydx{F_i}{T} \right] \IEEEeqnarraynumspace \\
+\dydx{c_i}{Y_j} &=& \frac{-1}{(1+P_{r,i})^2} \dydx{P_{r,i}}{Y_j} F_i + \frac{1}{1+P_{r,i}} \dydx{F_i}{Y_j} \\
+&=& \begin{dcases}
+c_i \left[ \frac{-P_{r,i}}{1 + P_{r,i}} \left( -\frac{W}{W_j} + \frac{1}{[X]_i} \frac{\rho}{W_j} \alpha_{ij} \right) + \frac{1}{F_i} \dydx{F_i}{Y_j} \right] , \text{ if ``(+M)'', or} \\
+c_i \left[ \frac{-P_{r,i}}{1 + P_{r,i}} \left( -\frac{W}{W_j} + \frac{1}{Y_m} \delta_{mj} \right) + \frac{1}{F_i} \dydx{F_i}{Y_j} \right] , \text{ if ``(+Y${}_m$)''.}\label{dCidY_chem}
+\end{dcases} \IEEEeqnarraynumspace
+\end{IEEEeqnarray}}%
+\end{itemize}
+
+The partial derivatives of $F_i$ depend on the representation of pressure dependence:
+\begin{itemize}
+%
+\item{Lindemann}
+\begin{align}
+	\dydx{F_i}{T} &= 0 \\
+	\dydx{F_i}{Y_j} &= 0
+\end{align}
+%
+\item{Troe}
+\begin{align}
+	\dydx{F_i}{T} &= \dydx{F_i}{F_{\text{cent}}} \dydx{F_{\text{cent}}}{T} + \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{T} \\
+	\dydx{F_i}{Y_j} &= \dydx{F_i}{F_{\text{cent}}} \cancelto{0}{\dydx{F_{\text{cent}}}{Y_j}} + \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{Y_j} = \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{Y_j}
+\end{align}
+where
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+	\dydx{F_i}{F_{\text{cent}}} &=& F_i \left( \frac{1}{F_{\text{cent}} \left( 1 + (A/B)^2 \right)} - \ln F_{\text{cent}} \frac{2 A}{B^3} \frac{ \dydx{A}{F_{\text{cent}}} B - A \dydx{B}{F_{\text{cent}}} }{ \left( 1 + (A/B)^2 \right)^2} \right), \\
+	\dydx{F_{\text{cent}}}{T} &=& -\frac{1-a}{T^{***}} \exp \left( \frac{-T}{T^{***}} \right) - \frac{a}{T^*} \exp \left( \frac{-T}{T^*} \right) + \frac{T^{**}}{T^2} \exp \left( \frac{-T^{**}}{T} \right),  \IEEEeqnarraynumspace \\
+	\dydx{F_i}{P_{r,i}} &=& -F_i \ln F_{\text{cent}} \frac{2A}{B^3} \frac{ \dydx{A}{P_{r,i}} B - A \dydx{B}{P_{r,i}} }{ \left( 1 + (A/B)^2 \right)^2 }, 
+\end{IEEEeqnarray}}%
+where $\dydx{P_{r,i}}{T}$ is given by Eq.~\eqref{E:dPridT}, $\dydx{P_{r,i}}{Y_j}$ is given by Eq.~\eqref{E:dPridY}, and:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rClrCl}
+\dydx{A}{F_{\text{cent}}} &=& \frac{-0.67}{F_{\text{cent}} \ln 10} \quad\quad
+\dydx{B}{F_{\text{cent}}} &=& \frac{-1.1762}{F_{\text{cent}} \ln 10} \\
+\dydx{A}{P_{r,i}} &=& \frac{1}{P_{r,i} \ln 10} \quad\quad
+\dydx{B}{P_{r,i}} &=& \frac{-0.14}{P_{r,i} \ln 10}
+\end{IEEEeqnarray}}%
+%
+\item{SRI}
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+	\dydx{F_i}{T} & = & F_i \left( \frac{e}{T} + X \frac{ \frac{a b}{T^2} \exp \left( \frac{-b}{T} \right) - \frac{1}{c} \exp \left( \frac{-T}{c} \right) }{ a \cdot \exp \left( \frac{-b}{T} \right) + \exp \left( \frac{-T}{c} \right) } \right. \nonumber \\
+	& & \left. +\: \dydx{X}{P_{r,i}} \dydx{P_{r,i}}{T} \ln \left( a \cdot \exp \left( \frac{-b}{T} \right) + \exp \left( \frac{-T}{c} \right) \right) \right) \\
+	\dydx{F_i}{Y_j} & = & F_i \dydx{X}{Y_j} \ln \left( a \cdot \exp \left( \frac{-b}{T} \right) + \exp \left( \frac{-T}{c} \right) \right)
+\end{IEEEeqnarray}}%
+where
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{X}{P_{r,i}} &=& -X^2 \frac{ 2 \log_{10} P_{r,i} }{ P_{r, i} \ln 10 } \;, \\
+\dydx{X}{Y_j} &=& \dydx{X}{P_{r,i}} \dydx{P_{r,i}}{Y_j} \;,
+\end{IEEEeqnarray}}%
+$\dydx{P_{r,i}}{T}$ is given by Eq.~\eqref{E:dPridT}, and $\dydx{P_{r,i}}{Y_j}$ is given by Eq.~\eqref{E:dPridY}.
+\end{itemize}
+Note that for both falloff and chemically activated bimolecular reactions, regardless of falloff parameterization, if all species contribute equally to the third-body concentration $[X]_i$ then the partial derivative of $c_i$ with respect to species mass fraction $Y_j$ is zero, since $\dydx{p}{Y_j} = 0$.
+
+The contributions of the alternative pressure-dependence descriptions, logarithmic and Chebyshev, to the Jacobian matrix entries require more complete descriptions since they do not follow the falloff formulation (e.g., falloff factor $F_i$).
+Instead, alternative partial derivatives of the reaction rate coefficient with respect to temperature ($\dydx{k_{f,i}}{T}$) must be provided in place of Eq.~\eqref{e:dkfdT} when calculating the partial derivatives of $R_i$ using Eqs.~\eqref{E:dRfdT-orig}, \eqref{e:dRdT_explicit_rev_general}, or \eqref{e:dkrdT_general}.
+Note that in both cases the partial derivatives with respect to species mass fractions ($\dydx{k_{f,i}}{Y_j}$) are zero, because the partial derivative of pressure with respect with species mass fraction is zero.
+The partial derivative of pressure with respect to temperature is also needed in both cases, and is nonzero:
+\begin{equation}
+\dydx{p}{T} = \ddx{T} \left( \rho \frac{R}{W} T \right) = \rho \frac{R}{W} = \frac{p}{T} \;. \label{e:dpdT}
+\end{equation}
+
+For the logarithmic pressure-dependent Arrhenius rate, the partial derivative with respect to temperature is
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{k_{f,i}}{T} &=& \left[ \dydx{(\log k_1)}{T} + \left( \dydx{(\log k_2)}{T} - \dydx{(\log k_1)}{T} \right) \frac{\log p - \log p_1}{\log p_2 - \log p_1} \right. \nonumber \\
+   & & \left. +\: \left( \log k_2 - \log k_1 \right) \frac{ \dydx{(\log p)}{T} }{\log p_2 - \log p_1} \right] \cdot k_{f,i} \;,
+\end{IEEEeqnarray}}%
+where $k_1$ and $k_2$ are given by Eqs.~\eqref{e:plog_k1} and \eqref{e:plog_k2}, respectively.
+Note that terms such as $k_1$, $k_2$, $p_1$, and $p_2$ are associated with the $i$th reaction alone; we omitted the subscript for clarity, and continue this was other reaction-specific terms in the following.
+The necessary components can be determined as
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{(\log k_1)}{T} &=& \frac{1}{k_1} \dydx{k_1}{T} = \frac{1}{T} \left( \beta_1 + \frac{T_{a,1}}{T} \right) \;, \\
+\dydx{(\log k_2)}{T} &=& \frac{1}{T} \left( \beta_2 + \frac{T_{a,2}}{T} \right) \;, \text{and} \\
+\dydx{(\log p)}{T} &=& \frac{1}{p} \dydx{p}{T} = \frac{1}{T} \;.
+\end{IEEEeqnarray}}%
+Then, the final simplified expression can be constructed, appropriate for use when pressure falls between $p_1$ and $p_2$:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{k_{f,i}}{T} &=& \frac{k_{f,i}}{T} \left[ \beta_1 + \frac{T_{a,1}}{T} + \left( \beta_2 - \beta_1 + \frac{T_{a,2} - T_{a,1}}{T} \right) \frac{ \log p - \log p_1 }{ \log p_2 - \log p_1 } \right. \nonumber \\
+    & & \left. +\: \left( \log \left(\frac{A_2}{A_1}\right) + ( \beta_2 - \beta_1 ) \log T + \frac{ T_{a,2} - T_{a,1} }{T} \right) \frac{1}{\log p_1 - \log p_2} \right]
+\end{IEEEeqnarray}}%
+
+Finally, the partial derivatives of the rate coefficient for the $i$th reaction with a Chebyshev rate expression can be evaluated; again, we omit the subscript $i$ for clarity:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{k_f}{T} &=& \log(10) \cdot k_f \ddx{T} \left( \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \, T_{i-1} (\tilde{T}) \, T_{j-1} \left(\tilde{p} \right) \right) \nonumber \\
+	&=& \log(10) \cdot k_f \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \, \ddx{T} \left( T_{i-1} (\tilde{T}) \, T_{j-1} \left(\tilde{p} \right) \right) \;, \nonumber
+\end{IEEEeqnarray}}%
+where
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\ddx{T} \left( T_{i-1} (\tilde{T}) \, T_{j-1} \left(\tilde{p} \right) \right) &=& (i-1) U_{i-2} (\tilde{T}) \, T_{j-1} (\tilde{p}) \, \dydx{\tilde{T}}{T} \nonumber \\
+	& & +\: (j-1) T_{i-1} (\tilde{T}) \, U_{j-2} (\tilde{p}) \, \dydx{\tilde{p}}{T} \;, \\
+\dydx{\tilde{T}}{T} &=& \frac{ -2 T^{-2} }{ T_{\max}^{-1} - T_{\min}^{-1} } \;, \\
+\dydx{\tilde{p}}{T} &=& \frac{ \frac{2}{p \log(10)} \dydx{p}{T} }{\log_{10} p_{\max} - \log_{10} p_{\min}} = \frac{ \frac{2}{T \log(10)} }{\log_{10} p_{\max} - \log_{10} p_{\min}} \;,
+\end{IEEEeqnarray}}%
+and $U_n$ is the Chebyshev polynomial of the second kind of degree $n$, expressed as
+\begin{equation}
+U_n (x) = \frac{ \sin (n+1) \arccos x }{ \sin ( \arccos x ) } \;.
+\end{equation}
+Thus, the partial derivative of the forward rate coefficient can be expressed as
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{k_f}{T} &=& \frac{k_f}{T} \log(10) \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \left( (i-1) U_{i-2} (\tilde{T}) \, T_{j-1} (\tilde{p}) \frac{-2 T^{-1}}{T_{\max}^{-1} - T_{\min}^{-1}} \right. \nonumber \\
+	& & \left. +\: (j-1) T_{i-1} (\tilde{T}) \, U_{j-2} (\tilde{p}) \frac{ \frac{2}{\log(10)}}{\log_{10} p_{\max} - \log_{10} p_{\min}} \right) \;.
+\end{IEEEeqnarray}}%
+
+The partial derivative of the reverse rate coefficient $k_{r, i}$ with respect to temperature can be found using Eq.~\eqref{e:dkrdT_general} for both pressure-dependent reaction classes.
+The partial derivative of $k_{r,i}$ with respect to species mass fractions is zero, for the same reason as the forward rate coefficient.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Efficient evaluation of Jacobian matrix}
+\label{section:eval}
+
+First, evaluate the Jacobian entries for partial derivatives of species equations ($\mathcal{J}_{k+1, 1}$ and $\mathcal{J}_{k+1, j+1}$ for $k, j = 1, \dotsc, N_{\text{sp}}$):
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\mathcal{J}_{k+1, 1} &=& \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{T} + \frac{\dot{\omega}_k}{T} \right) \nonumber \\
+&=& \frac{W_k}{\rho} \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} \left[ \dydx{c_i}{T} \left( R_{f,i} - R_{r,i} \right) + c_i \left( \dydx{R_i}{T} + \frac{R_{f,i} - R_{r,i}}{T} \right) \right] \;, \IEEEeqnarraynumspace
+\label{e:jac_dydt}
+\end{IEEEeqnarray}}%
+where the various terms are expressed previously; note that $c_i = 1$ and $\dydx{c_i}{T} = 0$ for pressure-dependent reactions expressed via logarithmic interpolations or Chebyshev polynomials.
+%If the reverse rate coefficient is expressed with explicit Arrhenius parameters,
+%{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+%	\mathcal{J}_{k+1, 1} &=& \frac{W_k}{\rho} \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} \left[ \dydx{c_i}{T} \left( R_{f,i} - R_{r,i} \right) + \frac{c_i}{T} \left( R_{f,i} \left( \beta_{f,i} + \frac{T_{af,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} + 1 \right) \right. \right. \nonumber \IEEEeqnarraynumspace \\
+%	&& -\: \left. \left. R_{r,i} \left( \beta_{r,i} + \frac{T_{ar,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} + 1 \right) \right) \right] \IEEEeqnarraynumspace
+%\end{IEEEeqnarray}}%
+%otherwise
+%{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+%	\mathcal{J}_{k+1, 1} &=& \frac{W_k}{\rho} \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} \left[ \dydx{c_i}{T} \left( R_{f,i} - R_{r,i} \right) + \frac{c_i}{T} \left( R_{f,i} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} + 1 \right) \right. \right. \nonumber \IEEEeqnarraynumspace \\
+%	&& -\: \left. \left. R_{r,i} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} - T \sum_{j=1}^{N_{\text{sp}}} \nu_{ji} \dydx{B_j}{T} + 1 \right) \right) \right] . \IEEEeqnarraynumspace
+%\end{IEEEeqnarray}}%
+
+The remaining columns are given by:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\mathcal{J}_{k+1, j+1} & = & \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{Y_j} + \dot{\omega}_k \frac{W}{W_j} \right) \nonumber \\
+&=& \frac{W_k}{\rho} \left[ \dot{\omega}_k \frac{W}{W_j} + \mathlarger{\sum_{i=1}^{N_{\text{reac}}}} \nu_{ki} \left( \vphantom{\prod_{\substack{n=1 \\ n \neq l}}^{N_{\text{sp}}}} \dydx{c_i}{Y_j} ( R_{f,i} - R_{r,i} ) \right. \right. \nonumber \\
+&& +\: \left. \left. c_i \left( \sum_{l=1}^{N_{\text{sp}}} \nu_{li}^{\prime} \left( -\frac{W}{W_j} R_{f,i} + \delta_{lj} k_{f,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{N_{\text{sp}}} [X_n]^{\nu_{ni}^{\prime}} \right) \right. \right. \right. \nonumber \\ 
+&& -\: \left. \left. \left. \sum_{l=1}^{N_{\text{sp}}} \nu_{li}^{\prime\prime} \left( -\frac{W}{W_j} R_{r,i} + \delta_{lj} k_{r,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{N_{\text{sp}}} [X_n]^{\nu_{ni}^{\prime\prime}} \right) \right) \right) \right] \IEEEeqnarraynumspace
+\label{e:jac_dydy}
+\end{IEEEeqnarray}}%
+
+Next, evaluate the Jacobian entries for partial derivatives of the energy equation ($\mathcal{J}_{1, 1}$ and $\mathcal{J}_{1, j+1}$ for $j = 1, \dotsc, N_{\text{sp}}$):
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\mathcal{J}_{1,1} &=& - \sum_{k=1}^{N_{\text{sp}}} \left[ \left( \frac{1}{c_p} \dydx{h_k}{T} - \frac{h_k}{c_p^2} \dydx{c_p}{T} \right) \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{T} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] \nonumber \\
+&=& \frac{-1}{c_p} \sum_{k=1}^{N_{\text{sp}}} \left[ \left( c_{p,k} - \frac{h_k}{c_p} \dydx{c_p}{T} \right) \frac{W_k \dot{\omega}_k}{\rho} + h_k \mathcal{J}_{k+1,1} \right] \\
+	\mathcal{J}_{1,j+1} &=& -\sum_{k=1}^{N_{\text{sp}}} \left[ \frac{-h_k}{c_p^2} \dydx{c_p}{Y_j} \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{Y_j} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] \nonumber \\
+	&=& \frac{-1}{c_p} \sum_{k=1}^{N_{\text{sp}}} h_k \left( \frac{-c_{p,j}}{c_p} \frac{W_k \dot{\omega}_k}{\rho} + \mathcal{J}_{k+1,j+1} \right) , \\
+	\text{or} \quad &=& \frac{-1}{c_p} \left( \frac{-c_{p,j}}{\rho c_p} \sum_{k=1}^{N_{\text{sp}}} h_k W_k \dot{\omega}_k + \sum_{k=1}^{N_{\text{sp}}} h_k \mathcal{J}_{k+1,j+1} \right) ,
+\label{e:jac_dt}
+\end{IEEEeqnarray}}%
+where $\dydx{c_p}{T}$ is given by Eq.~\eqref{E:dcpdT}.
+%The following terms should be evaluated and reused: $R_{f,i}$, $R_{r,i}$, $c_i$, $\dot{\omega}_k$, $h_k$, and $c_p$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Optimization of Jacobian evaluation}
+
+A simple implementation of the outlined chemical Jacobian is presented in pseudo-code in Algorithm~\eqref{p:naive_psuedo} based on the equations presented in Section~\ref{section:eval}.  
+Although a straight-forward implementation approach, it is deficient in that it minimizes potential reuse of computed products.
+Further, even for relatively small kinetic mechanisms, e.g. GRI-30~\cite{smith_gri-mech_30}, the number of lines of code produced is quite substantial.
+
+Without a strategy to enable the reuse of temporary computed products even reasonably modern compilers, e.g. GCC-4.4.7, struggle to compile the resulting code, resulting in long compilation times, slow execution and even occasionally crashes of the compiler itself.
+This section will lay out a restructuring of Algorithm~\ref{p:naive_psuedo} to greatly accelerates Jacobian evaluation via reuse of temporary products to reduce computational overhead.
+As a side-benefit of this technique, compilation times are greatly reduced, and compiler crashes are eliminated.
+Finally, a set of techniques used to optimize the Jacobian for single-instruction multiple-data (SIMD) devices, e.g. graphics processing units (GPUs) will be outlined.
+
+\subsection{Accelerating evaluation via reuse of temporary products}
+
+First, examining Eqs.~\eqref{e:jac_dydt}~and~\eqref{e:jac_dydy}, we see that large portions of the Jacobian entries are constant for a single reaction.
+For instance, if we define the temporary variable for reaction $i$:
+\begin{equation}
+	T_{\partial T,  i} = \frac{1}{\rho}\left[ \dydx{c_i}{T} \left( R_{f,i} - R_{r,i} \right) + c_i \left( \dydx{R_i}{T} + \frac{R_{f,i} - R_{r,i}}{T} \right) \right]
+\end{equation}
+Eq.~\eqref{e:jac_dydt} can be rewritten as:
+\begin{equation}
+	\mathcal{J}_{k+1, 1} = W_k \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} T_{\partial T, i}
+\end{equation}
+Next, instead of summing over all reactions for a single species, we transform the Algorithm to compute the temporary product for a single reaction $i$ and add to all relevant species:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
+	\mathcal{J}_{k+1, 1} \pluseq W_k \nu_{ki} T_{\partial T, i} \\
+	\nonumber \\
+	\forall k \in \{\text{Species}\}\text{ where } \nu_{ki} \neq 0 \nonumber
+\label{e:jac_temperature_update}
+\end{IEEEeqnarray}}%
+In doing so, the temporary product $T_{\partial T,  i}$ must only be evaluated a single time for each reaction, rather than once for each species in the reaction with a non-zero net production or consumption rate.
+
+Similarly, for Eq.~\eqref{e:jac_dydy} we can define similar temporary products, although more care must be taken to ensure the correctness for all the various cases.
+For all reactions $i$, the following temporary product can be defined:
+\begin{equation}
+	T_{\partial Y, i,\text{independent}} = -\frac{Wc_i}{\rho} \left[\sum_{l}^{N_{sp}}\nu_{li}^{\prime}R_{f,i} - \nu_{li}^{\prime\prime}R_{r,i}\right]
+\end{equation}
+The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a pressure independent reaction $i$ can then be updated as:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
+\label{e:pindep_jac_species}
+\mathcal{J}_{k+1,j+1} \pluseq
+	\frac{W_k}{W_j}
+	\Biggl(
+		T_{dy_,i,\text{independent}} + \frac{\dot{\omega}_kW}{\rho} \\
+	+ \left(
+		\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
+	\right)
+	\prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime}} +
+	\left(
+		\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1}
+	\right)
+	\prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime\prime}}
+	\Biggr) \nonumber \\
+	\nonumber \\
+	\forall k ,j \in \{\text{Species}\}\text{ where } \nu_{ki} \neq 0 \nonumber
+\end{IEEEeqnarray}
+}Note that either one or both of $\nu_{ji}^{\prime}$ and $\nu_{ji}^{\prime\prime}$ can be zero.
+This means that the added species molar concentration product terms are often zero, and may be omitted for most species $j$.
+
+For third-body enhanced or falloff reactions reactions, the $\dydx{c_i}{Y_j}$ term in Eq.~\eqref{e:jac_dydy} is inherently dependent on the $j$th species, however, certain simplifications can still be made.
+First, for any third-body enhanced or falloff reaction where all third-body efficiencies $\alpha_{i,j}$ are unity the derivative $\dydx{c_i}{Y_j}$ is identically zero as seen in Eq.~\eqref{e:dcdyequalzero}, and the updating scheme defined in Eq.~\eqref{e:pindep_jac_species} can be used.
+
+For third body-enhanced reactions without falloff dependence, we define a relatively simple temporary term:
+\begin{equation}
+	T_{\partial Y, i, \text{third-body}} = -W\left[X\right]_i + \rho\hat{\alpha}_{ij}
+\end{equation}
+where $\hat{\alpha}_{ij}$ is defined as the median non-unity third-body efficiency for reaction $i$.
+This choice will force the least corrections needed for individual species.
+If the third-body reaction does not depend on the whole mixture (i.e. $\text{``(+Y}_m\text{)''}$), then the $\hat{\alpha}_{ij}$ term is defined as zero.
+The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body without falloff dependence can be updated as:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
+\label{e:thd_jac_species}
+\mathcal{J}_{k+1,j+1} \pluseq
+	\frac{W_k}{W_j}
+	\Biggl(
+		T_{\partial Y_,i,\text{independent}} + T_{\partial Y, i, \text{third-body}} + \frac{\dot{\omega}_kW}{\rho} + 
+	\rho\left(\alpha_{ij} - \hat{\alpha}_{ij}\right) \\
+	+ \left(
+		\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
+	\right)
+	\prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime}} +
+	\left(
+		\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1}
+	\right)
+	\prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime\prime}}
+	\Biggr) \nonumber \\
+	\nonumber \\
+	\forall k ,j \in \{\text{Species}\}\text{ where } \nu_{ki} \neq 0 \nonumber
+\end{IEEEeqnarray}
+
+For reactions with falloff dependence, we define a temporary term corresponding to the $P_r$ polynomial in Eqs.~\eqref{dCidY_falloff}~and~\eqref{dCidY_chem}:
+\begin{equation}
+	T_{P_{r, i}}  =
+\begin{dcases}
+	\hfil 0 \; & \text{if Lindemann, or} \\
+	\frac{1.0}{1.0 + P_r} \; & \text{if Falloff reaction, or} \\
+	\frac{-P_r}{1.0 + P_r} \; & \text{if Chemically activated reation}
+\end{dcases} 
+\end{equation}
+Following this, we must define a temporary term relating to the falloff function derivative $\dydx{F_i}{Y_j}$:
+\begin{equation}
+T_{F_i} = 
+\begin{dcases}
+	\hfil 0 \; &\text{if Lindemann, or} \\
+	\hfil -P_{r,i}\ln F_\text{cent} \frac{2A}{B^3}\frac{0.14A + B}{\ln 10(1 + (A/B)^2)^2} \; &\text{if Troe, or} \\
+	\hfil -P_{r,i} X^2 \frac{2\log10 P_{r,i}}{\ln 10} \ln\left(a\cdot\exp\frac{-b}{T} + \exp\frac{-T}{c}\right) \; &\text{if SRI}
+\end{dcases}
+\end{equation}
+Finally, we define a temporary product for falloff reactions:
+\begin{equation}
+T_{\partial Y, i,\text{falloff}} = c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(-W+\frac{\rho}{\left[X\right]_i}\hat{\alpha}_{ij}\right)
+\end{equation}
+where the $\hat{\alpha}_{ij}$ term is again zero in the case that the falloff reaction depends on a single species (i.e. $\text{``(+Y}_m\text{)''}$).
+The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $i$ can then be updated as:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
+\label{e:pdep_jac_species}
+\mathcal{J}_{k+1,j+1} \pluseq
+	\frac{W_k}{W_j}
+	\Biggl(
+		T_{\partial Y_,i,\text{independent}} + T_{\partial Y, i, \text{falloff}} + \frac{\dot{\omega}_kW}{\rho} + \\
+	c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{\rho}{\left[X\right]_i}\delta_{M}\left(\alpha_{ij} - \hat{\alpha}_{ij}\right) + \frac{\left(1 - \delta_{\text{M}}\right)}{Y_m}\right) + \nonumber\\
+	\left(
+		\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
+	\right)
+	\prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime}} +
+	\left(
+		\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1}
+	\right)
+	\prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime\prime}}
+	\Biggr) \nonumber \\
+	\nonumber \\
+	\forall k ,j \in \{\text{Species}\}\text{ where } \nu_{ki} \neq 0 \nonumber
+\end{IEEEeqnarray}
+}where $\delta_{\text{M}}$ is defined as:
+\begin{equation}
+	\delta_M =
+\begin{dcases}
+1 &\text{if ``(+M)''} \\
+0 &\text{if ``} (+\text{Y}_m\text{)''}
+\end{dcases}
+\end{equation}
+
+Like the update scheme used in Eq.~\eqref{e:}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Results and discussion}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Acknowledgments}
+
+
+\section*{Figures}
+\begin{algorithm}
+\caption{A pseudo-code for simple/naive generation of the chemical Jacobian.}\label{p:naive_psuedo}
+\begin{algorithmic}[0]
+	\For {$sp_i$\text{ in mechanism}}
+		\For {$rxn_k$\text{ in mechanism}}
+			\If {$\nu_{i,k} \neq 0$}
+				\State \text{Generate code for }$rxn_k$\text{'s contribution to }$\dydx{\dot{Y_i}}{T}$
+			\EndIf
+		\EndFor
+		\For {$sp_j$\text{ in mechanism}}
+			\For {$rxn_k$\text{ in mechanism}}
+				\If {$\nu_{j,k} \neq 0$}
+					\State \text{Generate code for }$rxn_k$\text{'s contribution to }$\dydx{\dot{Y_k}}{Y_j}$
+				\EndIf
+			\EndFor
+		\EndFor
+	\EndFor
+	\For {$sp_i$\text{ in mechanism}}
+		\State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
+	\EndFor
+	\State \text{Generate code for $\dydx{\dot{T}}{T}$}
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{A restructured pseudo-code to enable efficient chemical Jacobian evaluation.}\label{p:updated_pseudo}
+\begin{algorithmic}[0]
+	\For {$rxn_k$\text{ in mechanism}}
+		\State Define reusable products for temperature derivatives\label{op:dt_reusable}
+		\For {$sp_i$ in $rxn_k$}
+			\If {$\nu_{i,k} \neq 0$}
+				\State Generate code for $rxn_k$'s contribution to $\dydx{\dot{Y_i}}{T}$
+			\EndIf
+		\EndFor
+		\State Define reusable products for species derivatives\label{op:dy_reusable}
+		\For {$sp_j$ in mechanism}
+			\For {$sp_i$ in $rxn_k$}
+				\If {$\nu_{i,k} \neq 0$}
+					\State Generate code for $\dydx{\dot{Y_i}}{Y_j}$
+				\EndIf
+			\EndFor
+		\EndFor
+	\EndFor
+	\For {$sp_i$\text{ in mechanism}}
+		\State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
+	\EndFor
+	\State \text{Generate code for $\dydx{\dot{T}}{T}$}
+\end{algorithmic}
+\end{algorithm}
+
+\pagebreak
+
+
+%% The Appendices part is started with the command \appendix;
+%% appendix sections are then done as normal sections
+\appendix
+
+
+\section{Proof of partial derivative of pressure}
+\label{A:pres_deriv}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{p}{Y_j} &=& \ddx{Y_j} \left( \mathcal{R} \sum_{k=1}^{N_{\text{sp}}} [X_k] \right) = \mathcal{R} T \sum_{k=1}^{N_{\text{sp}}} \dydx{[X_k]}{Y_j} \nonumber \\
+	&=& \mathcal{R} T \sum_{k=1}^{N_{\text{sp}}} \left( -[X_k] \frac{W}{W_k} + \delta_{kj} \frac{\rho}{W_k} \right) \nonumber \\
+	&=& -\mathcal{R} T \frac{W}{W_j} \sum_{k=1}^{N_{\text{sp}}} [X_k] + \mathcal{R} T \rho \sum_{k=1}^{N_{\text{sp}}} \frac{\delta_{kj}}{W_k} \nonumber \\
+	&=& -p \frac{W}{W_j} + \mathcal{R} T \rho \frac{1}{W_j} = -p \frac{W}{W_j} + p \frac{W}{W_j} \nonumber \\
+\therefore \dydx{p}{Y_j} &=& 0 \;.
+\end{IEEEeqnarray}}%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% The appropriate \bibliography command should be placed here.
+%% Notice that the class file automatically sets \bibliographystyle
+%% and also names the section correctly.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliography{refs}
+\bibliographystyle{elsarticle-num}
+%\bibliographystyle{elsarticle-num-CNF}
+
+
+\end{document}
