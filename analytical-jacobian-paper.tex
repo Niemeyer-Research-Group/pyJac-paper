@@ -909,15 +909,15 @@ The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a pressure independent reaction
 {\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
 \label{e:pindep_jac_species}
 \mathcal{J}_{k+1,j+1} \pluseq
-	\frac{W_k}{W_j}
+	\nu_{ki}\frac{W_k}{W_j}
 	\Biggl(
-		T_{dy_,i,\text{independent}} + \frac{\dot{\omega}_kW}{\rho} \\
-	+ \left(
-		\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
+		T_{dy_,i,\text{independent}} + \\
+	\left(
+		c_i\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
 	\right)
 	\prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime}} +
 	\left(
-		\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1}
+		c_i\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1}
 	\right)
 	\prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime\prime}}
 	\Biggr) \nonumber \\
@@ -932,25 +932,25 @@ First, for any third-body enhanced or falloff reaction where all third-body effi
 
 For third body-enhanced reactions without falloff dependence, we define a relatively simple temporary term:
 \begin{equation}
-	T_{\partial Y, i, \text{third-body}} = -W\left[X\right]_i + \rho\hat{\alpha}_{ij}
+	T_{\partial Y, i, \text{third-body}} = \left(\frac{-W\left[X\right]_i}{\rho} + \hat{\alpha}_{ij}\right)R_i
 \end{equation}
-where $\hat{\alpha}_{ij}$ is defined as the median non-unity third-body efficiency for reaction $i$.
+where $\hat{\alpha}_{ij}$ is defined as the median third-body efficiency for reaction $i$ (typically unity).
 This choice will force the least corrections needed for individual species.
 If the third-body reaction does not depend on the whole mixture (i.e. $\text{``(+Y}_m\text{)''}$), then the $\hat{\alpha}_{ij}$ term is defined as zero.
 The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body without falloff dependence can be updated as:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
 \label{e:thd_jac_species}
 \mathcal{J}_{k+1,j+1} \pluseq
-	\frac{W_k}{W_j}
+	\nu_{ki}\frac{W_k}{W_j}
 	\Biggl(
-		T_{\partial Y_,i,\text{independent}} + T_{\partial Y, i, \text{third-body}} + \frac{\dot{\omega}_kW}{\rho} + 
-	\rho\left(\alpha_{ij} - \hat{\alpha}_{ij}\right) \\
+		T_{\partial Y_,i,\text{independent}} + T_{\partial Y, i, \text{third-body}} +
+	\left(\alpha_{ij} - \hat{\alpha}_{ij}\right)R_i \\
 	+ \left(
-		\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
+		c_i\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
 	\right)
 	\prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime}} +
 	\left(
-		\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1}
+		c_i\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1}
 	\right)
 	\prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime\prime}}
 	\Biggr) \nonumber \\
@@ -978,23 +978,23 @@ T_{F_i} =
 \end{equation}
 Finally, we define a temporary product for falloff reactions:
 \begin{equation}
-T_{\partial Y, i,\text{falloff}} = c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(-W+\frac{\rho}{\left[X\right]_i}\hat{\alpha}_{ij}\right)
+T_{\partial Y, i,\text{falloff}} = c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{-W}{\rho}+\frac{\hat{\alpha}_{ij}}{\left[X\right]_i}\right)R_i
 \end{equation}
 where the $\hat{\alpha}_{ij}$ term is again zero in the case that the falloff reaction depends on a single species (i.e. $\text{``(+Y}_m\text{)''}$).
 The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $i$ can then be updated as:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
 \label{e:pdep_jac_species}
 \mathcal{J}_{k+1,j+1} \pluseq
-	\frac{W_k}{W_j}
+	\nu_{ki}\frac{W_k}{W_j}
 	\Biggl(
-		T_{\partial Y_,i,\text{independent}} + T_{\partial Y, i, \text{falloff}} + \frac{\dot{\omega}_kW}{\rho} + \\
-	c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{\rho}{\left[X\right]_i}\delta_{M}\left(\alpha_{ij} - \hat{\alpha}_{ij}\right) + \frac{\left(1 - \delta_{\text{M}}\right)}{Y_m}\right) + \nonumber\\
+		T_{\partial Y_,i,\text{independent}} + T_{\partial Y, i, \text{falloff}} + \\
+	c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{\delta_{M}\left(\alpha_{ij} - \hat{\alpha}_{ij}\right)}{\left[X\right]_i} + \frac{\left(1 - \delta_{\text{M}}\right)}{\rho Y_m}\right)R_i + \nonumber\\
 	\left(
-		\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
+		c_i\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
 	\right)
 	\prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime}} +
 	\left(
-		\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1}
+		c_i\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1}
 	\right)
 	\prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime\prime}}
 	\Biggr) \nonumber \\
