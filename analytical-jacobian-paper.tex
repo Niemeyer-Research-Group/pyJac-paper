@@ -1010,11 +1010,21 @@ The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $
 \end{dcases}
 \end{equation}
 
-Like the update scheme used in Eq.~\eqref{e:}
+Finally, all Jacobian entries $\mathcal{J}_{k+1,j+1}$ must be finished with the addition of the species rate term:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
+\mathcal{J}_{k+1,j+1} \pluseq \frac{W_k}{W_j} \frac{\dot{\omega}_kW}{\rho}
+\end{IEEEeqnarray}}
+
+This update scheme can often be simplified due to the choice of $\hat{\alpha}_{ij}$, which minimizes the number of third-body efficiency correction terms needed for a reaction, and the zeroing of the species molar concentration product terms as discussed above.
+
+Like the update scheme used in Eq.~\eqref{e:jac_temperature_update}, those in Eqs.~\eqref{e:pindep_jac_species},~\eqref{e:thd_jac_species}~and~\eqref{e:pdep_jac_species} significantly reduce the computational overhead of Jacobian evaluation.
+The bulk of the computation is performed once per reaction, and only minor sub-products must be computed for each species-species pair for a given reaction.
+The performance benefit obtained from this optimized scheme will be investigated in Section~\ref{s:results}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results and discussion}
-
+\label{s:results}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
