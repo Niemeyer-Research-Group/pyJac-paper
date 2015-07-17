@@ -651,9 +651,9 @@ where
 Now, the partial derivative of $R_i$ with respect to temperature is
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{R_i}{T} &=& \frac{R_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \right) \nonumber \\
-&& -\: k_{r,i} \left( \frac{1}{T} \left( \beta_i + \frac{T_{a,i}}{T} \right) - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji} \dydx{B_j}{T} \right) \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime\prime}} + \frac{R_{r,i}}{T} \prod_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} \nonumber \\
+&& -\: k_{r,i} \left( \frac{1}{T} \left( \beta_i + \frac{T_{a,i}}{T} \right) - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji} \dydx{B_j}{T} \right) \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime\prime}} + \frac{R_{r,i}}{T} \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} \nonumber \\
 &=& \frac{R_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \right) \nonumber \\
-&& -\: R_{r,i} \left[ \frac{1}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \prod_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} \right) - \prod_{j=1}^{N_{\text{sp}}} \nu_{ji} \dydx{B_j}{T} \right] \IEEEeqnarraynumspace
+&& -\: R_{r,i} \left[ \frac{1}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} \right) - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji} \dydx{B_j}{T} \right] \IEEEeqnarraynumspace
 \end{IEEEeqnarray}}%
 
 For all reversible reactions,
