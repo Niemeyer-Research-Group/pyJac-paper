@@ -495,12 +495,12 @@ k_2 (T) &= A_2 T^{\beta_2} \exp \left( -\frac{T_{a, 2}}{T} \right) \text{ at } p
 where the Arrhenius coefficients are given for each pressure $p_1$ and $p_2$.
 Then, the reaction rate coefficient at a particular pressure $p$ between $p_1$ and $p_2$ can be determined through logarithmic interpolation:
 \begin{equation}
-\log k(T, p) = \log k_1 (T) + \left( \log k_2 (T) - \log k_1 (T) \right) \frac{\log p - \log p_1}{\log p_2 - \log p_1} \;. \label{e:plog}
+\log k_{f,i}(T, p) = \log k_1 (T) + \left( \log k_2 (T) - \log k_1 (T) \right) \frac{\log p - \log p_1}{\log p_2 - \log p_1} \;. \label{e:plog}
 \end{equation}
 
 In addition, the pressure dependence of a reaction can be expressed through a bivariate Chebyshev polynomial fit~\cite{Venkatesh:1997hv,Venkatesh:1997ik,Venkatesh:2000gj,chemkin:2012,Goodwin:2014aa}:
 \begin{equation}
-\log_{10} k(T, p) = \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \phi_i (\tilde{T}) \phi_j \left(\tilde{p}\right) \label{e:cheb} \;,
+\log_{10} k_{f,i}(T, p) = \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \phi_i (\tilde{T}) \phi_j \left(\tilde{p}\right) \label{e:cheb} \;,
 \end{equation}
 where $\alpha_{ij}$ is the coefficient corresponding to the grid points $i$ and $j$, $N_T$ and $N_p$ are the numbers of grid points for temperature and pressure, respectively, and $\phi_n$ is the Chebyshev polynomial of the first kind of degree $n - 1$ typically expressed as
 \begin{equation}
