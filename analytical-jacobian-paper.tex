@@ -891,7 +891,7 @@ Eq.~\eqref{e:jac_dydt} can be rewritten as:
 \begin{equation}
 	\mathcal{J}_{k+1, 1} = W_k \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} T_{\partial T, i}
 \end{equation}
-Next, instead of summing over all reactions for a single species, we transform the Algorithm to compute the temporary product for a single reaction $i$ and add to all relevant species:
+Next, instead of summing over all reactions for a single species, we transform Algorithm~\eqref{p:naive_psuedo} to compute the temporary product for a single reaction $i$ and add to all relevant species:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
 	\mathcal{J}_{k+1, 1} \pluseq W_k \nu_{ki} T_{\partial T, i} \\
 	\nonumber \\
