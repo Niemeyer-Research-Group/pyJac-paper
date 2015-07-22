@@ -184,11 +184,28 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-
+% One or two sentence brief introduction to field
+% Two or three sentences of detailed background
+% One sentence clearly stating general problem
+% One sentence summarizing main result ("here we show")
+% Two or three sentences explaining what the main result reveals in direct comparison to what was thought to be the case previously, or how the main result adds to previous knowledge
+% One or two sentences to put the results into a more general context
+% Two or three sentences to provide a broader perspective
+Accurate simulations of combustion phenomena require the use of detailed chemical kinetics in order to capture limit phenomena such as ignition and extinction as well as predict pollutant formation.
+However, the reaction mechanism models for hydrocarbon fuels of practical interest exhibit both mathematical stiffness in the governing differential equations and large numbers of species and reactions, particularly for larger molecules.
+In order to integrate the stiff equations governing chemical kinetics, generally implicit algorithms are used that require frequent Jacobian matrix evaluations; in addition, various combustion diagnostics methods rely on accurate Jacobian matrices.
+Typically, these are calculated numerically using finite differences, but this poses significant computational demands for larger mechanisms since the number of source term evaluations scales with the square of species count; existing analytical Jacobian tools do not optimize evaluations or support the emerging SIMD processors such as GPUs.
+Here we introduce pyJac, a Python-based open-source program that generates analytical Jacobian matrices for use in chemical kinetics modeling and analysis.
+In addition to producing the necessary customized source code for evaluating species and reaction rates (including all modern reaction rate formulations), the chemical source terms, and the Jacobian matrix, pyJac optimizes the order of term calculations in order to minimize operations, separately for CPUs and GPUs.
+First, we established the correctness of the resulting Jacobian matrices through comparison with those obtained from high-order finite differences using rates from Cantera.
+We then demonstrated the improvement in performance, via matrix evaluation timing comparisons, achievable on CPUs and GPUs by optimizing the order of matrix element calculations.
+Finally, we explored the sparsity and characteristics of Jacobian matrices for a wide range of reaction mechanisms describing the oxidation of various hydrocarbon fuels.
+The Jacobian matrix generator described here will be particularly useful for reducing the cost of integrating chemical kinetics source terms with implicit algorithms and generally algorithms that require an accurate Jacobian matrix.
+Furthermore, the open-source release of the program and Python-based implementation will enable wide adoption.
 \end{abstract}
 
 \begin{keyword}
-Chemical kinetics \sep Jacobian
+Chemical kinetics \sep Jacobian \sep SIMD \sep GPU
 \end{keyword}
 
 \end{frontmatter}
@@ -279,7 +296,7 @@ While the central processing unit (CPU) market has seen performance gains via mu
 GPUs---originally developed for graphics/video processing and display purposes---consist of many hundreds to thousands of cores compared to tens of cores found on a typical CPU.
 Recognizing that the SIMD parallelism model fits well with the operator-split chemistry integration, which forms the basis of most reactive-flow codes~\cite{oran2005numerical}, a number of studies in recent years \cite{niemeyer_accelerating_2014,niemeyer_turbulence-chemistry_2011,shi_accelerating_2012,shi_redesigning_2011,spafford_accelerating_2010,stone_techniques_2013} have explored the use of SIMD processors to accelerate reactive-flow codes.
 To our knowledge there is currently no open-source analytical chemical Jacobian tool capable of generating code specifically optimized for SIMD processors.
-To this end, pyJac is capable of generating species / reaction rate, and analytical chemical Jacobian subroutines for the CUDA programming language~\cite{Nickolls:2008:SPP:1365490.1365500}, a widely used language for NVIDIA GPUs.
+To this end, \texttt{pyJac} is capable of generating species / reaction rate, and analytical chemical Jacobian subroutines for the CUDA programming language~\cite{Nickolls:2008:SPP:1365490.1365500}, a widely used language for NVIDIA GPUs.
 Additionally, the programming paradigm to achieve efficient code evaluation for SIMD processors is quite different than that of normal CPUs, optimization strategies specifically targeted at accelerating Jacobian evaluation on GPUs will be laid out and tested.
 
 
