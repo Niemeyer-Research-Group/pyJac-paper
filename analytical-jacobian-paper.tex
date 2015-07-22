@@ -197,7 +197,7 @@ In order to integrate the stiff equations governing chemical kinetics, generally
 Typically, Jacobian matrices are calculated numerically using finite differences, but this poses significant computational demands for larger mechanisms since the number of source term evaluations scales with the square of species count.
 Further, existing analytical Jacobian tools do not optimize evaluations or support the emerging SIMD processors such as GPUs.
 Here we introduce pyJac, a Python-based open-source program that generates analytical Jacobian matrices for use in chemical kinetics modeling and analysis.
-In addition to producing the necessary customized source code for evaluating species and reaction rates (including all modern reaction rate formulations), the chemical source terms, and the Jacobian matrix, pyJac optimizes the order of term calculations in order to minimize operations, separately for CPUs and GPUs.
+In addition to producing the necessary customized source code for evaluating species and reaction rates (including all modern reaction rate formulations), the chemical source terms, and the Jacobian matrix, pyJac uses an optimized evaluation order to minimize computational and memory operations.
 First, we established the correctness of the resulting Jacobian matrices through comparison with those obtained from high-order finite differences using rates from Cantera.
 We then demonstrated the improvement in performance, via matrix evaluation timing comparisons, achievable on CPUs and GPUs by optimizing the order of matrix element calculations.
 Finally, we explored the sparsity and characteristics of Jacobian matrices for a wide range of reaction mechanisms describing the oxidation of various hydrocarbon fuels.
