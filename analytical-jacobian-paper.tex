@@ -198,10 +198,10 @@ Typically, Jacobian matrices are calculated numerically using finite differences
 Further, existing analytical Jacobian tools do not optimize evaluations or support the emerging SIMD processors such as GPUs.
 Here we introduce pyJac, a Python-based open-source program that generates analytical Jacobian matrices for use in chemical kinetics modeling and analysis.
 In addition to producing the necessary customized source code for evaluating species and reaction rates (including all modern reaction rate formulations), the chemical source terms, and the Jacobian matrix, pyJac uses an optimized evaluation order to minimize computational and memory operations.
-First, we established the correctness of the resulting Jacobian matrices through comparison with those obtained from high-order finite differences using rates from Cantera.
-We then demonstrated the improvement in performance, via matrix evaluation timing comparisons, achievable on CPUs and GPUs by optimizing the order of matrix element calculations.
-Finally, we explored the sparsity and characteristics of Jacobian matrices for a wide range of reaction mechanisms describing the oxidation of various hydrocarbon fuels.
-The Jacobian matrix generator described here will be particularly useful for reducing the cost of integrating chemical kinetics source terms with implicit algorithms and generally algorithms that require an accurate Jacobian matrix.
+First, we establish the correctness of the resulting Jacobian matrices through comparison with those obtained from high-order finite differences using rates from Cantera.
+We then demonstrate the improvement in performance, via matrix evaluation timing comparisons, achievable on CPUs and GPUs by optimizing the order of matrix element calculations.
+Finally, we explore the sparsity and characteristics of Jacobian matrices for a wide range of reaction mechanisms describing the oxidation of various hydrocarbon fuels.
+The Jacobian matrix generator we describe here will be particularly useful for reducing the cost of integrating chemical kinetics source terms with implicit algorithms and generally algorithms that require an accurate Jacobian matrix.
 Furthermore, the open-source release of the program and Python-based implementation will enable wide adoption.
 \end{abstract}
 
