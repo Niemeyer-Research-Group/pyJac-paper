@@ -192,16 +192,16 @@
 % One or two sentences to put the results into a more general context
 % Two or three sentences to provide a broader perspective
 Accurate simulations of combustion phenomena require the use of detailed chemical kinetics in order to capture limit phenomena such as ignition and extinction as well as predict pollutant formation.
-However, the reaction mechanism models for hydrocarbon fuels of practical interest exhibit both mathematical stiffness in the governing differential equations and large numbers of species and reactions, particularly for larger molecules.
-In order to integrate the stiff equations governing chemical kinetics, generally implicit algorithms are used that require frequent Jacobian matrix evaluations; in addition, various combustion diagnostics methods rely on accurate Jacobian matrices.
-Typically, Jacobian matrices are calculated numerically using finite differences, but this poses significant computational demands for larger mechanisms since the number of source term evaluations scales with the square of species count.
+However, the chemical kinetic models for hydrocarbon fuels of practical interest exhibit both mathematical stiffness in the governing differential equations and large numbers of species and reactions, particularly for larger molecules.
+In order to integrate the stiff equations governing chemical kinetics, generally implicit algorithms are used that require frequent Jacobian matrix evaluations; in addition, various computational combustion diagnostics methods rely on accurate Jacobian matrices.
+Typically, Jacobian matrices are calculated numerically using finite differences, but this poses significant computational demands for larger chemical kinetic models since the number of chemical source term evaluations scales with the square of species count.
 Further, existing analytical Jacobian tools do not optimize evaluations or support the emerging SIMD processors such as GPUs.
 Here we introduce pyJac, a Python-based open-source program that generates analytical Jacobian matrices for use in chemical kinetics modeling and analysis.
-In addition to producing the necessary customized source code for evaluating species and reaction rates (including all modern reaction rate formulations), the chemical source terms, and the Jacobian matrix, pyJac uses an optimized evaluation order to minimize computational and memory operations.
+In addition to producing the necessary customized source code for evaluating reaction rates (including all modern reaction rate formulations), the chemical source terms, and the Jacobian matrix, pyJac uses an optimized evaluation order to minimize computational and memory operations.
 First, we establish the correctness of the resulting Jacobian matrices through comparison with those obtained from high-order finite differences using rates from Cantera.
 We then demonstrate the improvement in performance, via matrix evaluation timing comparisons, achievable on CPUs and GPUs by optimizing the order of matrix element calculations.
-Finally, we explore the sparsity and characteristics of Jacobian matrices for a wide range of reaction mechanisms describing the oxidation of various hydrocarbon fuels.
-The Jacobian matrix generator we describe here will be particularly useful for reducing the cost of integrating chemical kinetics source terms with implicit algorithms and generally algorithms that require an accurate Jacobian matrix.
+Finally, we explore the sparsity and characteristics of Jacobian matrices for a wide range of chemical kinetic models describing the oxidation of various hydrocarbon fuels.
+The Jacobian matrix generator we describe here will be particularly useful for reducing the cost of integrating chemical source terms with implicit algorithms in particular and algorithms that require an accurate Jacobian matrix in general.
 Furthermore, the open-source release of the program and Python-based implementation will enable wide adoption.
 \end{abstract}
 
@@ -1047,7 +1047,12 @@ The performance benefit obtained from this optimized scheme will be investigated
 \subsection{Validation}
 \label{s:validation}
 
+mechanisms to use for validation, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., falloff, Chebyshev, pressure log):
 
+\ce{H2}\slash \ce{CO}~\cite{Burke:2011fh}, 13 species and 27 reversible reactions
+GRI-Mech 3.0~\cite{smith_gri-mech_30}, 53 species and 325 reaction steps
+USC Mech version II~\cite{Wang:2007}, 111 species and 784 reactions
+MIT butanol
 
 \subsection{Performance analysis}
 \label{s:performance}
