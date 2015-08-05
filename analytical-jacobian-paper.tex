@@ -120,6 +120,8 @@
 %\newcommand{\hlb}[1]{{\sethlcolor{SkyBlue}\hl{#1}}}
 %\newcommand{\hlg}[1]{{\sethlcolor{green}\hl{#1}}}
 
+\usepackage{todonotes}
+
 
 % line numbers
 %\usepackage{lineno}
@@ -343,6 +345,7 @@ where
 \ddt{Y_k} &= \frac{W_k}{\rho} \dot{\omega}_k \quad k = 1, \dotsc, N_{\text{sp}}, 
 \end{align}
 $\rho$ is the density, $c_p$ is the mass-averaged constant-pressure specific heat, $h_k$ is the enthalpy of the $k$th species in mass units, $W_k$ is the molecular weight of the $k$th species, and $\dot{\omega}_k$ is the $k$th species overall production rate.
+Note that we assume a constant-pressure system.\todo{Need to say more?}
 
 \subsection{Thermodynamic properties}
 
@@ -794,10 +797,11 @@ Note that for both falloff and chemically activated bimolecular reactions, regar
 The contributions of the alternative pressure-dependence descriptions, logarithmic and Chebyshev, to the Jacobian matrix entries require more complete descriptions since they do not follow the falloff formulation (e.g., falloff factor $F_i$).
 Instead, alternative partial derivatives of the reaction rate coefficient with respect to temperature ($\dydx{k_{f,i}}{T}$) must be provided in place of Eq.~\eqref{e:dkfdT} when calculating the partial derivatives of $R_i$ using Eqs.~\eqref{E:dRfdT-orig}, \eqref{e:dRdT_explicit_rev_general}, or \eqref{e:dkrdT_general}.
 Note that in both cases the partial derivatives with respect to species mass fractions ($\dydx{k_{f,i}}{Y_j}$) are zero, because the partial derivative of pressure with respect with species mass fraction is zero.
-The partial derivative of pressure with respect to temperature is also needed in both cases, and is nonzero:
-\begin{equation}
-\dydx{p}{T} = \ddx{T} \left( \rho \frac{R}{W} T \right) = \rho \frac{R}{W} = \frac{p}{T} \;. \label{e:dpdT}
-\end{equation}
+In addition, since this treatment assumes a constant-pressure system, the partial derivative of pressure with respect to temperature is also zero.
+%The partial derivative of pressure with respect to temperature is also needed in both cases, and is nonzero:
+%\begin{equation}
+%\dydx{p}{T} = \ddx{T} \left( \rho \frac{R}{W} T \right) = \rho \frac{R}{W} = \frac{p}{T} \;. \label{e:dpdT}
+%\end{equation}
 
 For the logarithmic pressure-dependent Arrhenius rate, the partial derivative with respect to temperature is
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
@@ -810,12 +814,12 @@ The necessary components can be determined as
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{(\log k_1)}{T} &=& \frac{1}{k_1} \dydx{k_1}{T} = \frac{1}{T} \left( \beta_1 + \frac{T_{a,1}}{T} \right) \;, \\
 \dydx{(\log k_2)}{T} &=& \frac{1}{T} \left( \beta_2 + \frac{T_{a,2}}{T} \right) \;, \text{and} \\
-\dydx{(\log p)}{T} &=& \frac{1}{p} \dydx{p}{T} = \frac{1}{T} \;.
+\dydx{(\log p)}{T} &=& \frac{1}{p} \dydx{p}{T} = 0 \;.
 \end{IEEEeqnarray}}%
 Then, the final simplified expression can be constructed, appropriate for use when pressure falls between $p_1$ and $p_2$:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{k_{f,i}}{T} &=& \frac{k_{f,i}}{T} \left[ \beta_1 + \frac{T_{a,1}}{T} + \left( \beta_2 - \beta_1 + \frac{T_{a,2} - T_{a,1}}{T} \right) \frac{ \log p - \log p_1 }{ \log p_2 - \log p_1 } \right. \nonumber \\
-    & & \left. +\: \left( \log \left(\frac{A_2}{A_1}\right) + ( \beta_2 - \beta_1 ) \log T + \frac{ T_{a,2} - T_{a,1} }{T} \right) \frac{1}{\log p_1 - \log p_2} \right]
+\dydx{k_{f,i}}{T} &=& \frac{k_{f,i}}{T} \left[ \beta_1 + \frac{T_{a,1}}{T} + \left( \beta_2 - \beta_1 + \frac{T_{a,2} - T_{a,1}}{T} \right) \frac{ \log p - \log p_1 }{ \log p_2 - \log p_1 } \right] \;.
+%    & & \left. +\: \left( \log \left(\frac{A_2}{A_1}\right) + ( \beta_2 - \beta_1 ) \log T + \frac{ T_{a,2} - T_{a,1} }{T} \right) \frac{1}{\log p_1 - \log p_2} \right]
 \end{IEEEeqnarray}}%
 
 Finally, the partial derivatives of the rate coefficient for the $i$th reaction with a Chebyshev rate expression can be evaluated; again, we omit the subscript $i$ for clarity:
@@ -828,7 +832,8 @@ where
 \ddx{T} \left( T_{i-1} (\tilde{T}) \, T_{j-1} \left(\tilde{p} \right) \right) &=& (i-1) U_{i-2} (\tilde{T}) \, T_{j-1} (\tilde{p}) \, \dydx{\tilde{T}}{T} \nonumber \\
   & & +\: (j-1) T_{i-1} (\tilde{T}) \, U_{j-2} (\tilde{p}) \, \dydx{\tilde{p}}{T} \;, \\
 \dydx{\tilde{T}}{T} &=& \frac{ -2 T^{-2} }{ T_{\max}^{-1} - T_{\min}^{-1} } \;, \\
-\dydx{\tilde{p}}{T} &=& \frac{ \frac{2}{p \log(10)} \dydx{p}{T} }{\log_{10} p_{\max} - \log_{10} p_{\min}} = \frac{ \frac{2}{T \log(10)} }{\log_{10} p_{\max} - \log_{10} p_{\min}} \;,
+\dydx{\tilde{p}}{T} &=& \frac{ \frac{2}{p \log(10)} \dydx{p}{T} }{\log_{10} p_{\max} - \log_{10} p_{\min}} = 0 \;,
+%\frac{ \frac{2}{T \log(10)} }{\log_{10} p_{\max} - \log_{10} p_{\min}} \;,
 \end{IEEEeqnarray}}%
 and $U_n$ is the Chebyshev polynomial of the second kind of degree $n$, expressed as
 \begin{equation}
@@ -836,8 +841,8 @@ U_n (x) = \frac{ \sin \left((n+1) \arccos x\right) }{ \sin ( \arccos x ) } \;.
 \end{equation}
 Thus, the partial derivative of the forward rate coefficient can be expressed as
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{k_f}{T} &=& \frac{k_f}{T} \log(10) \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \left( (i-1) U_{i-2} (\tilde{T}) \, T_{j-1} (\tilde{p}) \frac{-2 T^{-1}}{T_{\max}^{-1} - T_{\min}^{-1}} \right. \nonumber \\
-  & & \left. +\: (j-1) T_{i-1} (\tilde{T}) \, U_{j-2} (\tilde{p}) \frac{ \frac{2}{\log(10)}}{\log_{10} p_{\max} - \log_{10} p_{\min}} \right) \;.
+\dydx{k_f}{T} &=& \frac{k_f}{T} \log(10) \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \left( (i-1) U_{i-2} (\tilde{T}) \, T_{j-1} (\tilde{p}) \frac{-2 T^{-1}}{T_{\max}^{-1} - T_{\min}^{-1}} \right) \;.
+%  & & \left. +\: (j-1) T_{i-1} (\tilde{T}) \, U_{j-2} (\tilde{p}) \frac{ \frac{2}{\log(10)}}{\log_{10} p_{\max} - \log_{10} p_{\min}} \right) \;.
 \end{IEEEeqnarray}}%
 
 The partial derivative of the reverse rate coefficient $k_{r, i}$ with respect to temperature can be found using Eq.~\eqref{e:dkrdT_general} for both pressure-dependent reaction classes.
@@ -923,7 +928,7 @@ For all reactions $i$, the following temporary product can be defined:
 \begin{equation}
   T_{\partial Y, i,\text{independent}} = -\frac{Wc_i}{\rho} \left[\sum_{l}^{N_{sp}}\nu_{li}^{\prime}R_{f,i} - \nu_{li}^{\prime\prime}R_{r,i}\right]
 \end{equation}
-The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a pressure independent reaction $i$ can then be updated as:
+The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a pressure-independent reaction $i$ can then be updated as:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
 \label{e:pindep_jac_species}
 \mathcal{J}_{k+1,j+1} \pluseq
@@ -1050,9 +1055,9 @@ The performance benefit obtained from this optimized scheme will be investigated
 mechanisms to use for validation, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., falloff, Chebyshev, pressure log):
 
 \ce{H2}\slash \ce{CO}~\cite{Burke:2011fh}, 13 species and 27 reversible reactions
-GRI-Mech 3.0~\cite{smith_gri-mech_30}, 53 species and 325 reaction steps
-USC Mech version II~\cite{Wang:2007}, 111 species and 784 reactions
-MIT butanol
+GRI-Mech 3.0~\cite{smith_gri-mech_30}, 53 species and 325 reversible reactions
+USC Mech version II~\cite{Wang:2007}, 111 species and 784 reversible reactions
+Merchant butanol~\cite{Merchant:2013kz,Hansen:2013fe}, 372 species and 8723 reversible reactions
 
 \subsection{Performance analysis}
 \label{s:performance}
