@@ -19,3 +19,4 @@ log.txt
 *.cls
 *.sty
 *.dropbox
+.DS_Store
