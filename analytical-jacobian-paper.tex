@@ -1053,7 +1053,7 @@ To gain further performance \texttt{pyJac} offers the ability to reorder the spe
 This is especially important for SIMD devices such as GPUs, as they typically have very small L1 caches and loads from global memory can present a significant computational bottleneck.
 This section will describe the algorithm developed to achieve this, and the resulting performance increase will be investigated in Section~\ref{s:results}.
 
-The order of the new order of the reactions is determined as outlined in Algorithm~\eqref{p:cache_opt_rxn}.
+The reordering of the reactions is determined as outlined in Algorithm~\eqref{p:cache_opt_rxn}.
 First a suitable seed reaction is selected, in this case the reaction whose participating (non third-body) species are in the most reactions.
 The seed reaction is used to initialized the reordered reaction set.
 The next reaction is then selected greedily as the reaction who shares the most participating species with the last reaction added to the reordered reaction set.
@@ -1176,8 +1176,8 @@ USC Mech version II~\cite{Wang:2007}, 111 species and 784 reversible reactions
 \begin{algorithm}
 \caption{An algorithm for determining reaction order for cache optimized kinetic mechanisms}\label{p:cache_opt_rxn}
 \begin{algorithmic}[0]
-  \State Denote the function $Species\left(R\right)$ as a function that returns the (non-third body) participating species of a reaction $R$
-  \State Denote the function $Reacs\left(S, \Set{\text{R}}\right)$ as a function that returns the reactions the given species participates in (as a non-third body species) in the set of reactions $\Set{\text{R}}$
+  \State Denote the function $Species\left(R\right)$ as a function that returns the (non third-body) participating species of a reaction $R$
+  \State Denote the function $Reacs\left(S, \Set{\text{R}}\right)$ as a function that returns the reactions the given species participates in (as a non third-body species) in the set of reactions $\Set{\text{R}}$
   \State Pick initial seed reaction $\Set{R_0 \in \Set{\text{R}} \mid \left|\left|\sum_{S\in Species\left(R_0\right)}Reacs\left(S, \Set{\text{R}}\right)\right|\right|\text{ is maximized}}$
   \State Add $R_0$ to reordered reaction set $\Set{\text{S}}$
   \While{$\Set{\text{S}} \subseteq \Set{\text{R}}$}
