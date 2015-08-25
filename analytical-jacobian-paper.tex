@@ -1054,11 +1054,11 @@ This is especially important for SIMD devices such as GPUs, as they typically ha
 This section will describe the algorithm developed to achieve this, and the resulting performance increase will be investigated in Section~\ref{s:results}.
 
 The reordering of the reactions is determined as outlined in Algorithm~\eqref{p:cache_opt_rxn}.
-First a suitable seed reaction is selected, in this case the reaction whose participating (non third-body) species are in the most reactions.
+First, a suitable seed reaction is selected, based on the reaction whose participating species (i.e., not third bodies) themselves participate in the largest number of total reactions.
 The seed reaction is used to initialize the reordered reaction set.
 The next reaction is then selected greedily as the reaction who shares the most participating species with the last reaction added to the reordered reaction set.
 As a practical note, the CUDA compiler \texttt{nvcc} often crashes when compiling the generated Jacobian for even modestly sized kinetic mechanisms (>50 reactions).
-To avoid this limitation \texttt{pyJac} splits the Jacobian evaluation into several smaller subfiles, which are compiled separately.
+To avoid this limitation \texttt{pyJac} splits the CUDA Jacobian evaluation into several smaller subfiles, which are compiled separately.
 When starting a new subfile, the initial seed reaction is re-picked from the set of remaining unordered reactions.
 Finally, the species are reordered to correspond to the order they will be loaded by the resulting Jacobian.
 
