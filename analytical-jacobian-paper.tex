@@ -1055,7 +1055,7 @@ This section will describe the algorithm developed to achieve this, and the resu
 
 The reordering of the reactions is determined as outlined in Algorithm~\eqref{p:cache_opt_rxn}.
 First a suitable seed reaction is selected, in this case the reaction whose participating (non third-body) species are in the most reactions.
-The seed reaction is used to initialized the reordered reaction set.
+The seed reaction is used to initialize the reordered reaction set.
 The next reaction is then selected greedily as the reaction who shares the most participating species with the last reaction added to the reordered reaction set.
 As a practical note, the CUDA compiler \texttt{nvcc} often crashes when compiling the generated Jacobian for even modestly sized kinetic mechanisms (>50 reactions).
 To avoid this limitation \texttt{pyJac} splits the Jacobian evaluation into several smaller subfiles, which are compiled separately.
