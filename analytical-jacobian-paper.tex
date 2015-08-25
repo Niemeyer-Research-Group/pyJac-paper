@@ -1058,7 +1058,7 @@ First, a suitable seed reaction is selected, based on the reaction whose partici
 The seed reaction is used to initialize the reordered reaction set.
 The next reaction is then selected greedily as the reaction who shares the most participating species with the last reaction added to the reordered reaction set.
 As a practical note, the CUDA compiler \texttt{nvcc} often crashes when compiling the generated Jacobian for even modestly sized kinetic mechanisms (>50 reactions).
-To avoid this limitation \texttt{pyJac} splits the CUDA Jacobian evaluation into several smaller subfiles, which are compiled separately.
+To avoid this limitation \texttt{pyJac} splits the CUDA Jacobian into several smaller subfiles, which are compiled separately.
 When starting a new subfile, the initial seed reaction is re-picked from the set of remaining unordered reactions.
 Finally, the species are reordered to correspond to the order they will be loaded by the resulting Jacobian.
 
