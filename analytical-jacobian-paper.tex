@@ -1047,7 +1047,6 @@ This update scheme can often be simplified due to the choice of $\hat{\alpha}_{i
 
 Like the update scheme used in Eq.~\eqref{e:jac_temperature_update}, those in Eqs.~\eqref{e:pindep_jac_species},~\eqref{e:thd_jac_species}~and~\eqref{e:pdep_jac_species} significantly reduce the computational overhead of Jacobian evaluation.
 The bulk of the computation is performed once per reaction, and only minor sub-products must be computed for each species-species pair for a given reaction.
-The performance benefit obtained from this optimized scheme will be investigated in Section~\ref{s:results}.
 
 \subsection{Cache Optimization}
 To gain further performance \texttt{pyJac} offers the ability to reorder the species and reactions in a kinetic mechanism in order to improve cache hit rates.
