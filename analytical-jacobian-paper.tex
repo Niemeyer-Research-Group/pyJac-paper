@@ -57,9 +57,14 @@
 %psuedo-code
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
+%for sets
+\usepackage{braket}
 %abs and norm
 \DeclarePairedDelimiter\abs{\lvert}{\rvert}%
 \DeclarePairedDelimiter\norm{\lVert}{\rVert}% 
+%set notation
+
+
 %fix to dcases from here:http://tex.stackexchange.com/questions/252410/centering-in-dcases-environment/252414
 \MHInternalSyntaxOn
 \renewcommand{\dcases}
@@ -1044,6 +1049,44 @@ Like the update scheme used in Eq.~\eqref{e:jac_temperature_update}, those in Eq
 The bulk of the computation is performed once per reaction, and only minor sub-products must be computed for each species-species pair for a given reaction.
 The performance benefit obtained from this optimized scheme will be investigated in Section~\ref{s:results}.
 
+\subsection{Cache Optimization}
+To gain further performance \texttt{pyJac} offers the ability to reorder the species and reactions in a kinetic mechanism in order to improve cache hit rates.
+This is especially important for SIMD devices such as GPUs, as they typically have very small L1 caches and loads from global memory can present a significant computational bottleneck.
+This section will describe the algorithm developed to achieve this, and the resulting performance increase will be investigated in Section~\ref{s:results}.
+
+The order of the new order of the reactions is determined as outlined in Algorithm~\eqref{p:cache_opt_rxn}.
+First a suitable seed reaction is selected, in this case the reaction whose participating (non third-body) species are in the most reactions.
+The seed reaction is used to initialized the reordered reaction set.
+The next reaction is then selected greedily as the reaction who shares the most participating species with the last reaction added to the reordered reaction set.
+As a practical note, the CUDA compiler \texttt{nvcc} often crashes when compiling the generated Jacobian for even modestly sized kinetic mechanisms (>50 reactions).
+To avoid this limitation \texttt{pyJac} splits the Jacobian evaluation into several smaller subfiles, which are compiled separately.
+When starting a new subfile, the initial seed reaction is re-picked from the set of remaining unordered reactions.
+Finally, the species are reordered to correspond to the order they will be loaded by the resulting Jacobian.
+
+\subsection{Shared Memory Caching}
+To further reduce costly global memory loads on SIMD devices, a shared memory caching strategy can be employed in combination with the cache optimization detailed above.
+\texttt{pyJac} uses a number of different criteria for different subroutines to determine the appropriate quantities to load into shared memory.
+
+For the reaction rate subroutine the concentrations of the various species in the mechanism are the only quantity reused between reactions.
+While generating the subroutine, a priority for each species is determined as the number of consecutive reactions (starting from the current reaction) a species participates in; the species are added to the shared memory cache in a similar manner to a priority queue.
+Species already in the shared memory cache that will not be used in at least the next two reactions are marked for eviction and may be replaced for the next reaction.
+The shared memory caching for the pressure modification subroutine works in an identical manner, except only species with non-unity third body efficiencies are considered for addition to the cache.
+
+The shared memory caching for the net species production rate subroutine works in a similar but slightly different manner.
+First, the species rate subroutine is specially structured to exploit SIMD parallelism, as shown in Algorithm~\eqref{p:spec_rates_sub}.
+This formulation encourages both instruction level parallelism, i.e. as each species rate update is independent they can be run with no chance of stalls due to data dependence, as well as the caching of the reaction rate in the local L1 cache, as it is reused between multiple update steps.
+As such, the biggest data loading bottleneck is the loading and updating of the species rates themselves.
+The species priorities are determined as the number of consecutive reactions they participate in, and are marked for eviction if they do not participate in the next two reactions.
+However, unlike the reaction rate subroutines care must be taken to ensure that the updated species rate in shared memory is mapped back to the species rate array upon eviction.
+
+The shared memory caching strategy for the Jacobian subroutine is significantly more complex.
+It utilizes heuristics which estimate priorities for reaction rates (forward, backwards and pressure modifications) and species concentrations for a single reaction update step, i.e. the combination of Eq.~\eqref{e:jac_temperature_update} and the appropriate choice of Eqs.~\eqref{e:pindep_jac_species},~\eqref{e:thd_jac_species}, and \eqref{e:pdep_jac_species}.
+After the reaction update step, all variables are marked for eviction.
+Variables in the shared memory cache are given priority for non-eviction (as possible) during the next shared memory cache update if they are also needed for the next reaction update step.
+
+As a practical note, most modern GPUs offer the choice between partitioning the total L1 cache to give more memory to either the L1 cache or divert some memory to the total allowed shared memory for each streaming multiprocessor.
+In our work, we have found that it is always preferential to favor a larger L1 cache (and thus reduce cache misses and costly L2 load/stores) over a larger shared memory allowance.
+However, even use of a small number of shared memory cache spots can provide significant accelerations when paired with the above two schemes.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results and discussion}
@@ -1128,6 +1171,33 @@ USC Mech version II~\cite{Wang:2007}, 111 species and 784 reversible reactions
     \State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
   \EndFor
   \State \text{Generate code for $\dydx{\dot{T}}{T}$}
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{An algorithm for determining reaction order for cache optimized kinetic mechanisms}\label{p:cache_opt_rxn}
+\begin{algorithmic}[0]
+  \State Denote the function $Species\left(R\right)$ as a function that returns the (non-third body) participating species of a reaction $R$
+  \State Denote the function $Reacs\left(S, \Set{\text{R}}\right)$ as a function that returns the reactions the given species participates in (as a non-third body species) in the set of reactions $\Set{\text{R}}$
+  \State Pick initial seed reaction $\Set{R_0 \in \Set{\text{R}} \mid \left|\left|\sum_{S\in Species\left(R_0\right)}Reacs\left(S, \Set{\text{R}}\right)\right|\right|\text{ is maximized}}$
+  \State Add $R_0$ to reordered reaction set $\Set{\text{S}}$
+  \While{$\Set{\text{S}} \subseteq \Set{\text{R}}$}
+  		\State $R_i = \Set{R_i \in \Set{\text{R}} \setminus \Set{\text{S}} \mid \frac{\left|\left|Species\left(R_i\right) \cap Species\left(R_{i - 1}\right)\right|\right|}{\left|\left|Species\left(R_{i - 1}\right)\right|\right|}\text{ is maximized}}$
+  		\State Add $R_i$ to $\Set{\text{S}}$
+  \EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{An algorithm for evaluating net species production rates in \texttt{pyJac}}\label{p:spec_rates_sub}
+\begin{algorithmic}[0]
+  \State Denote the function $Species\left(R\right)$ as a function that returns the (non-third body) participating species of a reaction $R$
+  \State Denote the ith reaction rate as $Rate_i$, and the jth net species production rate as $Spec_i$
+  \For{Reaction $R_i \in \Set{Reactions}$}
+  		\For{Species $S_j \in Species\left(R_i\right)$}
+  			\State $Spec_j \pluseq \nu_{j, i} \times Rate_i$
+  		\EndFor
+  \EndFor
 \end{algorithmic}
 \end{algorithm}
 
