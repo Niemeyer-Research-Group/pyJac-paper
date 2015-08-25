@@ -1129,6 +1129,7 @@ The bulk of the computation is performed once per reaction, and only minor sub-p
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Cache Optimization}
+\label{s:cache_opt}
 
 To gain further performance \texttt{pyJac} offers the ability to reorder the species and reactions in a kinetic mechanism in order to improve cache hit rates.
 This is especially important for SIMD devices such as GPUs, as they typically have very small L1 caches and loads from global memory can present a significant computational bottleneck.
@@ -1158,6 +1159,7 @@ Finally, the species are reordered to correspond to the order they will be loade
 \end{algorithm}
 
 \subsection{Shared Memory Caching}
+\label{s:smem}
 
 To further reduce costly global memory loads on SIMD devices, a shared memory caching strategy can be employed in combination with the cache optimization detailed above.
 \texttt{pyJac} uses a number of different criteria for different subroutines to determine the appropriate quantities to load into shared memory.
@@ -1273,7 +1275,15 @@ The former indicates overall error in the matrix but can be dominated by large e
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Performance analysis}
 \label{s:performance}
+In order to test the performance of \texttt{pyJac} the PaSR data generated for validation of the various kinetic mechanisms was used.
+The CPU Jacobian was compiled using \texttt{GCC} 4.4.7, and run on two 6-core Xeon X5650 processors, parallelized using OpenMP.
+In order to have a fair comparison between mechanisms, the mean simulation time over ten runs was normalized by the number of conditions in the generated PaSR data.
+The CPU Jacobian was tested both with and without cache optimization, as described in Section~\eqref{s:cache_opt}, to assess it's impact on the performance of the CPU code.
 
+The GPU Jacobian was tested on a single NVIDIA Tesla C2075, and was compiled using \texttt{NVCC 7.0}.
+The performance data for the GPU is presented as the total runtime for the various optimization options, plotted against the number of conditions, in order to demonstrate that the GPU has reached full utilization.
+Again, ten runs were performed for each number of conditions for averaging and standard deviation purposes.
+The GPU Jacobian was tested with and without cache optimization and shared memory caching, as described in Section~\eqref{s:smem}, and all combinations thereof.
 
 
 %\subsection{Jacobian matrix sparsity}
