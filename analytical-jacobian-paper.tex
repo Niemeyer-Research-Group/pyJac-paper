@@ -904,9 +904,59 @@ Although a straight-forward implementation approach, it is deficient in that it 
 Further, even for relatively small kinetic mechanisms, e.g. GRI-30~\cite{smith_gri-mech_30}, the number of lines of code produced is quite substantial.
 
 Without a strategy to enable the reuse of temporary computed products even reasonably modern compilers, e.g. GCC-4.4.7, struggle to compile the resulting code, resulting in long compilation times, slow execution and even occasionally crashes of the compiler itself.
-This section will lay out a restructuring of Algorithm~\eqref{p:naive_psuedo} that greatly accelerates Jacobian evaluation via reuse of temporary products to reduce computational overhead.
+This section will lay out a restructuring of Algorithm~\eqref{p:naive_psuedo}, Algorithm~\eqref{p:updated_pseudo}, that greatly accelerates Jacobian evaluation via reuse of temporary products to reduce computational overhead.
 As a side-benefit of this technique, compilation times are greatly reduced, and compiler crashes are eliminated.
 Finally, a set of techniques used to optimize the Jacobian for single-instruction multiple-data (SIMD) devices, e.g. graphics processing units (GPUs) will be outlined.
+
+\begin{algorithm}
+\caption{A pseudo-code for simple/naive generation of the chemical Jacobian.}\label{p:naive_psuedo}
+\begin{algorithmic}[0]
+  \For {$sp_i$\text{ in mechanism}}
+    \For {$rxn_k$\text{ in mechanism}}
+      \If {$\nu_{i,k} \neq 0$}
+        \State \text{Generate code for }$rxn_k$\text{'s contribution to }$\dydx{\dot{Y_i}}{T}$
+      \EndIf
+    \EndFor
+    \For {$sp_j$\text{ in mechanism}}
+      \For {$rxn_k$\text{ in mechanism}}
+        \If {$\nu_{j,k} \neq 0$}
+          \State \text{Generate code for }$rxn_k$\text{'s contribution to }$\dydx{\dot{Y_k}}{Y_j}$
+        \EndIf
+      \EndFor
+    \EndFor
+  \EndFor
+  \For {$sp_i$\text{ in mechanism}}
+    \State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
+  \EndFor
+  \State \text{Generate code for $\dydx{\dot{T}}{T}$}
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{A restructured pseudo-code to enable efficient chemical Jacobian evaluation.}\label{p:updated_pseudo}
+\begin{algorithmic}[0]
+  \For {$rxn_k$\text{ in mechanism}}
+    \State Define reusable products for temperature derivatives\label{op:dt_reusable}
+    \For {$sp_i$ in $rxn_k$}
+      \If {$\nu_{i,k} \neq 0$}
+        \State Generate code for $rxn_k$'s contribution to $\dydx{\dot{Y_i}}{T}$
+      \EndIf
+    \EndFor
+    \State Define reusable products for species derivatives\label{op:dy_reusable}
+    \For {$sp_j$ in mechanism}
+      \For {$sp_i$ in $rxn_k$}
+        \If {$\nu_{i,k} \neq 0$}
+          \State Generate code for $\dydx{\dot{Y_i}}{Y_j}$
+        \EndIf
+      \EndFor
+    \EndFor
+  \EndFor
+  \For {$sp_i$\text{ in mechanism}}
+    \State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
+  \EndFor
+  \State \text{Generate code for $\dydx{\dot{T}}{T}$}
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{Accelerating evaluation via reuse of temporary products}
 
@@ -1062,6 +1112,20 @@ To avoid this limitation \texttt{pyJac} splits the CUDA Jacobian into several sm
 When starting a new subfile, the initial seed reaction is re-picked from the set of remaining unordered reactions.
 Finally, the species are reordered to correspond to the order they will be loaded by the resulting Jacobian.
 
+\begin{algorithm}
+\caption{An algorithm for determining reaction order for cache optimized kinetic mechanisms}\label{p:cache_opt_rxn}
+\begin{algorithmic}[0]
+  \State Denote the function $Species\left(R\right)$ as a function that returns the (non third-body) participating species of a reaction $R$
+  \State Denote the function $Reacs\left(S, \Set{\text{R}}\right)$ as a function that returns the reactions the given species participates in (as a non third-body species) in the set of reactions $\Set{\text{R}}$
+  \State Pick initial seed reaction $\Set{R_0 \in \Set{\text{R}} \mid \left|\left|\sum_{S\in Species\left(R_0\right)}Reacs\left(S, \Set{\text{R}}\right)\right|\right|\text{ is maximized}}$
+  \State Add $R_0$ to reordered reaction set $\Set{\text{S}}$
+  \While{$\Set{\text{S}} \subseteq \Set{\text{R}}$}
+  		\State $R_i = \Set{R_i \in \Set{\text{R}} \setminus \Set{\text{S}} \mid \frac{\left|\left|Species\left(R_i\right) \cap Species\left(R_{i - 1}\right)\right|\right|}{\left|\left|Species\left(R_{i - 1}\right)\right|\right|}\text{ is maximized}}$
+  		\State Add $R_i$ to $\Set{\text{S}}$
+  \EndWhile
+\end{algorithmic}
+\end{algorithm}
+
 \subsection{Shared Memory Caching}
 To further reduce costly global memory loads on SIMD devices, a shared memory caching strategy can be employed in combination with the cache optimization detailed above.
 \texttt{pyJac} uses a number of different criteria for different subroutines to determine the appropriate quantities to load into shared memory.
@@ -1073,6 +1137,20 @@ The shared memory caching for the pressure modification subroutine works in an i
 
 The shared memory caching for the net species production rate subroutine works in a similar but slightly different manner.
 First, the species rate subroutine is specially structured to exploit SIMD parallelism, as shown in Algorithm~\eqref{p:spec_rates_sub}.
+
+\begin{algorithm}
+\caption{An algorithm for evaluating net species production rates in \texttt{pyJac}}\label{p:spec_rates_sub}
+\begin{algorithmic}[0]
+  \State Denote the function $Species\left(R\right)$ as a function that returns the (non-third body) participating species of a reaction $R$
+  \State Denote the ith reaction rate as $Rate_i$, and the jth net species production rate as $Spec_i$
+  \For{Reaction $R_i \in \Set{Reactions}$}
+  		\For{Species $S_j \in Species\left(R_i\right)$}
+  			\State $Spec_j \pluseq \nu_{j, i} \times Rate_i$
+  		\EndFor
+  \EndFor
+\end{algorithmic}
+\end{algorithm}
+
 This formulation encourages has two advantages.
 First, as each species rate update for a reaction is independent they can be run with no chance of stalls due to data dependence.
 Additionally, as the net reaction rate is used between multiple update steps it is highly likely to be found in the local L1 cache.
@@ -1125,82 +1203,6 @@ USC Mech version II~\cite{Wang:2007}, 111 species and 784 reversible reactions
 
 
 \section*{Figures}
-\begin{algorithm}
-\caption{A pseudo-code for simple/naive generation of the chemical Jacobian.}\label{p:naive_psuedo}
-\begin{algorithmic}[0]
-  \For {$sp_i$\text{ in mechanism}}
-    \For {$rxn_k$\text{ in mechanism}}
-      \If {$\nu_{i,k} \neq 0$}
-        \State \text{Generate code for }$rxn_k$\text{'s contribution to }$\dydx{\dot{Y_i}}{T}$
-      \EndIf
-    \EndFor
-    \For {$sp_j$\text{ in mechanism}}
-      \For {$rxn_k$\text{ in mechanism}}
-        \If {$\nu_{j,k} \neq 0$}
-          \State \text{Generate code for }$rxn_k$\text{'s contribution to }$\dydx{\dot{Y_k}}{Y_j}$
-        \EndIf
-      \EndFor
-    \EndFor
-  \EndFor
-  \For {$sp_i$\text{ in mechanism}}
-    \State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
-  \EndFor
-  \State \text{Generate code for $\dydx{\dot{T}}{T}$}
-\end{algorithmic}
-\end{algorithm}
-
-\begin{algorithm}
-\caption{A restructured pseudo-code to enable efficient chemical Jacobian evaluation.}\label{p:updated_pseudo}
-\begin{algorithmic}[0]
-  \For {$rxn_k$\text{ in mechanism}}
-    \State Define reusable products for temperature derivatives\label{op:dt_reusable}
-    \For {$sp_i$ in $rxn_k$}
-      \If {$\nu_{i,k} \neq 0$}
-        \State Generate code for $rxn_k$'s contribution to $\dydx{\dot{Y_i}}{T}$
-      \EndIf
-    \EndFor
-    \State Define reusable products for species derivatives\label{op:dy_reusable}
-    \For {$sp_j$ in mechanism}
-      \For {$sp_i$ in $rxn_k$}
-        \If {$\nu_{i,k} \neq 0$}
-          \State Generate code for $\dydx{\dot{Y_i}}{Y_j}$
-        \EndIf
-      \EndFor
-    \EndFor
-  \EndFor
-  \For {$sp_i$\text{ in mechanism}}
-    \State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
-  \EndFor
-  \State \text{Generate code for $\dydx{\dot{T}}{T}$}
-\end{algorithmic}
-\end{algorithm}
-
-\begin{algorithm}
-\caption{An algorithm for determining reaction order for cache optimized kinetic mechanisms}\label{p:cache_opt_rxn}
-\begin{algorithmic}[0]
-  \State Denote the function $Species\left(R\right)$ as a function that returns the (non third-body) participating species of a reaction $R$
-  \State Denote the function $Reacs\left(S, \Set{\text{R}}\right)$ as a function that returns the reactions the given species participates in (as a non third-body species) in the set of reactions $\Set{\text{R}}$
-  \State Pick initial seed reaction $\Set{R_0 \in \Set{\text{R}} \mid \left|\left|\sum_{S\in Species\left(R_0\right)}Reacs\left(S, \Set{\text{R}}\right)\right|\right|\text{ is maximized}}$
-  \State Add $R_0$ to reordered reaction set $\Set{\text{S}}$
-  \While{$\Set{\text{S}} \subseteq \Set{\text{R}}$}
-  		\State $R_i = \Set{R_i \in \Set{\text{R}} \setminus \Set{\text{S}} \mid \frac{\left|\left|Species\left(R_i\right) \cap Species\left(R_{i - 1}\right)\right|\right|}{\left|\left|Species\left(R_{i - 1}\right)\right|\right|}\text{ is maximized}}$
-  		\State Add $R_i$ to $\Set{\text{S}}$
-  \EndWhile
-\end{algorithmic}
-\end{algorithm}
-
-\begin{algorithm}
-\caption{An algorithm for evaluating net species production rates in \texttt{pyJac}}\label{p:spec_rates_sub}
-\begin{algorithmic}[0]
-  \State Denote the function $Species\left(R\right)$ as a function that returns the (non-third body) participating species of a reaction $R$
-  \State Denote the ith reaction rate as $Rate_i$, and the jth net species production rate as $Spec_i$
-  \For{Reaction $R_i \in \Set{Reactions}$}
-  		\For{Species $S_j \in Species\left(R_i\right)$}
-  			\State $Spec_j \pluseq \nu_{j, i} \times Rate_i$
-  		\EndFor
-  \EndFor
-\end{algorithmic}
-\end{algorithm}
 
 \pagebreak
 
