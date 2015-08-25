@@ -92,7 +92,8 @@
      range-units = single,
      tophrase = --, 
      per-mode = symbol-or-fraction,
-     separate-uncertainty = true
+     separate-uncertainty = true,
+     list-final-separator = {, and }
 %    scientific-notation = fixed
 }
 \DeclareSIUnit\atm{atm}
@@ -111,8 +112,6 @@
 \newcommand{\pluseq}{\mathrel{+}=}
 \newcommand{\asteq}{\mathrel{*}=}
 
-%\usepackage[textsize=small,textwidth=2.5cm]{todonotes}
-
 %to highlight text
 %\usepackage{soul}
 \usepackage[usenames, dvipsnames]{color}
@@ -120,7 +119,10 @@
 %\newcommand{\hlb}[1]{{\sethlcolor{SkyBlue}\hl{#1}}}
 %\newcommand{\hlg}[1]{{\sethlcolor{green}\hl{#1}}}
 
-\usepackage{todonotes}
+% Location for figures
+\graphicspath{{./figures/}}
+
+\usepackage[textsize=small,textwidth=2.5cm]{todonotes}
 
 
 % line numbers
@@ -198,8 +200,8 @@ However, the chemical kinetic models for hydrocarbon fuels of practical interest
 In order to integrate the stiff equations governing chemical kinetics, generally implicit algorithms are used that require frequent Jacobian matrix evaluations; in addition, various computational combustion diagnostics methods rely on accurate Jacobian matrices.
 Typically, Jacobian matrices are calculated numerically using finite differences, but this poses significant computational demands for larger chemical kinetic models since the number of chemical source term evaluations scales with the square of species count.
 Further, existing analytical Jacobian tools do not optimize evaluations or support the emerging SIMD processors such as GPUs.
-Here we introduce pyJac, a Python-based open-source program that generates analytical Jacobian matrices for use in chemical kinetics modeling and analysis.
-In addition to producing the necessary customized source code for evaluating reaction rates (including all modern reaction rate formulations), the chemical source terms, and the Jacobian matrix, pyJac uses an optimized evaluation order to minimize computational and memory operations.
+Here we introduce \texttt{pyJac}, a Python-based open-source program that generates analytical Jacobian matrices for use in chemical kinetics modeling and analysis.
+In addition to producing the necessary customized source code for evaluating reaction rates (including all modern reaction rate formulations), the chemical source terms, and the Jacobian matrix, \texttt{pyJac} uses an optimized evaluation order to minimize computational and memory operations.
 First, we establish the correctness of the resulting Jacobian matrices through comparison with those obtained from high-order finite differences using rates from Cantera.
 We then demonstrate the improvement in performance, via matrix evaluation timing comparisons, achievable on CPUs and GPUs by optimizing the order of matrix element calculations.
 Finally, we explore the sparsity and characteristics of Jacobian matrices for a wide range of chemical kinetic models describing the oxidation of various hydrocarbon fuels.
@@ -293,18 +295,43 @@ Chemical kinetics \sep Jacobian \sep SIMD \sep GPU
 \section{Introduction}
 \label{sec:intro}
 
-In the past, regular computational power increases could be counted on to enable previously inaccessible simulations.  
-This trend has been disrupted recently due to power consumption and heat dissipation issues, slowing the pace of processor speed increases.
-While the central processing unit (CPU) market has seen performance gains via multi-core parallelism, single-instruction multiple data processors (SIMD), e.g. graphics processing units (GPUs),  have emerged as a low cost, low power, massively parallel high-performance computing alternative. 
-GPUs---originally developed for graphics/video processing and display purposes---consist of many hundreds to thousands of cores compared to tens of cores found on a typical CPU.
-Recognizing that the SIMD parallelism model fits well with the operator-split chemistry integration, which forms the basis of most reactive-flow codes~\cite{oran2005numerical}, a number of studies in recent years \cite{niemeyer_accelerating_2014,niemeyer_turbulence-chemistry_2011,shi_accelerating_2012,shi_redesigning_2011,spafford_accelerating_2010,stone_techniques_2013} have explored the use of SIMD processors to accelerate reactive-flow codes.
-To our knowledge there is currently no open-source analytical chemical Jacobian tool capable of generating code specifically optimized for SIMD processors.
-To this end, \texttt{pyJac} is capable of generating species / reaction rate, and analytical chemical Jacobian subroutines for the CUDA programming language~\cite{Nickolls:2008:SPP:1365490.1365500}, a widely used language for NVIDIA GPUs.
-Additionally, the programming paradigm to achieve efficient code evaluation for SIMD processors is quite different than that of normal CPUs, optimization strategies specifically targeted at accelerating Jacobian evaluation on GPUs will be laid out and tested.
+Need for detailed chemistry
 
+As has been observed by others, in recent years the sizes of chemical kinetic models for hydrocarbon fuels
+
+In the past, regular computational power increases could be counted on to enable previously inaccessible simulations.
+This trend has been disrupted recently due to power consumption and heat dissipation issues, slowing the pace of increases in processor speed.
+While the central processing unit (CPU) market has seen performance gains via multi-core parallelism, single-instruction multiple data processors (SIMD), e.g., graphics processing units (GPUs), recently emerged as a low-cost, low-power, and massively parallel high-performance computing alternative. 
+GPUs---originally developed for graphics\slash video processing and display purposes---consist of many hundreds to thousands of cores compared to tens of cores found on a typical CPU.
+Recognizing that the SIMD parallelism model fits well with the operator-split chemistry integration, which forms the basis of most reactive-flow codes~\cite{Oran:2001aa}, a number of studies in recent years~\cite{niemeyer_accelerating_2014,niemeyer_turbulence-chemistry_2011,shi_accelerating_2012,shi_redesigning_2011,spafford_accelerating_2010,stone_techniques_2013} have explored the use of SIMD processors to accelerate reactive-flow codes.
+To our knowledge there is currently no open-source analytical chemical Jacobian tool capable of generating code specifically optimized for SIMD processors.
+To this end, \texttt{pyJac} is capable of generating subroutines for species and reaction rates, derivative source terms, and analytical chemical Jacobian matrices for the CUDA programming language~\cite{Nickolls:2008:SPP:1365490.1365500}, a widely used language for NVIDIA GPUs.
+In addition, since the programming paradigm to achieve efficient code evaluation for SIMD processors is quite different than that of normal CPUs, optimization strategies specifically targeted at accelerating Jacobian evaluation on GPUs will be laid out and tested.
+
+rationale: computational cost of a forward finite difference approximation scales with the square of the number of species, while cost of evaluating an analytical Jacobian grows linearly with the number of species~\cite{Lu:2009gh}.
+
+% past work
+%Adifor~\cite{Bischof:1996cc}, automatic differentiation
+Over the past few years, a number of research groups developed analytical Jacobian generators for chemical kinetics, although as will be discussed the software package introduced here offers a number of improvements.
+The TChem toolkit developed by Safta et al.~\cite{Safta:2011vn} was one of the first software packages developed for calculating the analytical Jacobian matrix, but provides this functionality through an interface rather than generating customized source code for each mechanism.
+Youssefi~\cite{Youssefi:2011tm} recognized the importance of using an analytical Jacobian over a numerical approximation both for reduction in computational cost and when performing eigendecomposition of the matrix.
+Bisetti~\cite{Bisetti:2012jw} released a utility for producing analytical Jacobian matrix source code based on isothermal and isobaric conditions, with the state vector comprised of species concentrations rather than mass fractions; while incompatible with many existing reacting-flow formulations, this formulation resulted in a significant increase of Jacobian matrix sparsity---such a strategy should be investigated further.
+Perini et al.~\cite{Perini:2012gy} developed an analytical Jacobian matrix formulation for constant-volume combustion, and when used in a multidimensional reactive-flow simulation---combined with tabulation of temperature-dependent properties---reported a performance improvement of around \SI{80}{\percent} over finite-difference-based approximations.
+Recently, Dijkmans et al.~\cite{Dijkmans:2014bb} used a GPU-based analytical Jacobian combined with tabulation of temperature-dependent functions based on polynomial interpolations to accelerate the integration of chemical kinetics ODEs, similar to the earlier approach of Shi et al.~\cite{shi_redesigning_2011}.
+As will be discussed in greater detail, unlike the current work, the approach of Dijkmans et al.~\cite{Dijkmans:2014bb} used the GPU to calculate the elements of a single Jacobian matrix in parallel, rather than many different matrices corresponding to different states.
+
+Furthermore, to the authors' knowledge, unlike \texttt{pyJac}, none of the previously demonstrated analytical Jacobian generation implementations support the newer pressure-dependent reaction formulations (i.e., logarithmic interpolation and Chebyshev polynomial).
+
+The rest of the paper is structured as follows.
+First, in Section~\ref{S:theory} we introduce the governing equations for chemical kinetics and then provide the analytical Jacobian matrix formulation.
+Next, Section~\ref{S:opt} describes the techniques used to optimize evaluation of the analytical Jacobian on both CPUs and GPUs.
+Then, in Section~\ref{S:results} we demonstrate the correctness and computational performance of the generated analytical Jacobian matrices for benchmark chemical kinetic models, and discuss the implications of these results.
+Finally, we summarize our work in Section~\ref{S:conclusions} and outline future research directions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Theory}
+\label{S:theory}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 This section describes the theoretical background of the analytical Jacobian generator, first in terms of the governing equations and then the various components of the Jacobian matrix itself.
 Greater explanation of development of the governing equations may be found in the literature~\cite{Law:2006tu,Warnatz:2006tq,Glassman:2008tq}, but we include the necessary details here for completeness.
@@ -893,6 +920,8 @@ where $\dydx{c_p}{T}$ is given by Eq.~\eqref{E:dcpdT}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Optimization of Jacobian evaluation}
+\label{S:opt}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 A simple implementation of the outlined chemical Jacobian is presented in pseudo-code in Algorithm~\eqref{p:naive_psuedo} based on the equations presented in Section~\ref{section:eval}.  
 Although a straight-forward implementation approach, it is deficient in that it minimizes potential reuse of computed products.
@@ -1044,22 +1073,76 @@ Like the update scheme used in Eq.~\eqref{e:jac_temperature_update}, those in Eq
 The bulk of the computation is performed once per reaction, and only minor sub-products must be computed for each species-species pair for a given reaction.
 The performance benefit obtained from this optimized scheme will be investigated in Section~\ref{s:results}.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results and discussion}
 \label{s:results}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In order to demonstrate the capabilities of \texttt{pyJac}, 
+The methodology for producing analytical Jacobian matrices described in the previous sections was implemented in the Python package \texttt{pyJac}, available openly online~\cite{Niemeyer:2015im} under a modified BSD license. \todo{Maybe not for WSS paper, but get DOI for v1 release}
+In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, multiple chemical kinetic models were chosen as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., falloff, Chebyshev, pressure log).
+Table~\ref{T:mechanisms} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, and USC Mech version II~\cite{Wang:2007}.
+
+\begin{table}[tbp]
+\centering
+\begin{tabular}{@{}l l l l@{}}
+\toprule
+Fuel species & Number of species & Number of reactions & Reference \\
+\midrule
+\ce{H2}\slash \ce{CO} & 13 & 27 & \cite{Burke:2011fh} \\
+\ce{CH4} & 53 & 325 & \cite{smith_gri-mech_30} \\
+\ce{C2H4} & 111 & 784 & \cite{Wang:2007} \\
+%\ce{C4H9OH} & 372 & 8723 & \cite{Merchant:2013kz,Hansen:2013fe} \\
+\bottomrule
+\end{tabular}
+\caption{
+Summary of chemical kinetic models used as benchmark test cases.
+}
+\label{T:mechanisms}
+\end{table}
+
+For both the correctness and performance tests, thermochemical composition data were generated using stochastic partially stirred reactor (PaSR) simulations.
+A detailed description of the PaSR methodology and implementation can be found in \ref{A:pasr}.
+Nine premixed PaSR simulations were performed for each fuel\slash mechanism, with the parameters given in Table~\ref{T:pasr_parameters}.
+Each simulation ran for 10 residence times ($\tau_{\text{res}}$) to ensure reaching statistical steady state.
+
+\begin{table}[tbp]
+\centering
+\begin{tabular}{@{}l l l l@{}}
+\toprule
+Parameter & \ce{H2}\slash air & \ce{CH4}\slash air & \ce{C2H4}\slash air \\
+\midrule
+$\phi$ & \multicolumn{3}{c}{1} \\
+$T$ & \multicolumn{3}{c}{\SIlist{400;600;800}{\kelvin}} \\
+$p$ & \multicolumn{3}{c}{\SIlist{1;10;25}{\atm}} \\
+$N_p$ & \multicolumn{3}{c}{100} \\
+$\tau_{\text{res}}$ & \SI{10}{\milli\second} & \SI{5}{\milli\second} & \SI{100}{\micro\second} \\
+$\tau_{\text{mix}}$ & \SI{1}{\milli\second} & \SI{1}{\milli\second} & \SI{10}{\micro\second} \\
+$\tau_{\text{pair}}$ & \SI{1}{\milli\second} & \SI{1}{\milli\second} & \SI{10}{\micro\second} \\
+\bottomrule
+\end{tabular}
+\caption{
+PaSR parameters used for hydrogen\slash air, methane\slash air, and ethylene\slash air premixed combustion cases, where $\phi$ indicates equivalence ratio.
+}
+\label{T:pasr_parameters}
+\end{table}
 
 \subsection{Validation}
 \label{s:validation}
 
-mechanisms to use for validation, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., falloff, Chebyshev, pressure log):
+In order to test the correctness of the Jacobian matrices produced by \texttt{pyJac}, the resulting analytical matrices were compared to numerical approximations based on finite differences.
+However, while these are used commonly to provide numerical approximations to Jacobian matrices, potential scaling issues due to large disparities in species mass fractions and associated net production rates can cause challenges in selecting appropriate differencing step sizes~\cite{Shampine:1994aa}.
+For example, when initially attempting to evaluate derivatives using sixth-order central differences with increments calculated similarly to that used by the implicit CVODE integrator in the SUNDIALS suite~\cite{Hindmarsh:2005hg}, we encountered large errors in various partial derivatives under certain conditions.
+Adjusting the relative and absolute tolerances reduced some of these errors, but consistent values could not be found that sufficed over all states considered---in particular, extremely small tolerances were required for states near equilibrium, but these same tolerances caused larger errors at other states.
+Note that the discussion of our experiences are not intended to imply issues with the numerical Jacobian approach used in SUNDIALS; such implicit solvers only require approximations to the Jacobian matrix.
+However, care should be taken when highly accurate Jacobian matrices are required, as in the current effort and for analysis techniques such as computational singular perturbation~\cite{Lam:1988wc,Lam:1993ub,Lam:1994ws,Lam:2007jq} and chemical explosive mode analysis~\cite{LU:2010hp,Luo:2012hk,Shan:2012dy} that rely on eigendecomposition of the Jacobian matrix.
 
-\ce{H2}\slash \ce{CO}~\cite{Burke:2011fh}, 13 species and 27 reversible reactions
-GRI-Mech 3.0~\cite{smith_gri-mech_30}, 53 species and 325 reversible reactions
-USC Mech version II~\cite{Wang:2007}, 111 species and 784 reversible reactions
-%Merchant butanol~\cite{Merchant:2013kz,Hansen:2013fe}, 372 species and 8723 reversible reactions
+With the aforementioned difficulties in mind, the Python package \texttt{numdifftools}~\cite{Brodtkorb:2015aa} was used to calculate highly accurate numerical  Jacobian matrices, via multiple-term Richardson extrapolants~\cite{Richardson:1911cl,Lyness:1966aa,Lyness:1969bt} of central differences that result in maximum derivative orders of 4--10.
+Other options for obtaining highly accurate numerical Jacobian approximations include using complex-step derivatives~\cite{Martins:2003fv,Shampine:2007gw,Ridout:2009fn}.
+For all test cases, the correctness of the species and reaction rate subroutines were determined through comparison with Cantera~\cite{Goodwin:2014aa}; however, due to issues with nonphysical (i.e., negative) mass fraction values that arise during the finite differencing, the numerical Jacobian matrices were not calculated using Cantera but rather the generated derivative subroutines directly.
+
+In reporting the discrepancy between the analytical and numerical Jacobian matrices, denoted $\mathcal{J}$ and $\hat{\mathcal{J}}$ respectively, two quantities are used: the relative error $p$-norm $E_\text{norm} = \norm{ \hat{\mathcal{J}} - \mathcal{J} }_p / \norm{\hat{\mathcal{J}}}_p$, where $p = 2$ (the Frobenius norm) and the maximum element relative error $E_\text{rel} = \max_{i, j} \abs{ ( \hat{\mathcal{J}}_{ij} - \mathcal{J}_{ij} ) / \hat{\mathcal{J}}_{ij} }$.
+The former indicates overall error in the matrix but can be dominated by large elements, so the latter error measure can be useful in identifying discrepancies in the smaller matrix elements.
+
 
 \subsection{Performance analysis}
 \label{s:performance}
@@ -1076,11 +1159,15 @@ USC Mech version II~\cite{Wang:2007}, 111 species and 784 reversible reactions
 
 
 
+Planned work includes further validation of \texttt{pyJac} using larger and more complex chemical kinetic models, including the butanol mechanism of Merchant et al.~\cite{Merchant:2013kz,Hansen:2013fe}, with 372 species and 8723 reversible reactions.
+In addition, future versions of \texttt{pyJac} will include the option of assuming constant-volume combustion.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgments}
 
 
 \section*{Figures}
+
 \begin{algorithm}
 \caption{A pseudo-code for simple/naive generation of the chemical Jacobian.}\label{p:naive_psuedo}
 \begin{algorithmic}[0]
@@ -1154,7 +1241,7 @@ USC Mech version II~\cite{Wang:2007}, 111 species and 784 reversible reactions
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Partially stirred reactor implementation}
-\label{A:PaSR}
+\label{A:pasr}
 
 Here, we describe our partially stirred reactor (PaSR) implementation for completeness, based on various prior descriptions~\cite{Correa:1993ud,Chen:1997ta,Pope:1997wu,Bhave:2004hc,Ren:2004fz,Ren:2014cd}.
 The reactor model consists of an even number \emph{N} of particles, each with a time-varying composition $\phi (t)$.
@@ -1195,6 +1282,23 @@ The discrete time step between inflow\slash outflow and pairing events and the s
 \Delta t_{\text{sub}} &= 0.04 \, \tau_{\text{mix}} \;,
 \end{align}
 adopted from Pope~\cite{Pope:1997wu}.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=.75\textwidth]{CH4_600K_1atm_mean_temperature.pdf}
+\caption{Mean temperature of premixed PaSR combustion for stoichiometric methane\slash air with an unburned temperature of \SI{600}{\kelvin} and at \SI{1}{\atm}, $\tau_{\text{res}} = \SI{5}{\milli\second}$, $\tau_{\text{mix}} = \tau_{\text{pair}} = \SI{1}{\milli\second}$, and using 100 particles.}
+\label{F:ch4_meantemp}
+\end{figure}
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=.75\textwidth]{CH4_600K_1atm_particle_temperature.pdf}
+\caption{Scatterplot of temperature over time (top) and PDF of temperature (bottom) of premixed PaSR combustion for stoichiometric methane\slash air with an unburned temperature of \SI{600}{\kelvin} and at \SI{1}{\atm}, $\tau_{\text{res}} = \SI{5}{\milli\second}$, $\tau_{\text{mix}} = \tau_{\text{pair}} = \SI{1}{\milli\second}$, and using 100 particles.}
+\label{F:ch4_particle_temp}
+\end{figure}
+
+Figures~\ref{F:ch4_meantemp} and \ref{F:ch4_particle_temp} demonstrate sample results from premixed PaSR combustion of methane\slash air, using GRI-Mech 3.0~\cite{smith_gri-mech_30}; Fig.~\ref{F:ch4_meantemp} shows the mean temperature evolution over time, while Fig.~\ref{F:ch4_particle_temp} shows the temperature distribution among all particles.
+Although a large number of particles reside near the equilibrium temperature of \SI{2367}{\kelvin}, the wide distribution in particle states is evident.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% The appropriate \bibliography command should be placed here.
