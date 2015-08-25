@@ -904,7 +904,7 @@ Although a straight-forward implementation approach, it is deficient in that it 
 Further, even for relatively small kinetic mechanisms, e.g. GRI-30~\cite{smith_gri-mech_30}, the number of lines of code produced is quite substantial.
 
 Without a strategy to enable the reuse of temporary computed products even reasonably modern compilers, e.g. GCC-4.4.7, struggle to compile the resulting code, resulting in long compilation times, slow execution and even occasionally crashes of the compiler itself.
-This section will lay out a restructuring of Algorithm~\ref{p:naive_psuedo} to greatly accelerates Jacobian evaluation via reuse of temporary products to reduce computational overhead.
+This section will lay out a restructuring of Algorithm~\eqref{p:naive_psuedo} that greatly accelerates Jacobian evaluation via reuse of temporary products to reduce computational overhead.
 As a side-benefit of this technique, compilation times are greatly reduced, and compiler crashes are eliminated.
 Finally, a set of techniques used to optimize the Jacobian for single-instruction multiple-data (SIMD) devices, e.g. graphics processing units (GPUs) will be outlined.
 
