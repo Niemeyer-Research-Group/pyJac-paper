@@ -1073,7 +1073,9 @@ The shared memory caching for the pressure modification subroutine works in an i
 
 The shared memory caching for the net species production rate subroutine works in a similar but slightly different manner.
 First, the species rate subroutine is specially structured to exploit SIMD parallelism, as shown in Algorithm~\eqref{p:spec_rates_sub}.
-This formulation encourages both instruction level parallelism, i.e. as each species rate update is independent they can be run with no chance of stalls due to data dependence, as well as the caching of the reaction rate in the local L1 cache, as it is reused between multiple update steps.
+This formulation encourages has two advantages.
+First, as each species rate update for a reaction is independent they can be run with no chance of stalls due to data dependence.
+Additionally, as the net reaction rate is used between multiple update steps it is highly likely to be found in the local L1 cache.
 As such, the biggest data loading bottleneck is the loading and updating of the species rates themselves.
 The species priorities are determined as the number of consecutive reactions they participate in, and are marked for eviction if they do not participate in the next two reactions.
 However, unlike the reaction rate subroutines care must be taken to ensure that the updated species rate in shared memory is mapped back to the species rate array upon eviction.
@@ -1085,7 +1087,7 @@ Variables in the shared memory cache are given priority for non-eviction (as pos
 
 As a practical note, most modern GPUs offer the choice between partitioning the total L1 cache to give more memory to either the L1 cache or divert some memory to the total allowed shared memory for each streaming multiprocessor.
 In our work, we have found that it is always preferential to favor a larger L1 cache (and thus reduce cache misses and costly L2 load/stores) over a larger shared memory allowance.
-However, even use of a small number of shared memory cache spots can provide significant accelerations when paired with the above two schemes.
+However, even use of a small number of shared memory cache spots can provide accelerations.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results and discussion}
