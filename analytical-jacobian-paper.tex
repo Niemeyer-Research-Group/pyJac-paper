@@ -295,6 +295,8 @@ Chemical kinetics \sep Jacobian \sep SIMD \sep GPU
 %of programs previously published in the CPC Program Library.\\
 \end{small}
 
+\todo{Are we doing sparsity? We mention it in the abstract}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
@@ -314,7 +316,7 @@ Due to the chemical stiffness exhibited by most kinetic models, typically solver
 In order to solve the nonlinear algebraic equations that arise in these methods, the Jacobian matrix must be evaluated and factorized, operations that result in the quadratic and cubic costs mentioned previously.
 However, by using an analytical formulation for the Jacobian matrix rather than a typical finite difference approximation, the cost of the numerous evaluations can be reduced from growing with the square of the number of species to a linear dependence~\cite{Lu:2009gh}.
 
-In parallel to the potential improvements in stiff, implicit integrators used for chemical kinetics, another route to improving performance.
+In parallel to the potential improvements in stiff, implicit integrators used for chemical kinetics, another route to improving performance.\todo{Not sure what we're saying here}
 In the past, regular computational power increases could be counted on to enable previously inaccessible simulations (i.e., Moore's Law).
 However, this trend has been disrupted recently due to power consumption and heat dissipation issues, slowing the pace of increases in processor speed.
 While the central processing unit (CPU) market has seen performance gains via multi-core parallelism, single-instruction multiple data processors (SIMD), e.g., graphics processing units (GPUs), recently emerged as a low-cost, low-power, and massively parallel high-performance computing alternative. 
@@ -942,9 +944,9 @@ A simple implementation of the outlined chemical Jacobian is presented in pseudo
 Although a straight-forward implementation approach, it is deficient in that it minimizes potential reuse of computed products.
 Further, even for relatively small kinetic mechanisms, e.g., GRI-Mech 3.0~\cite{smith_gri-mech_30}, the number of lines of code produced is quite substantial.
 
-Without a strategy to enable the reuse of temporary computed products even reasonably modern compilers (e.g., GCC 4.4.7), struggle to compile the resulting code, resulting in long compilation times, slow execution and even occasionally crashes of the compiler itself.
+Without a strategy to enable the reuse of temporary computed products even reasonably modern compilers (e.g., \texttt{gcc} 4.4.7), struggle to compile the resulting code, resulting in long compilation times, slow execution and even occasionally crashes of the compiler itself.
 This section will lay out a restructuring of Algorithm~\eqref{p:naive_psuedo}, Algorithm~\eqref{p:updated_pseudo}, that greatly accelerates Jacobian evaluation via reuse of temporary products to reduce computational overhead.
-As a side-benefit of this technique, compilation times are greatly reduced, and compiler crashes are eliminated.
+As a side-benefit of this technique, compilation times are greatly reduced, and compiler crashes can be avoided.
 Finally, a set of techniques used to optimize the Jacobian for SIMD devices such as GPUs will be outlined.
 
 \begin{algorithm}
@@ -1035,14 +1037,14 @@ This means that the added species molar concentration product terms are often ze
 For third-body enhanced or falloff reactions reactions, the $\dydx{c_i}{Y_j}$ term in Eq.~\eqref{e:jac_dydy} is inherently dependent on the $j$th species, however, certain simplifications can still be made.
 First, for any third-body enhanced or falloff reaction where all third-body efficiencies $\alpha_{i,j}$ are unity the derivative $\dydx{c_i}{Y_j}$ is identically zero as seen in Eq.~\eqref{e:dcdyequalzero}, and the updating scheme defined in Eq.~\eqref{e:pindep_jac_species} can be used.
 
-For third body-enhanced reactions without falloff dependence, we define a relatively simple temporary term:
+For third body-enhanced reactions, we define a relatively simple temporary term:
 \begin{equation}
   T_{\partial Y, i, \text{third-body}} = \left(\frac{-W\left[X\right]_i}{\rho} + \hat{\alpha}_{ij}\right)R_i
 \end{equation}
 where $\hat{\alpha}_{ij}$ is defined as the median third-body efficiency for reaction $i$ (typically unity).
 This choice will result in the least additional correction term additions needed for an individual species.
 If the third-body reaction does not depend on the whole mixture (i.e., $\text{``(+Y}_m\text{)''}$), then the $\hat{\alpha}_{ij}$ term is defined as zero.
-The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body without falloff dependence can be updated as:
+The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body reaction without falloff dependence can then be updated with
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \label{e:thd_jac_species}
 \mathcal{J}_{k+1,j+1} &\pluseq&
@@ -1075,8 +1077,8 @@ Following this, we must define a temporary term relating to the falloff function
 T_{F_i} = 
 \begin{dcases}
   \hfil 0 \; &\text{if Lindemann, } \\
-  \hfil -P_{r,i}\ln F_\text{cent} \frac{2A}{B^3}\frac{0.14A + B}{\ln 10(1 + (A/B)^2)^2} \; &\text{if Troe, or} \\
-  \hfil -P_{r,i}X^2 \frac{2\log10 P_{r,i}}{\ln 10} \ln\left(a\cdot\exp\frac{-b}{T} + \exp\frac{-T}{c}\right) \; &\text{if SRI.}
+  \hfil \ln F_\text{cent} \frac{2A}{B^3}\frac{0.14A + B}{\ln 10(1 + (A/B)^2)^2} \; &\text{if Troe, or} \\
+  \hfil X^2 \frac{2\log10 P_{r,i}}{\ln 10} \ln\left(a\cdot\exp\frac{-b}{T} + \exp\frac{-T}{c}\right) \; &\text{if SRI.}
 \end{dcases}
 \end{equation}
 Finally, we define a temporary product for falloff reactions:
@@ -1097,7 +1099,6 @@ The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $
   \right)
   \prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime\prime}}
   \Biggr] \quad k, j = 1, \ldots, N_{\text{sp}}
-  %\forall k ,j \in N_{\text{sp}} \text{ if } \nu_{ki} \neq 0 \nonumber
 \label{e:pdep_jac_species}
 \end{IEEEeqnarray}}%
 where $\delta_{\text{M}}$ is defined as:
@@ -1121,6 +1122,7 @@ The bulk of the computation is performed once per reaction, and only minor sub-p
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Cache Optimization}
+\label{s:cache_opt}
 
 To gain further performance \texttt{pyJac} offers the ability to reorder the species and reactions in a kinetic mechanism in order to improve cache hit rates.
 This is especially important for SIMD devices such as GPUs, as they typically have very small L1 caches and loads from global memory can present a significant computational bottleneck.
@@ -1130,8 +1132,8 @@ The reordering of the reactions is determined as outlined in Algorithm~\eqref{p:
 First, a suitable seed reaction is selected, based on the reaction whose participating species (i.e., not third bodies) themselves participate in the largest number of total reactions.
 The seed reaction is used to initialize the reordered reaction set.
 The next reaction is then selected greedily as the reaction who shares the most participating species with the last reaction added to the reordered reaction set.
-As a practical note, the CUDA compiler \texttt{nvcc} often crashes when compiling the generated Jacobian for even modestly sized kinetic mechanisms (>50 reactions).
-To avoid this limitation \texttt{pyJac} splits the CUDA Jacobian into several smaller subfiles, which are compiled separately.
+As a practical note, the size of the generated Jacobian subroutines are such that even relatively modern compilers, e.g. \texttt{gcc} 4.4.7 and the CUDA compiler \texttt{nvcc} 7.0 can crash when compiling the generated Jacobian for even modestly sized kinetic mechanisms (e.g. GRI~\cite{smith_gri-mech_30} for \texttt{nvcc} and USC Mech II~\cite{Wang:2007} for \texttt{gcc}).
+To avoid this limitation \texttt{pyJac} splits large Jacobians into several smaller subroutines when appropriate, which are compiled separately and called from the main Jacobian subroutine.
 When starting a new subfile, the initial seed reaction is re-picked from the set of remaining unordered reactions.
 Finally, the species are reordered to correspond to the order they will be loaded by the resulting Jacobian.
 
@@ -1150,6 +1152,7 @@ Finally, the species are reordered to correspond to the order they will be loade
 \end{algorithm}
 
 \subsection{Shared Memory Caching}
+\label{s:smem}
 
 To further reduce costly global memory loads on SIMD devices, a shared memory caching strategy can be employed in combination with the cache optimization detailed above.
 \texttt{pyJac} uses a number of different criteria for different subroutines to determine the appropriate quantities to load into shared memory.
@@ -1166,7 +1169,7 @@ First, the species rate subroutine is specially structured to exploit SIMD paral
 \caption{An algorithm for evaluating net species production rates in \texttt{pyJac}}\label{p:spec_rates_sub}
 \begin{algorithmic}[0]
   \State Denote the function $Species\left(R\right)$ as a function that returns the (non-third body) participating species of a reaction $R$
-  \State Denote the ith reaction rate as $Rate_i$, and the jth net species production rate as $Spec_i$
+  \State Denote the ith reaction rate as $Rate_i$, and the jth net species production rate as $Spec_j$
   \For{Reaction $R_i \in \Set{Reactions}$}
   		\For{Species $S_j \in Species\left(R_i\right)$}
   			\State $Spec_j \pluseq \nu_{j, i} \times Rate_i$
@@ -1175,9 +1178,9 @@ First, the species rate subroutine is specially structured to exploit SIMD paral
 \end{algorithmic}
 \end{algorithm}
 
-This formulation encourages has two advantages.
-First, as each species rate update for a reaction is independent they can be run with no chance of stalls due to data dependence.
-Additionally, as the net reaction rate is used between multiple update steps it is highly likely to be found in the local L1 cache.
+This formulation has two advantages.
+First, SIMD devices can execute all species rate updates for a reaction with with no chance of a stall due to data dependence as all the species rate updates are independent.
+Secondly, the net reaction rate is used between multiple update steps and is thus highly likely to be found in the local L1 cache or in a register, cutting down global memory loads.
 As such, the biggest data loading bottleneck is the loading and updating of the species rates themselves.
 The species priorities are determined as the number of consecutive reactions they participate in, and are marked for eviction if they do not participate in the next two reactions.
 However, unlike the reaction rate subroutines care must be taken to ensure that the updated species rate in shared memory is mapped back to the species rate array upon eviction.
@@ -1189,7 +1192,7 @@ Variables in the shared memory cache are given priority for non-eviction (as pos
 
 As a practical note, most modern GPUs offer the choice between partitioning the total L1 cache to give more memory to either the L1 cache or divert some memory to the total allowed shared memory for each streaming multiprocessor.
 In our work, we have found that it is always preferential to favor a larger L1 cache (and thus reduce cache misses and costly L2 load/stores) over a larger shared memory allowance.
-However, even use of a small number of shared memory cache spots can provide accelerations.
+However, even use of a small number of shared memory cache spots can accelerate computation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results and discussion}
@@ -1197,7 +1200,7 @@ However, even use of a small number of shared memory cache spots can provide acc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The methodology for producing analytical Jacobian matrices described in the previous sections was implemented in the Python package \texttt{pyJac}, available openly online~\cite{Niemeyer:2015im} under a modified BSD license. \todo{Maybe not for WSS paper, but get DOI for v1 release}
-In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, multiple chemical kinetic models were chosen as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., falloff, Chebyshev, pressure log).
+In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, multiple chemical kinetic models were chosen as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., falloff, Chebyshev, pressure log).\todo{do we have plog / cheby?}
 Table~\ref{T:mechanisms} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, and USC Mech version II~\cite{Wang:2007}.
 
 \begin{table}[tbp]
@@ -1265,7 +1268,15 @@ The former indicates overall error in the matrix but can be dominated by large e
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Performance analysis}
 \label{s:performance}
+In order to test the performance of \texttt{pyJac} the PaSR data generated for validation of the various kinetic mechanisms was used.
+The CPU Jacobian was compiled using \texttt{gcc} 4.4.7, and run on two 6-core Xeon X5650 processors, parallelized using OpenMP.
+In order to have a fair comparison between mechanisms, the mean simulation time over ten runs was normalized by the number of conditions in the generated PaSR data.
+The CPU Jacobian was tested both with and without cache optimization, as described in Section~\eqref{s:cache_opt}, to assess it's impact on the performance of the CPU code.
 
+The GPU Jacobian was tested on a single NVIDIA Tesla C2075, and was compiled using \texttt{nvcc} 7.0.
+The performance data for the GPU is presented as the total runtime for the various optimization options, plotted against the number of conditions, in order to demonstrate that the GPU has reached full utilization.
+Again, ten runs were performed for each number of conditions for averaging and standard deviation purposes.
+The GPU Jacobian was tested with and without cache optimization and shared memory caching, as described in Section~\eqref{s:smem}, and all combinations thereof.
 
 
 %\subsection{Jacobian matrix sparsity}
