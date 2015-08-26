@@ -1050,14 +1050,14 @@ This means that the added species molar concentration product terms are often ze
 For third-body enhanced or falloff reactions reactions, the $\dydx{c_i}{Y_j}$ term in Eq.~\eqref{e:jac_dydy} is inherently dependent on the $j$th species, however, certain simplifications can still be made.
 First, for any third-body enhanced or falloff reaction where all third-body efficiencies $\alpha_{i,j}$ are unity the derivative $\dydx{c_i}{Y_j}$ is identically zero as seen in Eq.~\eqref{e:dcdyequalzero}, and the updating scheme defined in Eq.~\eqref{e:pindep_jac_species} can be used.
 
-For third body-enhanced reactions without falloff dependence, we define a relatively simple temporary term:
+For third body-enhanced reactions, we define a relatively simple temporary term:
 \begin{equation}
   T_{\partial Y, i, \text{third-body}} = \left(\frac{-W\left[X\right]_i}{\rho} + \hat{\alpha}_{ij}\right)R_i
 \end{equation}
 where $\hat{\alpha}_{ij}$ is defined as the median third-body efficiency for reaction $i$ (typically unity).
 This choice will result in the least additional correction term additions needed for an individual species.
 If the third-body reaction does not depend on the whole mixture (i.e. $\text{``(+Y}_m\text{)''}$), then the $\hat{\alpha}_{ij}$ term is defined as zero.
-The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body without falloff dependence can be updated as:
+The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body enhanced reaction can be updated as:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
 \label{e:thd_jac_species}
 \mathcal{J}_{k+1,j+1} \pluseq
