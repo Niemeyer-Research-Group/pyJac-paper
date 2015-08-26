@@ -1,12 +1,395 @@
 %% This BibTeX bibliography file was created using BibDesk.
 %% http://bibdesk.sourceforge.net/
 
-%% Created for Kyle Niemeyer at 2015-08-25 14:37:57 -0700 
+%% Created for Kyle at 2015-08-26 00:53:41 -0700 
 
 
 %% Saved with string encoding Unicode (UTF-8) 
 
 
+
+@article{Curtiss:1952,
+	Author = {C F Curtiss and J O Hirschfelder},
+	Date-Added = {2015-08-26 07:15:49 +0000},
+	Date-Modified = {2015-08-26 07:15:49 +0000},
+	Journal = {Proceedings of the National Academy of Sciences of the United States of America},
+	Number = {3},
+	Pages = {235--243},
+	Title = {Integration of stiff equations},
+	Volume = {38},
+	Year = {1952}}
+
+@article{Brown:1989vl,
+	Annote = {originally LLNL Report UCRL-98412},
+	Author = {Brown, Peter N and Byrne, George D and Hindmarsh, Alan C},
+	Date-Added = {2015-08-26 07:14:43 +0000},
+	Date-Modified = {2015-08-26 07:14:43 +0000},
+	Journal = {SIAM J. Sci. Stat. Comput.},
+	Number = {5},
+	Pages = {1038--1051},
+	Title = {{VODE}: a Variable-Coefficient {ODE} Solver},
+	Volume = {10},
+	Year = {1989}}
+
+@article{Byrne:1987wp,
+	Author = {Byrne, George D and Hindmarsh, Alan C},
+	Date-Added = {2015-08-26 07:14:43 +0000},
+	Date-Modified = {2015-08-26 07:14:43 +0000},
+	Journal = {J. Comput. Phys.},
+	Number = {1},
+	Pages = {1--62},
+	Title = {Stiff {ODE} solvers: a review of current and coming attractions},
+	Volume = {70},
+	Year = {1987}}
+
+@article{Maas:1992ws,
+	Author = {Maas, Ulrich and Pope, Stephen B},
+	Date-Added = {2015-08-26 06:50:16 +0000},
+	Date-Modified = {2015-08-26 06:50:16 +0000},
+	Journal = {Combust. Flame},
+	Number = {3-4},
+	Pages = {239--264},
+	Title = {Simplifying chemical kinetics: intrinsic low-dimensional manifolds in composition space},
+	Volume = {88},
+	Year = {1992}}
+
+@article{Banerjee:2006,
+	Author = {I Banerjee and Marianthi Ierapetritou},
+	Date-Added = {2015-08-26 06:05:46 +0000},
+	Date-Modified = {2015-08-26 06:05:46 +0000},
+	Doi = {10.1016/j.combustflame.2005.10.001},
+	Journal = {Combust. Flame},
+	Number = {3},
+	Pages = {619--633},
+	Title = {An adaptive reduction scheme to model reactive flow},
+	Volume = {144},
+	Year = {2006},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.combustflame.2005.10.001}}
+
+@article{Liang:2009,
+	Author = {L Liang and J Stevens and J T Farrell},
+	Date-Added = {2015-08-26 06:05:46 +0000},
+	Date-Modified = {2015-08-26 06:05:46 +0000},
+	Doi = {10.1016/j.proci.2008.05.073},
+	Journal = {Proc. Combust. Inst.},
+	Number = {1},
+	Pages = {527--534},
+	Title = {A dynamic adaptive chemistry scheme for reactive flow computations},
+	Volume = {32},
+	Year = {2009},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.proci.2008.05.073}}
+
+@article{Shi:2010,
+	Author = {Yu Shi and Long Liang and Hai-Wen Ge and Rolf D Reitz},
+	Date-Added = {2015-08-26 06:05:46 +0000},
+	Date-Modified = {2015-08-26 06:05:46 +0000},
+	Doi = {10.1080/13647830903548834},
+	Journal = {Combust. Theor. Model.},
+	Number = {1},
+	Pages = {69--89},
+	Title = {Acceleration of the chemistry solver for modeling {DI} engine combustion using dynamic adaptive chemistry ({DAC}) schemes},
+	Volume = {14},
+	Year = {2010},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1080/13647830903548834}}
+
+@article{Gou:2013eu,
+	Annote = {homogenous ignition and unsteady spherical flame simulations
+
+based on PFA
+
+question of reaction progress variable and mixing
+
+builds table of thresholds, initial conditions, and progress variable
+
+threshold calculated for 1% local error for key parameters (mass fraction of major species, pressure, temperature)
+
+threshold changes significantly throughout, increasing monotonically; species number not monotonic
+
+speedup: from 5-100
+
+
+unsteady flame propagation: A-SURF
+-time not reported?},
+	Author = {Gou, Xiaolong and Chen, Zheng and Sun, Wenting and Ju, Yiguang},
+	Date-Added = {2015-08-26 06:05:46 +0000},
+	Date-Modified = {2015-08-26 06:05:46 +0000},
+	Journal = {Combust. Flame},
+	Number = {2},
+	Pages = {225--231},
+	Title = {A dynamic adaptive chemistry scheme with error control for combustion modeling with a large detailed mechanism},
+	Volume = {160},
+	Year = {2013}}
+
+@article{Yang:2013ip,
+	Annote = {PaSR
+
+suggest reaction time step is flow time step...
+
+speedup factor of 2 for USC-Mech II
+
+premixed, threshold 0.2 -{\&}gt; significant NO deviation (but that is a high threshold?)
+
+GRI-Mech 3.0: speedup of 3
+
+reaction time step: 1e-4 s
+
+tried 4 reductions per time step: better accuracy, but less efficient due to overhead
+
+more efficient to reduce error threshold than perform multiple reductions per time step},
+	Author = {Yang, Hongtao and Ren, Zhuyin and Lu, Tianfeng and Goldin, Graham M},
+	Date-Added = {2015-08-26 06:05:46 +0000},
+	Date-Modified = {2015-08-26 06:05:46 +0000},
+	Journal = {Combust. Theor. Model.},
+	Number = {1},
+	Pages = {167--183},
+	Title = {Dynamic adaptive chemistry for turbulent flame simulations},
+	Volume = {17},
+	Year = {2013}}
+
+@article{Curtis:2015aa,
+	Author = {Curtis, Nicholas J and Niemeyer, Kyle E and Sung, Chih Jen},
+	Date-Added = {2015-08-26 06:01:43 +0000},
+	Date-Modified = {2015-08-26 06:02:23 +0000},
+	Doi = {10.1016/j.combustflame.2014.11.004},
+	Journal = {Combust. Flame},
+	Pages = {1358--1374},
+	Title = {An automated target species selection method for dynamic adaptive chemistry simulations},
+	Volume = {162},
+	Year = {2015},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.combustflame.2014.11.004}}
+
+@article{Niemeyer:2015wq,
+	Author = {Niemeyer, Kyle E and Sung, Chih Jen},
+	Date-Added = {2015-08-26 05:50:01 +0000},
+	Date-Modified = {2015-08-26 05:50:01 +0000},
+	Doi = {10.1021/ef5022126},
+	Journal = {Energy Fuels},
+	Number = {2},
+	Pages = {1172--1185},
+	Title = {Reduced chemistry for a gasoline surrogate valid at engine-relevant conditions},
+	Volume = {29},
+	Year = {2015},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1021/ef5022126}}
+
+@article{Lu:2008bi,
+	Author = {Lu, Tianfeng and Law, Chung K},
+	Date-Added = {2015-08-26 05:48:35 +0000},
+	Date-Modified = {2015-08-26 05:48:35 +0000},
+	Journal = {Combust. Flame},
+	Pages = {153--163},
+	Title = {Strategies for mechanism reduction for large hydrocarbons: n-heptane},
+	Volume = {154},
+	Year = {2008}}
+
+@article{Niemeyer:2014,
+	Author = {Niemeyer, Kyle Evan and Sung, Chih Jen},
+	Date-Added = {2015-08-26 05:48:35 +0000},
+	Date-Modified = {2015-08-26 05:48:35 +0000},
+	Doi = {10.1016/j.combustflame.2014.05.001},
+	Journal = {Combust. Flame},
+	Number = {11},
+	Pages = {2752--2764},
+	Title = {Mechanism reduction for multicomponent surrogates: A case study using toluene reference fuels},
+	Volume = {161},
+	Year = {2014},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.combustflame.2014.05.001}}
+
+@article{Lu:2007,
+	Author = {Tianfeng Lu and Chung K Law},
+	Date-Added = {2015-08-26 05:36:07 +0000},
+	Date-Modified = {2015-08-26 05:36:07 +0000},
+	Doi = {10.1016/j.combustflame.2006.10.004},
+	Journal = {Combust. Flame},
+	Number = {3},
+	Pages = {117--126},
+	Title = {Diffusion coefficient reduction through species bundling},
+	Volume = {148},
+	Year = {2007},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.combustflame.2006.10.004}}
+
+@article{Gou:2010,
+	Author = {Xiaolong Gou and Wenting Sun and Zheng Chen and Yiguang Ju},
+	Date-Added = {2015-08-26 05:35:56 +0000},
+	Date-Modified = {2015-08-26 05:35:56 +0000},
+	Doi = {10.1016/j.combustflame.2010.02.020},
+	Journal = {Combust. Flame},
+	Number = {6},
+	Pages = {1111--1121},
+	Title = {A dynamic multi-timescale method for combustion modeling with detailed and reduced chemical kinetic mechanisms},
+	Volume = {157},
+	Year = {2010},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.combustflame.2010.02.020}}
+
+@article{Lu:2001ve,
+	Author = {Lu, Tianfeng and Ju, Yiguang and Law, Chung K},
+	Date-Added = {2015-08-26 05:35:56 +0000},
+	Date-Modified = {2015-08-26 05:35:56 +0000},
+	Journal = {Combust. Flame},
+	Number = {1-2},
+	Pages = {1445--1455},
+	Title = {Complex {CSP} for chemistry reduction and analysis},
+	Volume = {126},
+	Year = {2001}}
+
+@article{Ahmed:2007fa,
+	Author = {Ahmed, Syed Sayeed and Mau{\ss}, Fabian and Mor{\'e}ac, Gladys and Zeuch, Thomas},
+	Date-Added = {2015-08-26 05:33:25 +0000},
+	Date-Modified = {2015-08-26 05:33:25 +0000},
+	Doi = {10.1039/b614712g},
+	Journal = {Phys. Chem. Chem. Phys.},
+	Number = {9},
+	Pages = {1107--1126},
+	Title = {A comprehensive and compact \emph{n}-heptane oxidation model derived using chemical lumping},
+	Volume = {9},
+	Year = {2007},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1039/b614712g}}
+
+@article{Pepiot:2008kq,
+	Author = {Pepiot-Desjardins, Perrine and Pitsch, Heinz},
+	Date-Added = {2015-08-26 05:33:25 +0000},
+	Date-Modified = {2015-08-26 05:33:25 +0000},
+	Doi = {10.1080/13647830802245177},
+	Journal = {Combust. Theor. Model.},
+	Number = {6},
+	Pages = {1089--1108},
+	Title = {An automatic chemical lumping method for the reduction of large chemical kinetic mechanisms},
+	Volume = {12},
+	Year = {2008},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1080/13647830802245177}}
+
+@article{Hiremath:2010jw,
+	Author = {Hiremath, Varun and Ren, Zhuyin and Pope, Stephen B},
+	Date-Added = {2015-08-26 05:29:37 +0000},
+	Date-Modified = {2015-08-26 05:29:37 +0000},
+	Journal = {Combust. Theor. Model.},
+	Number = {5},
+	Pages = {619--652},
+	Title = {A greedy algorithm for species selection in dimension reduction of combustion chemistry},
+	Volume = {14},
+	Year = {2010}}
+
+@article{Lu:2006bb,
+	Author = {Lu, Tianfeng and Law, Chung K},
+	Date-Added = {2015-08-26 05:29:37 +0000},
+	Date-Modified = {2015-08-26 05:29:37 +0000},
+	Journal = {Combust. Flame},
+	Number = {1-2},
+	Pages = {24--36},
+	Title = {Linear time reduction of large kinetic mechanisms with directed relation graph: \emph{n}-heptane and iso-octane},
+	Volume = {144},
+	Year = {2006}}
+
+@article{Niemeyer:2010bt,
+	Author = {Kyle E Niemeyer and Chih Jen Sung and Mandhapati P Raju},
+	Date-Added = {2015-08-26 05:29:37 +0000},
+	Date-Modified = {2015-08-26 05:29:37 +0000},
+	Journal = {Combust. Flame},
+	Number = {9},
+	Pages = {1760--1770},
+	Title = {Skeletal mechanism generation for surrogate fuels using directed relation graph with error propagation and sensitivity analysis},
+	Volume = {157},
+	Year = {2010}}
+
+@article{Pepiot-Desjardins:2008,
+	Author = {Pepiot-Desjardins, Perrine and Pitsch, Heinz},
+	Date-Added = {2015-08-26 05:29:37 +0000},
+	Date-Modified = {2015-08-26 05:29:37 +0000},
+	Journal = {Combust. Flame},
+	Number = {1-2},
+	Pages = {67--81},
+	Title = {An efficient error-propagation-based reduction method for large chemical kinetic mechanisms},
+	Volume = {154},
+	Year = {2008}}
+
+@book{Turanyi:2014aa,
+	Address = {Berlin Heidelberg},
+	Author = {Tur{\'a}nyi, Tam{\'a}s and Tomlin, Alison S},
+	Date-Added = {2015-08-26 05:22:07 +0000},
+	Date-Modified = {2015-08-26 05:25:12 +0000},
+	Doi = {10.1007/978-3-662-44562-4},
+	Isbn = {978-3-662-44561-7},
+	Publisher = {Springer-Verlag},
+	Title = {Analysis of Kinetic Reaction Mechanisms},
+	Year = {2014}}
+
+@article{Herbinet:2010gu,
+	Annote = {3299 species and 10806 reactions
+
+- models for methyl-5-decenoate and methyl-9-decenoate (unsaturated esters)<b>
+
+biodiesel surrogates</b>:
+- methyl decanoate and n-heptane (prev. paper)
+- 0.25 methyl decanoate + 0.25 methyl-9-decenoate + 0.5 n-heptane
+	- compared to rapeseed oil methyl esters experiment (JSR), satisfactory for most species
+
+- compared methyl-5-decenoate engine simulations (SENKIN)},
+	Author = {Herbinet, Olivier and Pitz, William J and Westbrook, Charles K},
+	Date-Added = {2015-08-26 04:25:23 +0000},
+	Date-Modified = {2015-08-26 04:25:23 +0000},
+	Doi = {10.1016/j.combustflame.2009.10.013},
+	Journal = {Combust. Flame},
+	Number = {5},
+	Pages = {893--908},
+	Title = {Detailed chemical kinetic mechanism for the oxidation of biodiesel fuels blend surrogate},
+	Volume = {157},
+	Year = {2010},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.combustflame.2009.10.013}}
+
+@article{Mehl:2011cn,
+	Author = {Mehl, Marco and Pitz, William J and Westbrook, Charles K and Curran, Henry J},
+	Date-Added = {2015-08-26 04:25:23 +0000},
+	Date-Modified = {2015-08-26 04:25:23 +0000},
+	Doi = {10.1016/j.proci.2010.05.027},
+	Journal = {Proc. Combust. Inst.},
+	Number = {1},
+	Pages = {193--200},
+	Title = {Kinetic modeling of gasoline surrogate components and mixtures under engine conditions},
+	Volume = {33},
+	Year = {2011},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.proci.2010.05.027}}
+
+@article{Mehl:2011jn,
+	Annote = {surrogates: distillation curve (match MW of fuel), amount of aromatics in fuel, H/C ratio, and cetane/octane {\#}
+
+goal: use information about ignition propensity and composition to propose surrogate formulation
+
+AKI and sensitivity: related to slope of NTC region and ign delay in middle of NTC
+
+correlated sensitivity to slope of NTC, AKI to ignition delay times at 825 K
+
+sensitivity: aromatics and olefins play role
+
+reduction: (10% error)
+1) CARM -{\&}gt; 862 species
+2) targeted search algorithm
+
+-skeletal mechanism from ignition -{\&}gt; 256 species, missing flame chemistry
+-added high-temperature reactions back -{\&}gt; 312 species},
+	Author = {Mehl, Marco and Chen, Jyh-Yuan and Pitz, William J and Sarathy, S Mani and Westbrook, Charles K},
+	Date-Added = {2015-08-26 04:25:23 +0000},
+	Date-Modified = {2015-08-26 04:25:23 +0000},
+	Doi = {10.1021/ef201099y},
+	Journal = {Energy Fuels},
+	Number = {11},
+	Pages = {5215--5223},
+	Title = {An Approach for Formulating Surrogates for Gasoline with Application toward a Reduced Surrogate Mechanism for {CFD} Engine Modeling},
+	Volume = {25},
+	Year = {2011},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1021/ef201099y}}
+
+@article{Sarathy:2011kx,
+	Author = {Sarathy, S Mani and Westbrook, Charles K and Mehl, Marco and Pitz, William J and Togbe, Casimir and Dagaut, Philippe and Wang, Hai and Oehlschlaeger, Matthew A and Niemann, Ulrich and Seshadri, Kalyanasundaram and Veloo, Peter S and Ji, C and Egolfopoulos, Fokion N and Lu, Tianfeng F},
+	Date-Added = {2015-08-26 04:19:14 +0000},
+	Date-Modified = {2015-08-26 04:19:14 +0000},
+	Doi = {10.1016/j.combustflame.2011.05.007},
+	Journal = {Combust. Flame},
+	Month = dec,
+	Number = {12},
+	Pages = {2338--2357},
+	Title = {Comprehensive chemical kinetic modeling of the oxidation of 2-methylalkanes from C$_{7}$ to C$_{20}$},
+	Volume = {158},
+	Year = {2011},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.combustflame.2011.05.007}}
 
 @book{Anderson:1999aa,
 	Address = {Philadelphia, PA},
@@ -364,9 +747,9 @@ Eigenvectors of J are time-depedent but provide good trial basis vectors A and B
 	Volume = {44},
 	Year = {2011}}
 
-@article{Nickolls:2008:SPP:1365490.1365500,
+@article{Nickolls:2008aa,
 	Author = {Nickolls, John and Buck, Ian and Garland, Michael and Skadron, Kevin},
-	Date-Modified = {2015-07-28 06:33:22 +0000},
+	Date-Modified = {2015-08-26 07:46:46 +0000},
 	Doi = {10.1145/1365490.1365500},
 	Journal = {Queue},
 	Month = mar,
@@ -378,9 +761,9 @@ Eigenvectors of J are time-depedent but provide good trial basis vectors A and B
 	Bdsk-Url-1 = {http://doi.acm.org/10.1145/1365490.1365500},
 	Bdsk-Url-2 = {http://dx.doi.org/10.1145/1365490.1365500}}
 
-@article{niemeyer_accelerating_2014,
+@article{Niemeyer:2014aa,
 	Author = {Niemeyer, Kyle E. and Sung, Chih-Jen},
-	Date-Modified = {2015-07-28 06:36:54 +0000},
+	Date-Modified = {2015-08-26 07:43:49 +0000},
 	Doi = {10.1016/j.jcp.2013.09.025},
 	Journal = {J. Comput. Phys.},
 	Pages = {854--871},
@@ -389,18 +772,18 @@ Eigenvectors of J are time-depedent but provide good trial basis vectors A and B
 	Year = {2014},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.jcp.2013.09.025}}
 
-@inproceedings{niemeyer_turbulence-chemistry_2011,
+@inproceedings{Niemeyer:2011aa,
 	Author = {Niemeyer, Kyle Evan and Sung, Chih-Jen and Fotache, Catalin G. and Lee, Jeremiah C.},
 	Booktitle = {7th Fall Technical Meeting of the Eastern States Section of the Combustion Institute},
-	Date-Modified = {2015-08-25 21:25:37 +0000},
+	Date-Modified = {2015-08-26 07:43:51 +0000},
 	Location = {Storrs, {CT}, {USA}},
 	Month = oct,
 	Title = {Turbulence-chemistry closure method using graphics processing units: a preliminary test},
 	Year = {2011}}
 
-@article{shi_accelerating_2012,
+@article{Shi:2012aa,
 	Author = {Shi, Yu and Green, William H. and Wong, Hsi-Wu and Oluwole, Oluwayemisi O.},
-	Date-Modified = {2015-07-28 06:32:54 +0000},
+	Date-Modified = {2015-08-26 07:44:00 +0000},
 	Doi = {10.1016/j.combustflame.2012.02.016},
 	Journal = {Combustion and Flame},
 	Number = {7},
@@ -410,9 +793,9 @@ Eigenvectors of J are time-depedent but provide good trial basis vectors A and B
 	Year = {2012},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1016/j.combustflame.2012.02.016}}
 
-@article{shi_redesigning_2011,
+@article{Shi:2011aa,
 	Author = {Shi, Yu and Jr, William H. Green and Wong, Hsi-Wu and Oluwole, Oluwayemisi O.},
-	Date-Modified = {2015-07-28 06:36:27 +0000},
+	Date-Modified = {2015-08-26 07:44:06 +0000},
 	Doi = {10.1016/j.combustflame.2011.01.024},
 	Journal = {Combustion and Flame},
 	Number = {5},
@@ -423,11 +806,11 @@ Eigenvectors of J are time-depedent but provide good trial basis vectors A and B
 	Bdsk-Url-1 = {http://www.sciencedirect.com/science/article/pii/S0010218011000393},
 	Bdsk-Url-2 = {http://dx.doi.org/10.1016/j.combustflame.2011.01.024}}
 
-@incollection{spafford_accelerating_2010,
+@incollection{Spafford:2010aa,
 	Address = {Berlin, Heidelberg},
 	Author = {Spafford, Kyle and Meredith, Jeremy and Vetter, Jeffrey and Chen, Jacqueline and Grout, Ray and Sankaran, Ramanan},
 	Booktitle = {Euro-Par 2009 Parallel Processing Workshops, LNCS 6043},
-	Date-Modified = {2015-07-28 06:35:30 +0000},
+	Date-Modified = {2015-08-26 07:43:26 +0000},
 	Doi = {10.1007/978-3-642-14122-5_16},
 	Pages = {122--131},
 	Publisher = {Springer-Verlag},
@@ -435,9 +818,9 @@ Eigenvectors of J are time-depedent but provide good trial basis vectors A and B
 	Year = {2010},
 	Bdsk-Url-1 = {http://dx.doi.org/10.1007/978-3-642-14122-5_16}}
 
-@article{stone_techniques_2013,
+@article{Stone:2013aa,
 	Author = {Stone, Christopher P and Davis, Roger L},
-	Date-Modified = {2015-07-28 06:35:45 +0000},
+	Date-Modified = {2015-08-26 07:43:23 +0000},
 	Doi = {10.2514/1.B34874},
 	Journal = {Journal of Propulsion and Power},
 	Number = {4},
@@ -732,4 +1115,5 @@ deeper understanding needed of effect of Krylov subspace projections on Jacobian
 	School = {University of Connecticut},
 	Title = {Development of Analytic Tools for Computational Flame Diagnostics},
 	Url = {http://digitalcommons.uconn.edu/gs_theses/145/},
-	Year = {2011}}
+	Year = {2011},
+	Bdsk-Url-1 = {http://digitalcommons.uconn.edu/gs_theses/145/}}
