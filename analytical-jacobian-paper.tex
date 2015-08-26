@@ -1189,7 +1189,7 @@ First, the species rate subroutine is specially structured to exploit SIMD paral
 \caption{An algorithm for evaluating net species production rates in \texttt{pyJac}}\label{p:spec_rates_sub}
 \begin{algorithmic}[0]
   \State Denote the function $Species\left(R\right)$ as a function that returns the (non-third body) participating species of a reaction $R$
-  \State Denote the ith reaction rate as $Rate_i$, and the jth net species production rate as $Spec_i$
+  \State Denote the ith reaction rate as $Rate_i$, and the jth net species production rate as $Spec_j$
   \For{Reaction $R_i \in \Set{Reactions}$}
   		\For{Species $S_j \in Species\left(R_i\right)$}
   			\State $Spec_j \pluseq \nu_{j, i} \times Rate_i$
@@ -1198,9 +1198,9 @@ First, the species rate subroutine is specially structured to exploit SIMD paral
 \end{algorithmic}
 \end{algorithm}
 
-This formulation encourages has two advantages.
-First, as each species rate update for a reaction is independent they can be run with no chance of stalls due to data dependence.
-Additionally, as the net reaction rate is used between multiple update steps it is highly likely to be found in the local L1 cache.
+This formulation has two advantages.
+First, SIMD devices can execute all species rate updates for a reaction with with no chance of a stall due to data dependence as all the species rate updates are independent.
+Secondly, the net reaction rate is used between multiple update steps and is thus highly likely to be found in the local L1 cache or in a register, cutting down global memory loads.
 As such, the biggest data loading bottleneck is the loading and updating of the species rates themselves.
 The species priorities are determined as the number of consecutive reactions they participate in, and are marked for eviction if they do not participate in the next two reactions.
 However, unlike the reaction rate subroutines care must be taken to ensure that the updated species rate in shared memory is mapped back to the species rate array upon eviction.
@@ -1212,7 +1212,7 @@ Variables in the shared memory cache are given priority for non-eviction (as pos
 
 As a practical note, most modern GPUs offer the choice between partitioning the total L1 cache to give more memory to either the L1 cache or divert some memory to the total allowed shared memory for each streaming multiprocessor.
 In our work, we have found that it is always preferential to favor a larger L1 cache (and thus reduce cache misses and costly L2 load/stores) over a larger shared memory allowance.
-However, even use of a small number of shared memory cache spots can provide accelerations.
+However, even use of a small number of shared memory cache spots can accelerate computation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results and discussion}
