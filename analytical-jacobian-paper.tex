@@ -945,7 +945,7 @@ A simple implementation of the outlined chemical Jacobian is presented in pseudo
 Although a straight-forward implementation approach, it is deficient in that it minimizes potential reuse of computed products.
 Further, even for relatively small kinetic mechanisms, e.g., GRI-Mech 3.0~\cite{smith_gri-mech_30}, the number of lines of code produced is quite substantial.
 
-Without a strategy to enable the reuse of temporary computed products even reasonably modern compilers (e.g., GCC 4.4.7), struggle to compile the resulting code, resulting in long compilation times, slow execution and even occasionally crashes of the compiler itself.
+Without a strategy to enable the reuse of temporary computed products even reasonably modern compilers (e.g., \texttt{gcc} 4.4.7), struggle to compile the resulting code, resulting in long compilation times, slow execution and even occasionally crashes of the compiler itself.
 This section will lay out a restructuring of Algorithm~\eqref{p:naive_psuedo}, Algorithm~\eqref{p:updated_pseudo}, that greatly accelerates Jacobian evaluation via reuse of temporary products to reduce computational overhead.
 As a side-benefit of this technique, compilation times are greatly reduced, and compiler crashes can be avoided.
 Finally, a set of techniques used to optimize the Jacobian for SIMD devices such as GPUs will be outlined.
@@ -1152,8 +1152,8 @@ The reordering of the reactions is determined as outlined in Algorithm~\eqref{p:
 First, a suitable seed reaction is selected, based on the reaction whose participating species (i.e., not third bodies) themselves participate in the largest number of total reactions.
 The seed reaction is used to initialize the reordered reaction set.
 The next reaction is then selected greedily as the reaction who shares the most participating species with the last reaction added to the reordered reaction set.
-As a practical note, the CUDA compiler \texttt{nvcc} often crashes when compiling the generated Jacobian for even modestly sized kinetic mechanisms (>50 reactions).
-To avoid this limitation \texttt{pyJac} splits the CUDA Jacobian into several smaller subfiles, which are compiled separately.
+As a practical note, the size of the generated Jacobian subroutines are such that even relatively modern compilers, e.g. \texttt{gcc} 4.4.7 and the CUDA compiler \texttt{nvcc} 7.0 can crash when compiling the generated Jacobian for even modestly sized kinetic mechanisms (e.g. GRI~\cite{smith_gri-mech_30} for \texttt{nvcc} and USC Mech II~\cite{Wang:2007} for \texttt{gcc}).
+To avoid this limitation \texttt{pyJac} splits large Jacobians into several smaller subroutines when appropriate, which are compiled separately and called from the main Jacobian subroutine.
 When starting a new subfile, the initial seed reaction is re-picked from the set of remaining unordered reactions.
 Finally, the species are reordered to correspond to the order they will be loaded by the resulting Jacobian.
 
@@ -1220,7 +1220,7 @@ However, even use of a small number of shared memory cache spots can provide acc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The methodology for producing analytical Jacobian matrices described in the previous sections was implemented in the Python package \texttt{pyJac}, available openly online~\cite{Niemeyer:2015im} under a modified BSD license. \todo{Maybe not for WSS paper, but get DOI for v1 release}
-In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, multiple chemical kinetic models were chosen as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., falloff, Chebyshev, pressure log).
+In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, multiple chemical kinetic models were chosen as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., falloff, Chebyshev, pressure log).\todo{cleanup this}
 Table~\ref{T:mechanisms} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, and USC Mech version II~\cite{Wang:2007}.
 
 \begin{table}[tbp]
@@ -1289,11 +1289,11 @@ The former indicates overall error in the matrix but can be dominated by large e
 \subsection{Performance analysis}
 \label{s:performance}
 In order to test the performance of \texttt{pyJac} the PaSR data generated for validation of the various kinetic mechanisms was used.
-The CPU Jacobian was compiled using \texttt{GCC} 4.4.7, and run on two 6-core Xeon X5650 processors, parallelized using OpenMP.
+The CPU Jacobian was compiled using \texttt{gcc} 4.4.7, and run on two 6-core Xeon X5650 processors, parallelized using OpenMP.
 In order to have a fair comparison between mechanisms, the mean simulation time over ten runs was normalized by the number of conditions in the generated PaSR data.
 The CPU Jacobian was tested both with and without cache optimization, as described in Section~\eqref{s:cache_opt}, to assess it's impact on the performance of the CPU code.
 
-The GPU Jacobian was tested on a single NVIDIA Tesla C2075, and was compiled using \texttt{NVCC 7.0}.
+The GPU Jacobian was tested on a single NVIDIA Tesla C2075, and was compiled using \texttt{nvcc} 7.0.
 The performance data for the GPU is presented as the total runtime for the various optimization options, plotted against the number of conditions, in order to demonstrate that the GPU has reached full utilization.
 Again, ten runs were performed for each number of conditions for averaging and standard deviation purposes.
 The GPU Jacobian was tested with and without cache optimization and shared memory caching, as described in Section~\eqref{s:smem}, and all combinations thereof.
