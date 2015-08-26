@@ -316,7 +316,7 @@ Due to the chemical stiffness exhibited by most kinetic models, typically solver
 In order to solve the nonlinear algebraic equations that arise in these methods, the Jacobian matrix must be evaluated and factorized, operations that result in the quadratic and cubic costs mentioned previously.
 However, by using an analytical formulation for the Jacobian matrix rather than a typical finite difference approximation, the cost of the numerous evaluations can be reduced from growing with the square of the number of species to a linear dependence~\cite{Lu:2009gh}.
 
-In parallel to the potential improvements in stiff, implicit integrators used for chemical kinetics, another route to improving performance.
+In parallel to the potential improvements in stiff, implicit integrators used for chemical kinetics, another route to improving performance.\todo{Not sure what we're saying here}
 In the past, regular computational power increases could be counted on to enable previously inaccessible simulations (i.e., Moore's Law).
 However, this trend has been disrupted recently due to power consumption and heat dissipation issues, slowing the pace of increases in processor speed.
 While the central processing unit (CPU) market has seen performance gains via multi-core parallelism, single-instruction multiple data processors (SIMD), e.g., graphics processing units (GPUs), recently emerged as a low-cost, low-power, and massively parallel high-performance computing alternative. 
