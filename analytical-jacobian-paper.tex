@@ -402,10 +402,9 @@ where $C_{p,l}$ is the constant-pressure specific heat in molar units, $H_k$ is 
 For a calorically perfect gas, the standard-state specific heats, enthalpies, and internal energies are also the actual values.
 
 The mass-specific specific heat and enthalpy are then defined as
-\begin{align}
-c_{p,k} &= \frac{C_{p,k}}{W_k} \text{ and} \\
-h_k &= \frac{H_k}{W_k} \;,
-\end{align}
+\begin{equation}
+c_{p,k} = \frac{C_{p,k}}{W_k} \quad \text{and} \quad h_k = \frac{H_k}{W_k} \;,
+\end{equation}
 and the mixture-averaged specific heat is
 \begin{equation}
 c_p = \sum_{k=1}^{N_{\text{sp}}} Y_k c_{p,k} \;.
@@ -415,31 +414,30 @@ c_p = \sum_{k=1}^{N_{\text{sp}}} Y_k c_{p,k} \;.
 \subsection{Reaction rate expressions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Next, define the species rates of production and related kinetic terms:
+Next, define the species rates of production and related kinetic terms as
 \begin{equation}
-\dot{\omega}_k = \sum_{i=1}^{N_{\text{reac}}} \nu_{k i} q_i
+\dot{\omega}_k = \sum_{i=1}^{N_{\text{reac}}} \nu_{k i} q_i \;,
 \end{equation}
 where $N_{\text{reac}}$ is the number of reactions, $\nu_{k i}$ is the overall stoichiometric coefficient for species $k$ in reaction $i$, and $q_i$ is the rate-of-progress for reaction $i$.
-These are defined by:
+These are defined by
 \begin{align}
-\nu_{k i} &= \nu_{k i}^{\prime \prime} - \nu_{k i}^{\prime}  \\
-q_i &= c_i R_i ,
+\nu_{k i} &= \nu_{k i}^{\prime \prime} - \nu_{k i}^{\prime}  \quad \text{and} \\
+q_i &= c_i R_i \;,
 \end{align}
 where $\nu_{k i}^{\prime \prime}$ and $\nu_{k i}^{\prime}$ are the product and reactant stoichiometric coefficients (respectively) of species $k$ in reaction $i$.
-The base rate-of-progress for a reversible reaction is:
+The base rate-of-progress for a reversible reaction is
 \begin{align}
-R_i &= R_{f, i} - R_{r, i} \\
-R_{f, i} &= k_{f, i} \prod_{j = 1}^{N_{\text{sp}}} [X_j]^{\nu_{j i}^{\prime}} \\
-R_{r, i} &= k_{r, i} \prod_{j = 1}^{N_{\text{sp}}} [X_j]^{\nu_{j i}^{\prime \prime}}
+R_i &= R_{f, i} - R_{r, i} \;, \\
+R_{f, i} &= k_{f, i} \prod_{j = 1}^{N_{\text{sp}}} [X_j]^{\nu_{j i}^{\prime}} \;, \\
+R_{r, i} &= k_{r, i} \prod_{j = 1}^{N_{\text{sp}}} [X_j]^{\nu_{j i}^{\prime \prime}} \;, 
 \end{align}
-and the third-body\slash pressure modification $c_i$ is given by:
-
+and the third-body\slash pressure modification $c_i$ is given by
 \begin{equation}
 c_i = \begin{dcases}
-  1 &\text{Pressure-independent reaction} \\
-  [X]_i &\text{\nth{3}-body enhanced reaction, no pressure dependence} \\
-  \frac{P_{r i}}{1 + P_{r i}} F_i &\text{unimolecular/recombination falloff reaction} \\
-  \frac{1}{1 + P_{r i}} F_i &\text{chemically-activated bimolecular reaction}
+  1 &\text{elementary reaction,} \\
+  [X]_i &\text{\nth{3}-body enhanced reaction,} \\
+  \frac{P_{r i}}{1 + P_{r i}} F_i &\text{unimolecular/recombination falloff reaction, and} \\
+  \frac{1}{1 + P_{r i}} F_i &\text{chemically-activated bimolecular reaction.}
   \end{dcases}
 \label{e:rxn_pressure}
 \end{equation}
@@ -517,8 +515,8 @@ Pressure-dependent falloff reactions have low- ($k_{0, i}$) and high-pressure-li
 These are used to define a reduced pressure, depending on whether the third body is a specific species (e.g.\ ``$(+\text{Y}_m)$'') or the mixture as a whole (including any efficiencies $\alpha_{i j}$):
 \begin{equation}
 P_{r,i} = \begin{dcases}
-\frac{k_{0,i}}{k_{\infty,i}} [X]_i &\text{if ``(+M)''} \\
-\frac{k_{0,i}}{k_{\infty,i}} [X_m] &\text{if ``} (+\text{Y}_m\text{)''}
+\frac{k_{0,i}}{k_{\infty,i}} [X]_i &\text{if ``(+M)'', or} \\
+\frac{k_{0,i}}{k_{\infty,i}} [X_m] &\text{if ``} (+\text{Y}_m\text{)''.}
 \end{dcases}
 \label{e:pr_i}
 \end{equation}
@@ -527,24 +525,25 @@ The falloff factor $F_i$ used in Eq.~\eqref{e:rxn_pressure} is determined based 
 \begin{equation}
 F_i = \begin{dcases}
 1 &\text{for Lindemann,} \\
-F_{\text{cent}}^{ \left( 1 + ( A / B )^2 \right)^{-1} } &\text{for Troe, } \\
+F_{\text{cent}}^{ \left( 1 + ( A / B )^2 \right)^{-1} } &\text{for Troe, or} \\
 d T^e \left( a \cdot \exp \left( -\frac{b}{T} \right) + \exp \left( -\frac{T}{c} \right) \right)^X &\text{for SRI.}
 \end{dcases}
 \end{equation}
 
-For the Troe representation,
+The variables for the Troe representation are given by
 \begin{align}
-F_{\text{cent}} &= (1 - a) \exp \left( -\frac{T}{T^{***}} \right) + a\cdot \exp \left( -\frac{T}{T^*} \right) + \exp \left( -\frac{T^{**}}{T} \right) \\
-A &= \log_{10} P_{r,i} - 0.67 \log_{10} F_{\text{cent}} - 0.4 \\
-B &= 0.806 - 1.1762 \log_{10} F_{\text{cent}} - 0.14 \log_{10} P_{r,i}
+F_{\text{cent}} &= (1 - a) \exp \left( -\frac{T}{T^{***}} \right) + a\cdot \exp \left( -\frac{T}{T^*} \right) + \exp \left( -\frac{T^{**}}{T} \right) \;, \\
+A &= \log_{10} P_{r,i} - 0.67 \log_{10} F_{\text{cent}} - 0.4 \;, \text{and} \\
+B &= 0.806 - 1.1762 \log_{10} F_{\text{cent}} - 0.14 \log_{10} P_{r,i} \;,
 \end{align}
-where $a$, $T^{***}$, $T^*$, and $T^{**}$ are specified parameters. $T^{**}$ is optional, and, if it is not used, the final term of $F_{\text{cent}}$ is omitted.
-
-For the SRI representation,
+where $a$, $T^{***}$, $T^*$, and $T^{**}$ are specified parameters. 
+The final parameter $T^{**}$ is optional, and, if it is not used, the final term of $F_{\text{cent}}$ is omitted.
+The expression used in the SRI representation is given by
 \begin{equation}
 X = \left( 1 + \left( \log_{10} P_{r,i} \right)^2 \right)^{-1}
 \end{equation}
-where $a$, $b$, and $c$ are required parameters. The parameters $d$ and $e$ are optional; if not specified, $d = 1$ and $e = 0$.
+where $a$, $b$, and $c$ are required parameters.
+The parameters $d$ and $e$ are optional; if not specified, $d = 1$ and $e = 0$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Pressure-dependent reactions}
@@ -1010,39 +1009,27 @@ Eq.~\eqref{e:jac_dydt} can be rewritten as:
   \mathcal{J}_{k+1, 1} = W_k \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} T_{\partial T, i}
 \end{equation}
 Next, instead of summing over all reactions for a single species, we transform Algorithm~\eqref{p:naive_psuedo} to compute the temporary product for a single reaction $i$ and add to all relevant species:
-{\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
-  \mathcal{J}_{k+1, 1} \pluseq W_k \nu_{ki} T_{\partial T, i} \\
-  \nonumber \\
-  \forall k \in \{\text{Species}\}\text{ where } \nu_{ki} \neq 0 \nonumber
+\begin{IEEEeqnarray}{rCl}
+  \mathcal{J}_{k+1, 1} \pluseq \nu_{ki} W_k T_{\partial T, i} \quad k = 1, \ldots, N_{\text{sp}}
 \label{e:jac_temperature_update}
-\end{IEEEeqnarray}}%
+\end{IEEEeqnarray}%
 In doing so, the temporary product $T_{\partial T,  i}$ must only be evaluated a single time for each reaction, rather than once for each species in the reaction with a non-zero net production or consumption rate.
 
 Similarly, for Eq.~\eqref{e:jac_dydy} we can define similar temporary products, although more care must be taken to ensure the correctness for all the various cases.
 For all reactions $i$, the following temporary product can be defined:
 \begin{equation}
-  T_{\partial Y, i,\text{independent}} = -\frac{Wc_i}{\rho} \left[R_{f,i}\sum_{l}^{N_{sp}}\nu_{li}^{\prime} - R_{r,i}\sum_{l}^{N_{sp}}\nu_{li}^{\prime\prime}\right]
+  T_{\partial Y, i,\text{ind}} = -\frac{Wc_i}{\rho} \left( R_{f,i}\sum_{l}^{N_{sp}}\nu_{li}^{\prime} - R_{r,i}\sum_{l}^{N_{sp}}\nu_{li}^{\prime\prime}\right)
 \end{equation}
 The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a pressure-independent reaction $i$ can then be updated as:
-{\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\mathcal{J}_{k+1,j+1} &\pluseq& \nu_{ki}\frac{W_k}{W_j} \left[ T_{dY_,i,\text{ind}} + \left( c_i\nu_{ji}^{\prime}k_{f,i} \left[X_j \right]^{\nu_{ji}^{\prime}-1} \right) \prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime}} \right. \nonumber \\
+&& -\: \left.
+  \left( c_i\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1} \right)
+  \prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime\prime}} \right] \quad
+  k, j = 1, \ldots, N_{\text{sp}}
 \label{e:pindep_jac_species}
-\mathcal{J}_{k+1,j+1} \pluseq
-  \nu_{ki}\frac{W_k}{W_j}
-  \Biggl(
-    T_{dY_,i,\text{independent}} + \\
-  \left(
-    c_i\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
-  \right)
-  \prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime}} -
-  \left(
-    c_i\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1}
-  \right)
-  \prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime\prime}}
-  \Biggr) \nonumber \\
-  \nonumber \\
-  \forall k ,j \in \{\text{Species}\}\text{ where } \nu_{ki} \neq 0 \nonumber
-\end{IEEEeqnarray}
-}Note that either one or both of $\nu_{ji}^{\prime}$ and $\nu_{ji}^{\prime\prime}$ can be zero.
+\end{IEEEeqnarray}}%
+Note that either one or both of $\nu_{ji}^{\prime}$ and $\nu_{ji}^{\prime\prime}$ can be zero.
 This means that the added species molar concentration product terms are often zero, and may be omitted for most species $j$.
 
 For third-body enhanced or falloff reactions reactions, the $\dydx{c_i}{Y_j}$ term in Eq.~\eqref{e:jac_dydy} is inherently dependent on the $j$th species, however, certain simplifications can still be made.
@@ -1054,72 +1041,66 @@ For third body-enhanced reactions without falloff dependence, we define a relati
 \end{equation}
 where $\hat{\alpha}_{ij}$ is defined as the median third-body efficiency for reaction $i$ (typically unity).
 This choice will result in the least additional correction term additions needed for an individual species.
-If the third-body reaction does not depend on the whole mixture (i.e. $\text{``(+Y}_m\text{)''}$), then the $\hat{\alpha}_{ij}$ term is defined as zero.
+If the third-body reaction does not depend on the whole mixture (i.e., $\text{``(+Y}_m\text{)''}$), then the $\hat{\alpha}_{ij}$ term is defined as zero.
 The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body without falloff dependence can be updated as:
-{\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \label{e:thd_jac_species}
-\mathcal{J}_{k+1,j+1} \pluseq
+\mathcal{J}_{k+1,j+1} &\pluseq&
   \nu_{ki}\frac{W_k}{W_j}
-  \Biggl(
-    T_{\partial Y_,i,\text{independent}} + T_{\partial Y, i, \text{third-body}} +
-  \left(\alpha_{ij} - \hat{\alpha}_{ij}\right)R_i \\
-  + \left(
+  \Biggl[
+    T_{\partial Y, i,\text{ind}} + T_{\partial Y, i, \text{third-body}} +
+  \left(\alpha_{ij} - \hat{\alpha}_{ij}\right)R_i \nonumber \\
+&& +\: \left(
     c_i\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
   \right)
-  \prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime}} +
-  \left(
+  \prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime}} \nonumber \\
+&& +\: \left(
     c_i\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1}
   \right)
   \prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime\prime}}
-  \Biggr) \nonumber \\
-  \nonumber \\
-  \forall k ,j \in \{\text{Species}\}\text{ where } \nu_{ki} \neq 0 \nonumber
+  \Biggr] \quad k, j = 1, \ldots, N_{\text{sp}}
 \end{IEEEeqnarray}
 
 For reactions with falloff dependence, we define a temporary term corresponding to the $P_r$ polynomial in Eqs.~\eqref{dCidY_falloff}~and~\eqref{dCidY_chem}:
 \begin{equation}
   T_{P_{r, i}}  =
 \begin{dcases}
-  \hfil 0 \; & \text{if Lindemann, or} \\
-  \frac{1.0}{1.0 + P_r} \; & \text{if Falloff reaction, or} \\
-  \frac{-P_r}{1.0 + P_r} \; & \text{if Chemically activated reation}
+  \hfil 0 \; & \text{if Lindemann,} \\
+  \frac{1.0}{1.0 + P_r} \; & \text{if Falloff reaction,} \\
+  \frac{-P_r}{1.0 + P_r} \; & \text{if Chemically activated reation.}
 \end{dcases} 
 \end{equation}
 Following this, we must define a temporary term relating to the falloff function derivative $\dydx{F_i}{Y_j}$:
 \begin{equation}
 T_{F_i} = 
 \begin{dcases}
-  \hfil 0 \; &\text{if Lindemann, or} \\
+  \hfil 0 \; &\text{if Lindemann, } \\
   \hfil -P_{r,i}\ln F_\text{cent} \frac{2A}{B^3}\frac{0.14A + B}{\ln 10(1 + (A/B)^2)^2} \; &\text{if Troe, or} \\
-  \hfil -P_{r,i}X^2 \frac{2\log10 P_{r,i}}{\ln 10} \ln\left(a\cdot\exp\frac{-b}{T} + \exp\frac{-T}{c}\right) \; &\text{if SRI}
+  \hfil -P_{r,i}X^2 \frac{2\log10 P_{r,i}}{\ln 10} \ln\left(a\cdot\exp\frac{-b}{T} + \exp\frac{-T}{c}\right) \; &\text{if SRI.}
 \end{dcases}
 \end{equation}
 Finally, we define a temporary product for falloff reactions:
 \begin{equation}
 T_{\partial Y, i,\text{falloff}} = c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{-W}{\rho}+\frac{\hat{\alpha}_{ij}}{\left[X\right]_i}\right)R_i
 \end{equation}
-where the $\hat{\alpha}_{ij}$ term is again zero in the case that the falloff reaction depends on a single species (i.e. $\text{``(+Y}_m\text{)''}$).
+where the $\hat{\alpha}_{ij}$ term is again zero in the case that the falloff reaction depends on a single species (i.e., $\text{``(+Y}_m\text{)''}$).
 The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $i$ can then be updated as:
-{\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
-\label{e:pdep_jac_species}
-\mathcal{J}_{k+1,j+1} \pluseq
-  \nu_{ki}\frac{W_k}{W_j}
-  \Biggl(
-    T_{\partial Y_,i,\text{independent}} + T_{\partial Y, i, \text{falloff}} + \\
-  c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{\delta_{M}\left(\alpha_{ij} - \hat{\alpha}_{ij}\right)}{\left[X\right]_i} + \frac{\left(1 - \delta_{\text{M}}\right)}{\rho Y_m}\right)R_i + \nonumber\\
-  \left(
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\mathcal{J}_{k+1,j+1} &\pluseq& \nu_{ki}\frac{W_k}{W_j} \Biggr[
+    T_{\partial Y,i,\text{ind}} + T_{\partial Y, i, \text{falloff}} \; c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{\delta_{M}\left(\alpha_{ij} - \hat{\alpha}_{ij}\right)}{\left[X\right]_i} + \frac{1 - \delta_{\text{M}}}{\rho Y_m}\right)R_i \nonumber \\
+&& +\: \left(
     c_i\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
   \right)
-  \prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime}} +
-  \left(
+  \prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime}} \nonumber \\
+&& +\: \left(
     c_i\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1}
   \right)
   \prod_{\substack{n=1 \\ n \neq j}}^{N_{\text{sp}}}[X_n]^{\nu_{ni}^{\prime\prime}}
-  \Biggr) \nonumber \\
-  \nonumber \\
-  \forall k ,j \in \{\text{Species}\}\text{ where } \nu_{ki} \neq 0 \nonumber
-\end{IEEEeqnarray}
-}where $\delta_{\text{M}}$ is defined as:
+  \Biggr] \quad k, j = 1, \ldots, N_{\text{sp}}
+  %\forall k ,j \in N_{\text{sp}} \text{ if } \nu_{ki} \neq 0 \nonumber
+\label{e:pdep_jac_species}
+\end{IEEEeqnarray}}%
+where $\delta_{\text{M}}$ is defined as:
 \begin{equation}
   \delta_M =
 \begin{dcases}
@@ -1298,7 +1279,7 @@ The former indicates overall error in the matrix but can be dominated by large e
 
 
 Planned work includes further validation of \texttt{pyJac} using larger and more complex chemical kinetic models, including the butanol mechanism of Merchant et al.~\cite{Merchant:2013kz,Hansen:2013fe}, with 372 species and 8723 reversible reactions.
-In addition, future versions of \texttt{pyJac} will include the option of assuming constant-volume combustion.
+In addition, future versions of \texttt{pyJac} will include the option of assuming constant-volume combustion, and support generating Fortran and Matlab source code.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgments}
