@@ -204,7 +204,7 @@ Accurate simulations of combustion phenomena require the use of detailed chemica
 However, the chemical kinetic models for hydrocarbon fuels of practical interest exhibit both mathematical stiffness in the governing differential equations and large numbers of species and reactions, particularly for larger molecules.
 In order to integrate the stiff equations governing chemical kinetics, generally implicit algorithms are used that require frequent Jacobian matrix evaluations; in addition, various computational combustion diagnostics methods rely on accurate Jacobian matrices.
 Typically, Jacobian matrices are calculated numerically using finite differences, but this poses significant computational demands for larger chemical kinetic models since the number of chemical source term evaluations scales with the square of species count.
-Further, existing analytical Jacobian tools do not optimize evaluations or support the emerging SIMD processors such as GPUs.
+Further, existing analytical Jacobian tools do not optimize evaluations or support emerging SIMD processors such as GPUs.
 Here we introduce \texttt{pyJac}, a Python-based open-source program that generates analytical Jacobian matrices for use in chemical kinetics modeling and analysis.
 In addition to producing the necessary customized source code for evaluating reaction rates (including all modern reaction rate formulations), the chemical source terms, and the Jacobian matrix, \texttt{pyJac} uses an optimized evaluation order to minimize computational and memory operations.
 First, we establish the correctness of the resulting Jacobian matrices through comparison with those obtained from high-order finite differences using rates from Cantera.
@@ -300,32 +300,43 @@ Chemical kinetics \sep Jacobian \sep SIMD \sep GPU
 \section{Introduction}
 \label{sec:intro}
 
-Need for detailed chemistry
+As the need for detailed and accurate chemical kinetics models in predictive reactive-flow simulations has become recognized in recent years, simultaneously such models describing the oxidation of hydrocarbon fuels grew significantly in size and complexity.
+For example, a recently developed detailed kinetic model for 2-methylalkanes, relevant for jet and diesel fuel surrogates, consists of over 7000 species and 30000 reactions~\cite{Sarathy:2011kx}; similarly large surrogate models exist for gasoline~\cite{Mehl:2011cn,Mehl:2011jn} and biodiesel~\cite{Herbinet:2010gu}.
+Since in general the computational cost of solving the associated, generally stiff, systems of equations scales at best quadratically with the number of species---and at worst, cubically---models of this size pose challenges even for lower-dimensional analyses, and cannot practically be used directly in multidimensional reactive-flow simulations.
 
-As has been observed by others, in recent years the sizes of chemical kinetic models for hydrocarbon fuels
+In an effort to reduce the computational demands of using large, detailed kinetic models, a number of techniques have been developed to reduce their size and complexity while retaining predictiveness, as reviewed by Lu and Law~\cite{Lu:2009gh} as well as Turányi and Tomlin~\cite{Turanyi:2014aa}.
+Major classes of such approaches include skeletal reduction methods that remove unimportant species and reactions~\cite{Lu:2006bb,Pepiot-Desjardins:2008,Hiremath:2010jw,Niemeyer:2010bt}, lumping of species that share similar properties~\cite{Lu:2007,Ahmed:2007fa,Pepiot:2008kq}, and time-scale reduction methods that reduce chemical stiffness~\cite{Maas:1992ws,Lam:1994ws,Lu:2001ve,Gou:2010}.
+Such methods can be combined in multiple stages for significant a priori reduction~\cite{Lu:2008bi,Niemeyer:2014,Niemeyer:2015wq}, or applied dynamically during a simulation to achieve greater local savings~\cite{Banerjee:2006,Liang:2009,Shi:2010,Gou:2013eu,Yang:2013ip,Curtis:2015aa}.
+Techniques such as interpolation\slash tabulation of expensive terms~\cite{Pope:1997wu} can also reduce computational costs.
 
-In the past, regular computational power increases could be counted on to enable previously inaccessible simulations.
-This trend has been disrupted recently due to power consumption and heat dissipation issues, slowing the pace of increases in processor speed.
+In addition to the aforementioned cost reduction methods that modify the chemical kinetic models, focusing on improvements to the integration algorithms that actually solve the governing differential equations can also offer significant gains in computational performance.
+Due to the chemical stiffness exhibited by most kinetic models, typically solvers rely on robust, high-order implicit integration algorithms based on backward differentiation formulae~\cite{Curtiss:1952,Byrne:1987wp,Brown:1989vl,Hindmarsh:2005hg}.
+In order to solve the nonlinear algebraic equations that arise in these methods, the Jacobian matrix must be evaluated and factorized, operations that result in the quadratic and cubic costs mentioned previously.
+However, by using an analytical formulation for the Jacobian matrix rather than a typical finite difference approximation, the cost of the numerous evaluations can be reduced from growing with the square of the number of species to a linear dependence~\cite{Lu:2009gh}.
+
+In parallel to the potential improvements in stiff, implicit integrators used for chemical kinetics, another route to improving performance.
+In the past, regular computational power increases could be counted on to enable previously inaccessible simulations (i.e., Moore's Law).
+However, this trend has been disrupted recently due to power consumption and heat dissipation issues, slowing the pace of increases in processor speed.
 While the central processing unit (CPU) market has seen performance gains via multi-core parallelism, single-instruction multiple data processors (SIMD), e.g., graphics processing units (GPUs), recently emerged as a low-cost, low-power, and massively parallel high-performance computing alternative. 
 GPUs---originally developed for graphics\slash video processing and display purposes---consist of many hundreds to thousands of cores compared to tens of cores found on a typical CPU.
-Recognizing that the SIMD parallelism model fits well with the operator-split chemistry integration, which forms the basis of most reactive-flow codes~\cite{Oran:2001aa}, a number of studies in recent years~\cite{niemeyer_accelerating_2014,niemeyer_turbulence-chemistry_2011,shi_accelerating_2012,shi_redesigning_2011,spafford_accelerating_2010,stone_techniques_2013} have explored the use of SIMD processors to accelerate reactive-flow codes.
-To our knowledge there is currently no open-source analytical chemical Jacobian tool capable of generating code specifically optimized for SIMD processors.
-To this end, \texttt{pyJac} is capable of generating subroutines for species and reaction rates, derivative source terms, and analytical chemical Jacobian matrices for the CUDA programming language~\cite{Nickolls:2008:SPP:1365490.1365500}, a widely used language for NVIDIA GPUs.
-In addition, since the programming paradigm to achieve efficient code evaluation for SIMD processors is quite different than that of normal CPUs, optimization strategies specifically targeted at accelerating Jacobian evaluation on GPUs will be laid out and tested.
-
-rationale: computational cost of a forward finite difference approximation scales with the square of the number of species, while cost of evaluating an analytical Jacobian grows linearly with the number of species~\cite{Lu:2009gh}.
+Recognizing that the SIMD parallelism model fits well with the operator-split chemistry integration, which forms the basis of most reactive-flow codes~\cite{Oran:2001aa}, a number of studies in recent years~\cite{Spafford:2010aa,Shi:2011aa,Niemeyer:2011aa,Shi:2012aa,Stone:2013aa,Niemeyer:2014aa} explored the use of SIMD processors to accelerate the integration of chemical kinetics in reactive-flow codes.
+While explicit methods offer significant improvements in performance for nonstiff and moderately stiff chemical kinetics~\cite{Niemeyer:2014aa}, experiences thus far suggest that implicit or similar algorithms may still be required to handle stiff chemistry.
+This provides significant motivation to provide the capability of evaluating analytical Jacobian matrices on GPUs as well as CPUs.
 
 % past work
 %Adifor~\cite{Bischof:1996cc}, automatic differentiation
-Over the past few years, a number of research groups developed analytical Jacobian generators for chemical kinetics, although as will be discussed the software package introduced here offers a number of improvements.
+Thus, motivated by the potential cost reductions offered by analytical Jacobian matrix formulations, over the past few years a number of research groups developed analytical Jacobian generators for chemical kinetics, although as will be discussed the software package introduced here offers a number of improvements.
 The TChem toolkit developed by Safta et al.~\cite{Safta:2011vn} was one of the first software packages developed for calculating the analytical Jacobian matrix, but provides this functionality through an interface rather than generating customized source code for each mechanism.
 Youssefi~\cite{Youssefi:2011tm} recognized the importance of using an analytical Jacobian over a numerical approximation both for reduction in computational cost and when performing eigendecomposition of the matrix.
 Bisetti~\cite{Bisetti:2012jw} released a utility for producing analytical Jacobian matrix source code based on isothermal and isobaric conditions, with the state vector comprised of species concentrations rather than mass fractions; while incompatible with many existing reacting-flow formulations, this formulation resulted in a significant increase of Jacobian matrix sparsity---such a strategy should be investigated further.
 Perini et al.~\cite{Perini:2012gy} developed an analytical Jacobian matrix formulation for constant-volume combustion, and when used in a multidimensional reactive-flow simulation---combined with tabulation of temperature-dependent properties---reported a performance improvement of around \SI{80}{\percent} over finite-difference-based approximations.
-Recently, Dijkmans et al.~\cite{Dijkmans:2014bb} used a GPU-based analytical Jacobian combined with tabulation of temperature-dependent functions based on polynomial interpolations to accelerate the integration of chemical kinetics ODEs, similar to the earlier approach of Shi et al.~\cite{shi_redesigning_2011}.
+Recently, Dijkmans et al.~\cite{Dijkmans:2014bb} used a GPU-based analytical Jacobian combined with tabulation of temperature-dependent functions based on polynomial interpolations to accelerate the integration of chemical kinetics equations, similar to the earlier approach of Shi et al.~\cite{Shi:2011aa}.
 As will be discussed in greater detail, unlike the current work, the approach of Dijkmans et al.~\cite{Dijkmans:2014bb} used the GPU to calculate the elements of a single Jacobian matrix in parallel, rather than many different matrices corresponding to different states.
 
-Furthermore, to the authors' knowledge, unlike \texttt{pyJac}, none of the previously demonstrated analytical Jacobian generation implementations support the newer pressure-dependent reaction formulations (i.e., logarithmic interpolation and Chebyshev polynomial).
+To our knowledge, currently no open-source analytical chemical Jacobian tool exists that is capable of generating code specifically optimized for SIMD processors.
+To this end, \texttt{pyJac} is capable of generating subroutines for species and reaction rates, derivative source terms, and analytical chemical Jacobian matrices both for CPU operation via C\slash \CC{} and GPU operation via CUDA~\cite{Nickolls:2008aa}, a widely used programming language for NVIDIA GPUs.
+In addition, since the programming paradigm to achieve efficient code evaluation for SIMD processors is quite different than that of normal CPUs, optimization strategies specifically targeted at accelerating Jacobian evaluation on GPUs will be laid out and tested.
+Furthermore, to the our knowledge, unlike \texttt{pyJac} none of the previously discussed analytical Jacobian generation implementations support the newer pressure-dependent reaction formulations (i.e., based on logarithmic or Chebyshev polynomial interpolation).
 
 The rest of the paper is structured as follows.
 First, in Section~\ref{S:theory} we introduce the governing equations for chemical kinetics and then provide the analytical Jacobian matrix formulation.
@@ -930,12 +941,12 @@ where $\dydx{c_p}{T}$ is given by Eq.~\eqref{E:dcpdT}.
 
 A simple implementation of the outlined chemical Jacobian is presented in pseudo-code in Algorithm~\eqref{p:naive_psuedo} based on the equations presented in Section~\ref{section:eval}.  
 Although a straight-forward implementation approach, it is deficient in that it minimizes potential reuse of computed products.
-Further, even for relatively small kinetic mechanisms, e.g. GRI-30~\cite{smith_gri-mech_30}, the number of lines of code produced is quite substantial.
+Further, even for relatively small kinetic mechanisms, e.g., GRI-Mech 3.0~\cite{smith_gri-mech_30}, the number of lines of code produced is quite substantial.
 
-Without a strategy to enable the reuse of temporary computed products even reasonably modern compilers, e.g. GCC-4.4.7, struggle to compile the resulting code, resulting in long compilation times, slow execution and even occasionally crashes of the compiler itself.
+Without a strategy to enable the reuse of temporary computed products even reasonably modern compilers (e.g., GCC 4.4.7), struggle to compile the resulting code, resulting in long compilation times, slow execution and even occasionally crashes of the compiler itself.
 This section will lay out a restructuring of Algorithm~\eqref{p:naive_psuedo}, Algorithm~\eqref{p:updated_pseudo}, that greatly accelerates Jacobian evaluation via reuse of temporary products to reduce computational overhead.
 As a side-benefit of this technique, compilation times are greatly reduced, and compiler crashes are eliminated.
-Finally, a set of techniques used to optimize the Jacobian for single-instruction multiple-data (SIMD) devices, e.g. graphics processing units (GPUs) will be outlined.
+Finally, a set of techniques used to optimize the Jacobian for SIMD devices such as GPUs will be outlined.
 
 \begin{algorithm}
 \caption{A pseudo-code for simple/naive generation of the chemical Jacobian.}\label{p:naive_psuedo}
@@ -1132,7 +1143,7 @@ The bulk of the computation is performed once per reaction, and only minor sub-p
 
 To gain further performance \texttt{pyJac} offers the ability to reorder the species and reactions in a kinetic mechanism in order to improve cache hit rates.
 This is especially important for SIMD devices such as GPUs, as they typically have very small L1 caches and loads from global memory can present a significant computational bottleneck.
-This section will describe the algorithm developed to achieve this, and the resulting performance increase will be investigated in Section~\ref{s:results}.
+This section will describe the algorithm developed to achieve this, and the resulting performance increase will be investigated in Section~\ref{S:results}.
 
 The reordering of the reactions is determined as outlined in Algorithm~\eqref{p:cache_opt_rxn}.
 First, a suitable seed reaction is selected, based on the reaction whose participating species (i.e., not third bodies) themselves participate in the largest number of total reactions.
@@ -1201,7 +1212,7 @@ However, even use of a small number of shared memory cache spots can provide acc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results and discussion}
-\label{s:results}
+\label{S:results}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The methodology for producing analytical Jacobian matrices described in the previous sections was implemented in the Python package \texttt{pyJac}, available openly online~\cite{Niemeyer:2015im} under a modified BSD license. \todo{Maybe not for WSS paper, but get DOI for v1 release}
@@ -1283,7 +1294,7 @@ The former indicates overall error in the matrix but can be dominated by large e
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
-
+\label{S:conclusions}
 
 
 Planned work includes further validation of \texttt{pyJac} using larger and more complex chemical kinetic models, including the butanol mechanism of Merchant et al.~\cite{Merchant:2013kz,Hansen:2013fe}, with 372 species and 8723 reversible reactions.
