@@ -1220,7 +1220,7 @@ However, even use of a small number of shared memory cache spots can accelerate 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The methodology for producing analytical Jacobian matrices described in the previous sections was implemented in the Python package \texttt{pyJac}, available openly online~\cite{Niemeyer:2015im} under a modified BSD license. \todo{Maybe not for WSS paper, but get DOI for v1 release}
-In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, multiple chemical kinetic models were chosen as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., falloff, Chebyshev, pressure log).\todo{cleanup this}
+In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, multiple chemical kinetic models were chosen as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., falloff, Chebyshev, pressure log).\todo{do we have plog / cheby?}
 Table~\ref{T:mechanisms} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, and USC Mech version II~\cite{Wang:2007}.
 
 \begin{table}[tbp]
