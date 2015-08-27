@@ -114,8 +114,8 @@
 \newcommand{ \ddx } [1] { \frac{ \partial }{ \partial #1 } }
 \newcommand{ \dydx } [2] { \frac{ \partial #1 }{ \partial #2 } }
 \newcommand{ \ddydxx } [2] { \frac{ \partial^2 #1 }{ \partial #2^2 } }
-\newcommand{\pluseq}{\mathrel{+}=}
-\newcommand{\asteq}{\mathrel{*}=}
+\newcommand{\pluseq}{\mathrel{{+}{=}}}
+\newcommand{\asteq}{\mathrel{{*}{=}}}
 
 %to highlight text
 %\usepackage{soul}
@@ -127,6 +127,7 @@
 % Location for figures
 \graphicspath{{./figures/}}
 
+% Add [disable] option to quickly remove any
 \usepackage[textsize=small,textwidth=2.5cm]{todonotes}
 
 
@@ -209,7 +210,7 @@ Here we introduce \texttt{pyJac}, a Python-based open-source program that genera
 In addition to producing the necessary customized source code for evaluating reaction rates (including all modern reaction rate formulations), the chemical source terms, and the Jacobian matrix, \texttt{pyJac} uses an optimized evaluation order to minimize computational and memory operations.
 First, we establish the correctness of the resulting Jacobian matrices through comparison with those obtained from high-order finite differences using rates from Cantera.
 We then demonstrate the improvement in performance, via matrix evaluation timing comparisons, achievable on CPUs and GPUs by optimizing the order of matrix element calculations.
-Finally, we explore the sparsity and characteristics of Jacobian matrices for a wide range of chemical kinetic models describing the oxidation of various hydrocarbon fuels.
+%Finally, we explore the sparsity and characteristics of Jacobian matrices for a wide range of chemical kinetic models describing the oxidation of various hydrocarbon fuels.
 The Jacobian matrix generator we describe here will be particularly useful for reducing the cost of integrating chemical source terms with implicit algorithms in particular and algorithms that require an accurate Jacobian matrix in general.
 Furthermore, the open-source release of the program and Python-based implementation will enable wide adoption.
 \end{abstract}
@@ -295,7 +296,7 @@ Chemical kinetics \sep Jacobian \sep SIMD \sep GPU
 %of programs previously published in the CPC Program Library.\\
 \end{small}
 
-\todo{Are we doing sparsity? We mention it in the abstract}
+\todo{Are we doing sparsity? We mention it in the abstract. (Removed from abstract for now.)}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -727,22 +728,19 @@ For all reversible reactions,
 && -\: \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime\prime} \left( -\frac{W}{W_j} R_{r,i} + k_{r,i} \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime\prime} - 1} \delta_{kj} \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime\prime}} \right)
 \end{IEEEeqnarray}}%
 
-The partial derivatives of $c_i$ depend on the type of reaction:
-\begin{itemize}
-\item{Basic reaction}
+The partial derivatives of $c_i$ depend on the type of reaction.
+For elementary reactions, 
 \begin{align}
-\dydx{c_i}{T} &= 0 \\
-\dydx{c_i}{Y_j} &= 0
+\dydx{c_i}{T} &= 0 \text{ and}\\
+\dydx{c_i}{Y_j} &= 0 \;.
 \end{align}
-
-\item{Third-body-enhanced reaction}
+For third-body-enhanced reactions,
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{c_i}{T} &=& \dydx{[X]_i}{T} = \frac{-1}{T} \sum_{j=1}^{N_{\text{sp}}} \alpha_{ij} [X_j] = -\frac{c_i}{T} \;, \\
+\dydx{c_i}{T} &=& \dydx{[X]_i}{T} = \frac{-1}{T} \sum_{j=1}^{N_{\text{sp}}} \alpha_{ij} [X_j] = -\frac{c_i}{T} \text{ , and} \\
 \dydx{c_i}{Y_j} &=& \sum_{k=1}^{N_{\text{sp}}} \alpha_{i k} \left( -[X_k] \frac{W}{W_j} + \frac{\rho}{W_k} \delta_{kj} \right) \nonumber \\
 &=& -\frac{W}{W_j} [X]_i + \rho \sum_{k=1}^{N_{\text{sp}}} \frac{\alpha_{ik}}{W_k} \delta_{kj}
-= -\frac{W}{W_j} [X]_i + \frac{\rho}{W_j} \alpha_{ij}
+= -\frac{W}{W_j} [X]_i + \frac{\rho}{W_j} \alpha_{ij} \;.
 \end{IEEEeqnarray}}%
-
 Note that in the case that all species contribute equally (i.e., $\alpha_{ij} = 1$ for all species $j$), the latter partial derivative simplifies to
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{c_i}{Y_j} = \ddx{Y_j} \left( \frac{p}{\mathcal{R} T} \right) = 0 \;,
@@ -750,7 +748,7 @@ Note that in the case that all species contribute equally (i.e., $\alpha_{ij} = 
 \end{IEEEeqnarray}}%
 because $\dydx{p}{Y_j} = 0$ (shown in \ref{A:pres_deriv}).
 
-\item{Unimolecular/recombination fall-off reaction}
+In the case of unimolecular\slash recombination fall-off reactions, 
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
   \dydx{c_i}{T} & = & \ddx{T} \left( \frac{P_{r,i}}{1+P_{r,i}} \right) F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{T} \nonumber \\
   & = & \frac{1}{(1+P_{r,i})^2} \dydx{P_{r,i}}{T} F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{T} \\
@@ -758,7 +756,6 @@ because $\dydx{p}{Y_j} = 0$ (shown in \ref{A:pres_deriv}).
   & = & \frac{1}{(1+P_{r,i})^2} \dydx{P_{r,i}}{Y_j} F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{Y_j} \nonumber \\
   &=& c_i \left( \frac{1}{P_{r,i}} \frac{1}{1 + P_{r,i}} \dydx{P_{r,i}}{Y_j} + \frac{1}{F_i} \dydx{F_i}{Y_j} \right)
 \end{IEEEeqnarray}}%
-
 The partial derivatives for $P_{r,i}$ are
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{P_{r,i}}{T} &=& \frac{1}{k_{\infty,i}} \left( \dydx{k_{0,i}}{T} [X]_i + k_{0,i} \dydx{[X]_i}{T} - \frac{k_{0,i}}{k_{\infty,i}} [X]_i \dydx{k_{\infty,i}}{T} \right) \nonumber \\
@@ -783,7 +780,7 @@ c_i \left[ \frac{1}{1 + P_{r,i}} \left( -\frac{W}{W_j} + \frac{1}{Y_m} \delta_{m
 \end{dcases} \IEEEeqnarraynumspace
 \end{IEEEeqnarray}}%
 
-\item{Chemically-activated bimolecular reaction}
+Similarly, for chemically-activated bimolecular reactions 
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{c_i}{T} &=& \frac{-1}{(1+P_{r,i})^2} \dydx{P_{r,i}}{T} F_i + \frac{1}{1+P_{r,i}} \dydx{F_i}{T} \nonumber \\
 &=& c_i \left[ -\frac{P_{r,i}}{T} \left( \beta_{0,i} - \beta_{\infty,i} + \frac{T_{a0,i} - T_{a \infty,i}}{T} - 1 \right) + \frac{1}{F_i} \dydx{F_i}{T} \right] \IEEEeqnarraynumspace \\
@@ -793,18 +790,14 @@ c_i \left[ \frac{-P_{r,i}}{1 + P_{r,i}} \left( -\frac{W}{W_j} + \frac{1}{[X]_i} 
 c_i \left[ \frac{-P_{r,i}}{1 + P_{r,i}} \left( -\frac{W}{W_j} + \frac{1}{Y_m} \delta_{mj} \right) + \frac{1}{F_i} \dydx{F_i}{Y_j} \right] , \text{ if ``(+Y${}_m$)''.}\label{dCidY_chem}
 \end{dcases} \IEEEeqnarraynumspace
 \end{IEEEeqnarray}}%
-\end{itemize}
 
-The partial derivatives of $F_i$ depend on the representation of pressure dependence:
-\begin{itemize}
-%
-\item{Lindemann}
+The partial derivatives of $F_i$ depend on the representation of pressure dependence.
+For Lindemann reactions, 
 \begin{align}
-  \dydx{F_i}{T} &= 0 \\
-  \dydx{F_i}{Y_j} &= 0
+  \dydx{F_i}{T} &= 0 \text{ and}\\
+  \dydx{F_i}{Y_j} &= 0 \;.
 \end{align}
-%
-\item{Troe}
+For reactions using the Troe falloff formulation,
 \begin{align}
   \dydx{F_i}{T} &= \dydx{F_i}{F_{\text{cent}}} \dydx{F_{\text{cent}}}{T} + \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{T} \\
   \dydx{F_i}{Y_j} &= \dydx{F_i}{F_{\text{cent}}} \cancelto{0}{\dydx{F_{\text{cent}}}{Y_j}} + \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{Y_j} = \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{Y_j}
@@ -823,7 +816,7 @@ where $\dydx{P_{r,i}}{T}$ is given by Eq.~\eqref{E:dPridT}, $\dydx{P_{r,i}}{Y_j}
 \dydx{B}{P_{r,i}} &=& \frac{-0.14}{P_{r,i} \ln 10}
 \end{IEEEeqnarray}}%
 %
-\item{SRI}
+Finally, for falloff reactions described with the SRI formulation,
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
   \dydx{F_i}{T} & = & F_i \left( \frac{e}{T} + X \frac{ \frac{a b}{T^2} \exp \left( \frac{-b}{T} \right) - \frac{1}{c} \exp \left( \frac{-T}{c} \right) }{ a \cdot \exp \left( \frac{-b}{T} \right) + \exp \left( \frac{-T}{c} \right) } \right. \nonumber \\
   & & \left. +\: \dydx{X}{P_{r,i}} \dydx{P_{r,i}}{T} \ln \left( a \cdot \exp \left( \frac{-b}{T} \right) + \exp \left( \frac{-T}{c} \right) \right) \right) \\
@@ -835,7 +828,6 @@ where
 \dydx{X}{Y_j} &=& \dydx{X}{P_{r,i}} \dydx{P_{r,i}}{Y_j} \;,
 \end{IEEEeqnarray}}%
 $\dydx{P_{r,i}}{T}$ is given by Eq.~\eqref{E:dPridT}, and $\dydx{P_{r,i}}{Y_j}$ is given by Eq.~\eqref{E:dPridY}.
-\end{itemize}
 Note that for both falloff and chemically activated bimolecular reactions, regardless of falloff parameterization, if all species contribute equally to the third-body concentration $[X]_i$ then the partial derivative of $c_i$ with respect to species mass fraction $Y_j$ is zero, since $\dydx{p}{Y_j} = 0$.
 
 The contributions of the alternative pressure-dependence descriptions, logarithmic and Chebyshev, to the Jacobian matrix entries require more complete descriptions since they do not follow the falloff formulation (e.g., falloff factor $F_i$).
@@ -1039,11 +1031,11 @@ First, for any third-body enhanced or falloff reaction where all third-body effi
 
 For third body-enhanced reactions, we define a relatively simple temporary term:
 \begin{equation}
-  T_{\partial Y, i, \text{third-body}} = \left(\frac{-W\left[X\right]_i}{\rho} + \hat{\alpha}_{ij}\right)R_i
+  T_{\partial Y, i, \text{third-body}} = \left(\frac{-W\left[X\right]_i}{\rho} + \hat{\alpha}_i\right)R_i
 \end{equation}
-where $\hat{\alpha}_{ij}$ is defined as the median third-body efficiency for reaction $i$ (typically unity).
-This choice will result in the least additional correction term additions needed for an individual species.
-If the third-body reaction does not depend on the whole mixture (i.e., $\text{``(+Y}_m\text{)''}$), then the $\hat{\alpha}_{ij}$ term is defined as zero.
+where $\hat{\alpha}_i$ is defined as the median third-body efficiency for reaction $i$ (typically unity).
+This choice will result in the least additional correction term additions needed for individual species.
+If the third-body reaction does not depend on the whole mixture (i.e., $\text{``(+Y}_m\text{)''}$), then the $\hat{\alpha}_i$ term is defined as zero.
 The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body reaction without falloff dependence can then be updated with
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \label{e:thd_jac_species}
@@ -1051,7 +1043,7 @@ The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body reaction without f
   \nu_{ki}\frac{W_k}{W_j}
   \Biggl[
     T_{\partial Y, i,\text{ind}} + T_{\partial Y, i, \text{third-body}} +
-  \left(\alpha_{ij} - \hat{\alpha}_{ij}\right)R_i \nonumber \\
+  \left(\alpha_{ij} - \hat{\alpha}_i \right)R_i \nonumber \\
 && +\: \left(
     c_i\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
   \right)
@@ -1063,13 +1055,13 @@ The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body reaction without f
   \Biggr] \quad k, j = 1, \ldots, N_{\text{sp}}
 \end{IEEEeqnarray}
 
-For reactions with falloff dependence, we define a temporary term corresponding to the $P_r$ polynomial in Eqs.~\eqref{dCidY_falloff}~and~\eqref{dCidY_chem}:
+For reactions with falloff dependence, we define a temporary term corresponding to the $P_r$ polynomial in Eqs.~\eqref{dCidY_falloff}~and~\eqref{dCidY_chem}:\todo{check nomenclature here}
 \begin{equation}
   T_{P_{r, i}}  =
 \begin{dcases}
   \hfil 0 \; & \text{if Lindemann,} \\
-  \frac{1.0}{1.0 + P_r} \; & \text{if Falloff reaction,} \\
-  \frac{-P_r}{1.0 + P_r} \; & \text{if Chemically activated reation.}
+  \frac{1.0}{1.0 + P_r} \; & \text{if falloff reaction,} \\
+  \frac{-P_r}{1.0 + P_r} \; & \text{if chemically activated reaction.}
 \end{dcases} 
 \end{equation}
 Following this, we must define a temporary term relating to the falloff function derivative $\dydx{F_i}{Y_j}$:
@@ -1083,13 +1075,13 @@ T_{F_i} =
 \end{equation}
 Finally, we define a temporary product for falloff reactions:
 \begin{equation}
-T_{\partial Y, i,\text{falloff}} = c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{-W}{\rho}+\frac{\hat{\alpha}_{ij}}{\left[X\right]_i}\right)R_i
+T_{\partial Y, i,\text{falloff}} = c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{-W}{\rho}+\frac{\hat{\alpha}_i}{\left[X\right]_i}\right)R_i
 \end{equation}
-where the $\hat{\alpha}_{ij}$ term is again zero in the case that the falloff reaction depends on a single species (i.e., $\text{``(+Y}_m\text{)''}$).
+where the $\hat{\alpha}_i$ term is again zero in the case that the falloff reaction depends on a single species (i.e., $\text{``(+Y}_m\text{)''}$).
 The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $i$ can then be updated as:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \mathcal{J}_{k+1,j+1} &\pluseq& \nu_{ki}\frac{W_k}{W_j} \Biggr[
-    T_{\partial Y,i,\text{ind}} + T_{\partial Y, i, \text{falloff}} \; c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{\delta_{M}\left(\alpha_{ij} - \hat{\alpha}_{ij}\right)}{\left[X\right]_i} + \frac{1 - \delta_{\text{M}}}{\rho Y_m}\right)R_i \nonumber \\
+    T_{\partial Y,i,\text{ind}} + T_{\partial Y, i, \text{falloff}} \; c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{\delta_{M}\left(\alpha_{ij} - \hat{\alpha}_i\right)}{\left[X\right]_i} + \frac{1 - \delta_{\text{M}}}{\rho Y_m}\right)R_i \nonumber \\
 && +\: \left(
     c_i\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
   \right)
@@ -1115,7 +1107,7 @@ Finally, all Jacobian entries $\mathcal{J}_{k+1,j+1}$ must be finished with the 
 \mathcal{J}_{k+1,j+1} \pluseq \frac{W_k}{W_j} \frac{\dot{\omega}_kW}{\rho}
 \end{IEEEeqnarray}}
 
-This update scheme can often be simplified due to the choice of $\hat{\alpha}_{ij}$, which minimizes the number of third-body efficiency correction terms needed for a reaction, and the zeroing of the species molar concentration product terms as discussed above.
+This update scheme can often be simplified due to the choice of $\hat{\alpha}_i$, which minimizes the number of third-body efficiency correction terms needed for a reaction, and the zeroing of the species molar concentration product terms as discussed above.
 
 Like the update scheme used in Eq.~\eqref{e:jac_temperature_update}, those in Eqs.~\eqref{e:pindep_jac_species},~\eqref{e:thd_jac_species}~and~\eqref{e:pdep_jac_species} significantly reduce the computational overhead of Jacobian evaluation.
 The bulk of the computation is performed once per reaction, and only minor sub-products must be computed for each species-species pair for a given reaction.
@@ -1200,7 +1192,7 @@ However, even use of a small number of shared memory cache spots can accelerate 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The methodology for producing analytical Jacobian matrices described in the previous sections was implemented in the Python package \texttt{pyJac}, available openly online~\cite{Niemeyer:2015im} under a modified BSD license. \todo{Maybe not for WSS paper, but get DOI for v1 release}
-In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, multiple chemical kinetic models were chosen as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., falloff, Chebyshev, pressure log).\todo{do we have plog / cheby?}
+In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, multiple chemical kinetic models were chosen as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., various falloff formulations). \todo{Add Chebyshev, pressure log when true}
 Table~\ref{T:mechanisms} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, and USC Mech version II~\cite{Wang:2007}.
 
 \begin{table}[tbp]
@@ -1262,14 +1254,38 @@ With the aforementioned difficulties in mind, the Python package \texttt{numdiff
 Other options for obtaining highly accurate numerical Jacobian approximations include using complex-step derivatives~\cite{Martins:2003fv,Shampine:2007gw,Ridout:2009fn}.
 For all test cases, the correctness of the species and reaction rate subroutines were determined through comparison with Cantera~\cite{Goodwin:2014aa}; however, due to issues with nonphysical (i.e., negative) mass fraction values that arise during the finite differencing, the numerical Jacobian matrices were not calculated using Cantera but rather the generated derivative subroutines directly.
 
-In reporting the discrepancy between the analytical and numerical Jacobian matrices, denoted $\mathcal{J}$ and $\hat{\mathcal{J}}$ respectively, two quantities are used: the relative error $p$-norm $E_\text{norm} = \norm{ \hat{\mathcal{J}} - \mathcal{J} }_p / \norm{\hat{\mathcal{J}}}_p$, where $p = 2$ (the Frobenius norm) and the maximum element relative error $E_\text{rel} = \max_{i, j} \abs{ ( \hat{\mathcal{J}}_{ij} - \mathcal{J}_{ij} ) / \hat{\mathcal{J}}_{ij} }$.
-The former indicates overall error in the matrix but can be dominated by large elements, so the latter error measure can be useful in identifying discrepancies in the smaller matrix elements.
+In reporting the discrepancy between the analytical and numerical Jacobian matrices, denoted $\mathcal{J}$ and $\hat{\mathcal{J}}$ respectively, the  the norm of the relative errors of matrix elements $E_\text{rel} = \norm{ ( \hat{\mathcal{J}}_{ij} - \mathcal{J}_{ij} ) / \hat{\mathcal{J}}_{ij} }_p$, where $p = 2$ (the Frobenius norm), was used to quantify error.
+This differs somewhat from the error metric suggested by Anderson et al.~\cite{Anderson:1999aa} for use quantifying the error of matrices in LAPACK: the relative error $p$-norm $E_\text{norm} = \norm{ \hat{\mathcal{J}} - \mathcal{J} }_p / \norm{\hat{\mathcal{J}}}_p$.
+The latter indicates overall error in the matrix but can be dominated by large elements, so for the current purposes the former error measure can be more useful in identifying discrepancies in both larger and smaller matrix elements.
+
+Table~\ref{T:error} presents the correctness testing results for each benchmark case.
+For certain conditions, large relative errors were observed in extremely small nonzero elements (e.g., magnitude $\sim$\num{e-22}) likely due to roundoff errors; thus, error statistics were only based on matrix elements $\mathcal{J}_{ij}$ where $\abs{\mathcal{J}_{ij}} \geq \norm{\mathcal{J}}_p / \num{e20}$.
+
+\begin{table}[tbp]
+\centering
+\begin{tabular}{@{}l l l l@{}}
+\toprule
+Mechanism & Sample size & Mean & Maximum \\
+\midrule
+\ce{H2}\slash \ce{CO} & \num{900900} & \SI{5.031e-6}{\percent} & \SI{0.8657}{\percent} \\
+GRI-Mech 3.0 & \num{450900} & \SI{3.400e-3}{\percent} & \SI{0.2614}{\percent} \\
+USC Mech II & \num{91800} & \SI{2.194e-5}{\percent} & \SI{3.389e-3}{\percent} \\
+% MIT butanol
+\bottomrule
+\end{tabular}
+\caption{Summary of Jacobian matrix correctness study results.
+Error statistics are based on the norm of the relative error percentages $E_\text{rel}$ for each sample.
+The sample size for each case depended on the number of particles and relevant timescales used.
+}
+\label{T:error}
+\end{table}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Performance analysis}
 \label{s:performance}
-In order to test the performance of \texttt{pyJac} the PaSR data generated for validation of the various kinetic mechanisms was used.
-The CPU Jacobian was compiled using \texttt{gcc} 4.4.7, and run on two 6-core Xeon X5650 processors, parallelized using OpenMP.
+In order to test the performance of \texttt{pyJac}, the PaSR data generated for validation of the various kinetic mechanisms was used.
+The CPU Jacobian was compiled using \texttt{gcc} 4.4.7, and run on two six-core Xeon X5650 processors, parallelized using OpenMP.
 In order to have a fair comparison between mechanisms, the mean simulation time over ten runs was normalized by the number of conditions in the generated PaSR data.
 The CPU Jacobian was tested both with and without cache optimization, as described in Section~\eqref{s:cache_opt}, to assess it's impact on the performance of the CPU code.
 
