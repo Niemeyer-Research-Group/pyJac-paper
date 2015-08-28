@@ -317,9 +317,9 @@ Due to the chemical stiffness exhibited by most kinetic models, typically solver
 In order to solve the nonlinear algebraic equations that arise in these methods, the Jacobian matrix must be evaluated and factorized, operations that result in the quadratic and cubic costs mentioned previously.
 However, by using an analytical formulation for the Jacobian matrix rather than a typical finite difference approximation, the cost of the numerous evaluations can be reduced from growing with the square of the number of species to a linear dependence~\cite{Lu:2009gh}.
 
-In parallel to the potential improvements in stiff, implicit integrators used for chemical kinetics, another route to improving performance.\todo{Not sure what we're saying here}
+In parallel to the potential improvements in stiff, implicit integrators used for chemical kinetics, developing algorithms tailored for high-performance  hardware accelerators offers another route to reducing computational costs.
 In the past, regular computational power increases could be counted on to enable previously inaccessible simulations (i.e., Moore's Law).
-However, this trend has been disrupted recently due to power consumption and heat dissipation issues, slowing the pace of increases in processor speed.
+However, power consumption and heat dissipation issues disrupted this trend recently, slowing the pace of increases in processor speed.
 While the central processing unit (CPU) market has seen performance gains via multi-core parallelism, single-instruction multiple data processors (SIMD), e.g., graphics processing units (GPUs), recently emerged as a low-cost, low-power, and massively parallel high-performance computing alternative. 
 GPUs---originally developed for graphics\slash video processing and display purposes---consist of many hundreds to thousands of cores compared to tens of cores found on a typical CPU.
 Recognizing that the SIMD parallelism model fits well with the operator-split chemistry integration, which forms the basis of most reactive-flow codes~\cite{Oran:2001aa}, a number of studies in recent years~\cite{Spafford:2010aa,Shi:2011aa,Niemeyer:2011aa,Shi:2012aa,Stone:2013aa,Niemeyer:2014aa} explored the use of SIMD processors to accelerate the integration of chemical kinetics in reactive-flow codes.
@@ -391,7 +391,7 @@ where
 \ddt{Y_k} &= \frac{W_k}{\rho} \dot{\omega}_k \quad k = 1, \dotsc, N_{\text{sp}}, \label{e:dTdt}
 \end{align}
 $\rho$ is the density, $c_p$ is the mass-averaged constant-pressure specific heat, $h_k$ is the enthalpy of the $k$th species in mass units, $W_k$ is the molecular weight of the $k$th species, and $\dot{\omega}_k$ is the $k$th species overall production rate.
-Note that we assume a constant-pressure system.\todo{Need to say more?}
+Note that we assume a constant-pressure system in the current approach.\todo{Need to say more?}
 
 \subsection{Thermodynamic properties}
 
@@ -660,72 +660,69 @@ The partial derivatives of species concentration are
 &=& -[X_l] \frac{W}{W_j} + \frac{\rho}{W_l} \delta_{lj}
 \end{IEEEeqnarray}}%
 
-The partial derivatives of $R_i$ for: 
-\begin{itemize}
-\item{Irreversible reactions}
+The partial derivatives of $R_i$ vary depending on whether the reaction is reversible.
+For irreversible reactions, 
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{R_{f, i}}{T} &=& \dydx{k_{f, i}}{T} \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} \right) \nonumber \\
-&=& \dydx{k_{f, i}}{T} \frac{1}{k_{f, i}} R_{f, i} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} \right) \label{E:dRfdT-orig} \\
-\dydx{R_{f, i}}{Y_j} &=& k_{f, i} \ddx{Y_j} \left( \prod_{k=1}^{N_{\text{sp}}} [X_k]^{\nu_{ki}^{\prime}} \right) \label{E:dRfdY-orig}
+&=& \dydx{k_{f, i}}{T} \frac{1}{k_{f, i}} R_{f, i} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} \right) \; \text{and} \label{E:dRfdT-orig} \\
+\dydx{R_{f, i}}{Y_j} &=& k_{f, i} \ddx{Y_j} \left( \prod_{k=1}^{N_{\text{sp}}} [X_k]^{\nu_{ki}^{\prime}} \right) \;. \label{E:dRfdY-orig}
 \end{IEEEeqnarray}}%
-Theoretically, $ \dydx{R_{f, i}}{[X_j]} $ could be further simplified to $ \frac{\nu_{ji}^{\prime}}{ [X_j] } R_{f, i} $, but practically this should be avoided since $ [X_j] $ could be zero. The partial derivatives of the molar concentration product terms above are:
+Theoretically, $ \dydx{R_{f, i}}{[X_j]} $ could be further simplified to $ \frac{\nu_{ji}^{\prime}}{ [X_j] } R_{f, i} $, but practically this should be avoided since $ [X_j] $ could be zero.
+The partial derivatives of the molar concentration product terms above are
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \ddx{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} \right) &=& \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} [X_j]^{\nu_{ji}^{\prime} - 1} \left( \frac{-[X_j]}{T} \right) \prod_{\substack{k=1 \\ k \ne j}}^{N_{\text{sp}}} [X_k]^{\nu_{ki}^{\prime}} \nonumber \\
 &=& -\frac{1}{T} \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} [X_j]^{\nu_{ji}^{\prime}} \prod_{\substack{k=1 \\ k \ne j}}^{N_{\text{sp}}} [X_k]^{\nu_{ki}^{\prime}} \nonumber \\
-&=& -\frac{1}{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} \right) \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \\
+&=& -\frac{1}{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} \right) \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \text{ and} \\
 \ddx{Y_j} \left( \prod_{k=1}^{N_{\text{sp}}} [X_k]^{\nu_{ki}^{\prime}} \right) &=& \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime} [X_k]^{\nu_{ki}^{\prime} - 1} \left( \dydx{[X_k]}{Y_j} \right) \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime}} \nonumber \\
 &=& \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime} [X_k]^{\nu_{ki}^{\prime} - 1} \left( -[X_k] \frac{W}{W_j} + \frac{\rho}{W_k} \delta_{kj}  \right) \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime}} \nonumber \\
-&=& \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime} \left( -[X_k]^{\nu_{ki}^{\prime}} \frac{W}{W_j} + \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime} - 1} \delta_{kj} \right) \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime}} \IEEEeqnarraynumspace
+&=& \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime} \left( -[X_k]^{\nu_{ki}^{\prime}} \frac{W}{W_j} + \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime} - 1} \delta_{kj} \right) \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime}} \;, \IEEEeqnarraynumspace
 \end{IEEEeqnarray}}%
-and the partial derivative of forward reaction rate coefficient is:
+and the partial derivative of forward reaction rate coefficient is
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
   \dydx{k_{f, i}}{T} & = & \ddx{T} \left( A_i \exp \left( \beta_i \ln T - \frac{T_{a,i}}{T} \right) \right) \nonumber \\
-  & = & A_i \left( \frac{\beta_i}{T} + \frac{T_{a,i}}{T^2} \right) \exp \left( \beta_i \ln T - \frac{T_{a,i}}{T} \right) \\
-  & = & \frac{k_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} \right) \nonumber
+  & = & A_i \left( \frac{\beta_i}{T} + \frac{T_{a,i}}{T^2} \right) \exp \left( \beta_i \ln T - \frac{T_{a,i}}{T} \right) \nonumber \\
+  & = & \frac{k_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} \right) \;.
 \label{e:dkfdT}
 \end{IEEEeqnarray}}%
 Inserting these into Eqs.~\eqref{E:dRfdT-orig} and \eqref{E:dRfdY-orig} gives
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{R_{f, i}}{T} &=& \frac{1}{T} \left( \beta_i \frac{T_{a,i}}{T} \right) R_{f,i} - \frac{k_{f,i}}{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} \right) \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \nonumber \\
-&=& \frac{R_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \right) \label{E:dRfdT} \\
-\dydx{R_{f,i}}{Y_j} &=& \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime} \left( -\frac{W}{W_j} R_{f,i} + k_{f,i} \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime} - 1} \delta_{kj} \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime}} \right) \label{E:dRfdY} \IEEEeqnarraynumspace
+&=& \frac{R_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \right) \text{ and} \label{E:dRfdT} \\
+\dydx{R_{f,i}}{Y_j} &=& \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime} \left( -\frac{W}{W_j} R_{f,i} + k_{f,i} \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime} - 1} \delta_{kj} \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime}} \right) \;. \IEEEeqnarraynumspace \label{E:dRfdY}
 \end{IEEEeqnarray}}%
 
-\item{Reversible reactions}
-
-For reactions with explicit reverse Arrhenius coefficients,
+For reversible reactions with explicit reverse Arrhenius coefficients,
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{R_i}{T} & = & \dydx{k_{f, i}}{T} \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime}} \right) \nonumber \\
 && -\: \dydx{k_{r, i}}{T} \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime \prime}} - k_{r, i} \ddx{T} \left( \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime\prime}} \right) \label{e:dRdT_explicit_rev_general} \\
-&=& \frac{R_{f,i}}{T} \left( \beta_{f,i} + \frac{T_{af,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \right) - \frac{R_{r,i}}{T} \left( \beta_{r,i} + \frac{T_{ar,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} \right) \IEEEeqnarraynumspace \\
+&=& \frac{R_{f,i}}{T} \left( \beta_{f,i} + \frac{T_{af,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \right) - \frac{R_{r,i}}{T} \left( \beta_{r,i} + \frac{T_{ar,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} \right) \;. \IEEEeqnarraynumspace \\
 \end{IEEEeqnarray}}%
 Similarly, $ \frac{1}{ [X_j] } \left( \nu_{ji}^{\prime} R_{f, i} - \nu_{ji}^{\prime \prime} R_{r, i} \right) $ should be avoided since $ [X_j] $ could be zero.
-\end{itemize}
 
 The partial derivative of the reverse reaction rate coefficient, when evaluated using the forward rate coefficient and equilibrium constant using Eq.~\eqref{e:kri}, is more complicated:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
   \dydx{k_{r, i}}{T} & = & \ddx{T} \left( \frac{k_{f, i}}{K_{c, i}} \right) = \frac{ \dydx{k_{f, i}}{T} K_{c, i} - \dydx{K_{c, i}}{T} k_{f, i} }{K_{c, i}^2} \label{e:dkrdT_general} \\
-  & = & \frac{k_{f, i}}{K_{c, i}} \frac{1}{T} \left( \beta_i + \frac{T_{a, i}}{T} \right) - \frac{1}{K_{c, i}} \dydx{K_{c, i}}{T} \frac{k_{f, i}}{K_{c, i}} \\
+  & = & \frac{k_{f, i}}{K_{c, i}} \frac{1}{T} \left( \beta_i + \frac{T_{a, i}}{T} \right) - \frac{1}{K_{c, i}} \dydx{K_{c, i}}{T} \frac{k_{f, i}}{K_{c, i}} \nonumber \\
   \dydx{K_{c, i}}{T} & = & \left( \frac{p_{\text{atm}}}{\mathcal{R}} \right)^{\sum \nu_{ki}} \left( \sum_{k=1}^{N_{\text{sp}}} \nu_{ki} \dydx{B_k}{T} \right) \exp \left( \sum_{k=1}^{N_{\text{sp}}} \nu_{ki} B_k \right) \nonumber \\
   & = & K_{c, i} \sum_{k=1}^{N_{\text{sp}}} \nu_{ki} \dydx{B_k}{T} \\
-  \therefore \dydx{k_{r, i}}{T} & = & k_{r, i} \left( \frac{1}{T} \left( \beta_i + \frac{T_{a, i}}{T} \right) - \sum_{k=1}^{N_{\text{sp}}} \nu_{ki} \dydx{B_k}{T} \right)
+  \therefore \dydx{k_{r, i}}{T} & = & k_{r, i} \left( \frac{1}{T} \left( \beta_i + \frac{T_{a, i}}{T} \right) - \sum_{k=1}^{N_{\text{sp}}} \nu_{ki} \dydx{B_k}{T} \right) \;,
 \end{IEEEeqnarray}}%
 where
 \begin{equation}
-  \dydx{B_k}{T} = \frac{1}{T} \left( a_{0,k} - 1 + \frac{a_{5,k}}{T} \right) + \frac{a_{1,k}}{2} + T \left( \frac{a_{2,k}}{3} + T \left( \frac{a_{3,k}}{4} + \frac{a_{4,k}}{5} T \right) \right)
+  \dydx{B_k}{T} = \frac{1}{T} \left( a_{0,k} - 1 + \frac{a_{5,k}}{T} \right) + \frac{a_{1,k}}{2} + T \left( \frac{a_{2,k}}{3} + T \left( \frac{a_{3,k}}{4} + \frac{a_{4,k}}{5} T \right) \right) \;.
 \end{equation}
 Now, the partial derivative of $R_i$ with respect to temperature is
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{R_i}{T} &=& \frac{R_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \right) \nonumber \\
 && -\: k_{r,i} \left( \frac{1}{T} \left( \beta_i + \frac{T_{a,i}}{T} \right) - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji} \dydx{B_j}{T} \right) \prod_{j=1}^{N_{\text{sp}}} [X_j]^{\nu_{ji}^{\prime\prime}} + \frac{R_{r,i}}{T} \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} \nonumber \\
 &=& \frac{R_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime} \right) \nonumber \\
-&& -\: R_{r,i} \left[ \frac{1}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} \right) - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji} \dydx{B_j}{T} \right] \IEEEeqnarraynumspace
+&& -\: R_{r,i} \left[ \frac{1}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} \right) - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji} \dydx{B_j}{T} \right] \;. \IEEEeqnarraynumspace
 \end{IEEEeqnarray}}%
 
 For all reversible reactions,
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{R_i}{Y_j} &=& \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime} \left( -\frac{W}{W_j} R_{f,i} + k_{f,i} \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime} - 1} \delta_{kj} \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime}} \right) \nonumber \\
-&& -\: \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime\prime} \left( -\frac{W}{W_j} R_{r,i} + k_{r,i} \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime\prime} - 1} \delta_{kj} \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime\prime}} \right)
+&& -\: \sum_{k=1}^{N_{\text{sp}}} \nu_{ki}^{\prime\prime} \left( -\frac{W}{W_j} R_{r,i} + k_{r,i} \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime\prime} - 1} \delta_{kj} \prod_{\substack{l=1 \\ l \ne k}}^{N_{\text{sp}}} [X_l]^{\nu_{li}^{\prime\prime}} \right) \;.
 \end{IEEEeqnarray}}%
 
 The partial derivatives of $c_i$ depend on the type of reaction.
@@ -753,13 +750,13 @@ In the case of unimolecular\slash recombination fall-off reactions,
   \dydx{c_i}{T} & = & \ddx{T} \left( \frac{P_{r,i}}{1+P_{r,i}} \right) F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{T} \nonumber \\
   & = & \frac{1}{(1+P_{r,i})^2} \dydx{P_{r,i}}{T} F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{T} \\
   \dydx{c_i}{Y_j} & = & \ddx{Y_j} \left( \frac{P_{r,i}}{1+P_{r,i}} \right) F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{Y_j} \nonumber \\
-  & = & \frac{1}{(1+P_{r,i})^2} \dydx{P_{r,i}}{Y_j} F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{Y_j} \nonumber \\
-  &=& c_i \left( \frac{1}{P_{r,i}} \frac{1}{1 + P_{r,i}} \dydx{P_{r,i}}{Y_j} + \frac{1}{F_i} \dydx{F_i}{Y_j} \right)
+%  & = & \frac{1}{(1+P_{r,i})^2} \dydx{P_{r,i}}{Y_j} F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{Y_j} \nonumber \\
+  &=& c_i \left( \frac{1}{P_{r,i}} \frac{1}{1 + P_{r,i}} \dydx{P_{r,i}}{Y_j} + \frac{1}{F_i} \dydx{F_i}{Y_j} \right) \;.
 \end{IEEEeqnarray}}%
 The partial derivatives for $P_{r,i}$ are
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{P_{r,i}}{T} &=& \frac{1}{k_{\infty,i}} \left( \dydx{k_{0,i}}{T} [X]_i + k_{0,i} \dydx{[X]_i}{T} - \frac{k_{0,i}}{k_{\infty,i}} [X]_i \dydx{k_{\infty,i}}{T} \right) \nonumber \\
-&=&  \frac{1}{T} \frac{k_{0,i}}{k_{\infty,i}} \left( \beta_{0,i} + \frac{T_{a0,i}}{T} \right) [X]_i - \frac{k_{0,i}}{k_{\infty,i}} \frac{[X]_i}{T} - \frac{P_{r,i}}{T} \frac{k_{\infty,i}}{k_{\infty,i}} \left( \beta_{\infty,i} + \frac{T_{a \infty, i}}{T} \right) \nonumber \IEEEeqnarraynumspace \\
+%&=&  \frac{1}{T} \frac{k_{0,i}}{k_{\infty,i}} \left( \beta_{0,i} + \frac{T_{a0,i}}{T} \right) [X]_i - \frac{k_{0,i}}{k_{\infty,i}} \frac{[X]_i}{T} - \frac{P_{r,i}}{T} \frac{k_{\infty,i}}{k_{\infty,i}} \left( \beta_{\infty,i} + \frac{T_{a \infty, i}}{T} \right) \nonumber \IEEEeqnarraynumspace \\
 &=& \frac{P_{r,i}}{T} \left( \beta_{0,i} - \beta_{\infty,i} + \frac{T_{a 0, i} - T_{a \infty,i}}{T} - 1 \right) \label{E:dPridT} \\
 \dydx{P_{r,i}}{Y_j} &=& \begin{dcases}
 -P_{r,i} \frac{W}{W_j} + \frac{k_{0,i}}{k_{\infty,i}} \frac{\rho}{W_j} \alpha_{ij} , \; \text{ if ``(+M)'', or} \\
@@ -799,8 +796,8 @@ For Lindemann reactions,
 \end{align}
 For reactions using the Troe falloff formulation,
 \begin{align}
-  \dydx{F_i}{T} &= \dydx{F_i}{F_{\text{cent}}} \dydx{F_{\text{cent}}}{T} + \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{T} \\
-  \dydx{F_i}{Y_j} &= \dydx{F_i}{F_{\text{cent}}} \cancelto{0}{\dydx{F_{\text{cent}}}{Y_j}} + \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{Y_j} = \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{Y_j}
+  \dydx{F_i}{T} &= \dydx{F_i}{F_{\text{cent}}} \dydx{F_{\text{cent}}}{T} + \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{T} \text{ and} \\
+  \dydx{F_i}{Y_j} &= \dydx{F_i}{F_{\text{cent}}} \cancelto{0}{\dydx{F_{\text{cent}}}{Y_j}} + \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{Y_j} = \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{Y_j} \;,
 \end{align}
 where
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
@@ -808,12 +805,12 @@ where
   \dydx{F_{\text{cent}}}{T} &=& -\frac{1-a}{T^{***}} \exp \left( \frac{-T}{T^{***}} \right) - \frac{a}{T^*} \exp \left( \frac{-T}{T^*} \right) + \frac{T^{**}}{T^2} \exp \left( \frac{-T^{**}}{T} \right),  \IEEEeqnarraynumspace \\
   \dydx{F_i}{P_{r,i}} &=& -F_i \ln F_{\text{cent}} \frac{2A}{B^3} \frac{ \dydx{A}{P_{r,i}} B - A \dydx{B}{P_{r,i}} }{ \left( 1 + (A/B)^2 \right)^2 }, 
 \end{IEEEeqnarray}}%
-where $\dydx{P_{r,i}}{T}$ is given by Eq.~\eqref{E:dPridT}, $\dydx{P_{r,i}}{Y_j}$ is given by Eq.~\eqref{E:dPridY}, and:
+$\dydx{P_{r,i}}{T}$ is given by Eq.~\eqref{E:dPridT}, $\dydx{P_{r,i}}{Y_j}$ is given by Eq.~\eqref{E:dPridY}, and
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rClrCl}
 \dydx{A}{F_{\text{cent}}} &=& \frac{-0.67}{F_{\text{cent}} \ln 10} \quad\quad
 \dydx{B}{F_{\text{cent}}} &=& \frac{-1.1762}{F_{\text{cent}} \ln 10} \\
 \dydx{A}{P_{r,i}} &=& \frac{1}{P_{r,i} \ln 10} \quad\quad
-\dydx{B}{P_{r,i}} &=& \frac{-0.14}{P_{r,i} \ln 10}
+\dydx{B}{P_{r,i}} &=& \frac{-0.14}{P_{r,i} \ln 10} \;.
 \end{IEEEeqnarray}}%
 %
 Finally, for falloff reactions described with the SRI formulation,
@@ -860,7 +857,8 @@ Then, the final simplified expression can be constructed, appropriate for use wh
 
 Finally, the partial derivatives of the rate coefficient for the $i$th reaction with a Chebyshev rate expression can be evaluated; again, we omit the subscript $i$ for clarity:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{k_f}{T} &=& \log(10) \cdot k_f \ddx{T} \left( \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \, T_{i-1} (\tilde{T}) \, T_{j-1} \left(\tilde{p} \right) \right) \nonumber \\
+\dydx{k_f}{T} 
+%&=& \log(10) \cdot k_f \ddx{T} \left( \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \, T_{i-1} (\tilde{T}) \, T_{j-1} \left(\tilde{p} \right) \right) \nonumber \\
   &=& \log(10) \cdot k_f \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \, \ddx{T} \left( T_{i-1} (\tilde{T}) \, T_{j-1} \left(\tilde{p} \right) \right) \;, \nonumber
 \end{IEEEeqnarray}}%
 where
@@ -906,12 +904,12 @@ where the various terms are expressed previously; note that $c_i = 1$ and $\dydx
 % && -\: \left. \left. R_{r,i} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{N_{\text{sp}}} \nu_{ji}^{\prime\prime} - T \sum_{j=1}^{N_{\text{sp}}} \nu_{ji} \dydx{B_j}{T} + 1 \right) \right) \right] . \IEEEeqnarraynumspace
 %\end{IEEEeqnarray}}%
 
-The remaining columns are given by:
+The remaining columns are given by
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \mathcal{J}_{k+1, j+1} & = & \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{Y_j} + \dot{\omega}_k \frac{W}{W_j} \right) \nonumber \\
 &=& \frac{W_k}{\rho} \left[ \dot{\omega}_k \frac{W}{W_j} + \mathlarger{\sum_{i=1}^{N_{\text{reac}}}} \nu_{ki} \left( \vphantom{\prod_{\substack{n=1 \\ n \neq l}}^{N_{\text{sp}}}} \dydx{c_i}{Y_j} ( R_{f,i} - R_{r,i} ) \right. \right. \nonumber \\
 && +\: \left. \left. c_i \left( \sum_{l=1}^{N_{\text{sp}}} \nu_{li}^{\prime} \left( -\frac{W}{W_j} R_{f,i} + \delta_{lj} k_{f,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{N_{\text{sp}}} [X_n]^{\nu_{ni}^{\prime}} \right) \right. \right. \right. \nonumber \\ 
-&& -\: \left. \left. \left. \sum_{l=1}^{N_{\text{sp}}} \nu_{li}^{\prime\prime} \left( -\frac{W}{W_j} R_{r,i} + \delta_{lj} k_{r,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{N_{\text{sp}}} [X_n]^{\nu_{ni}^{\prime\prime}} \right) \right) \right) \right] \IEEEeqnarraynumspace
+&& -\: \left. \left. \left. \sum_{l=1}^{N_{\text{sp}}} \nu_{li}^{\prime\prime} \left( -\frac{W}{W_j} R_{r,i} + \delta_{lj} k_{r,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{N_{\text{sp}}} [X_n]^{\nu_{ni}^{\prime\prime}} \right) \right) \right) \right] \;. \IEEEeqnarraynumspace
 \label{e:jac_dydy}
 \end{IEEEeqnarray}}%
 
@@ -920,8 +918,8 @@ Next, evaluate the Jacobian entries for partial derivatives of the energy equati
 \mathcal{J}_{1,1} &=& - \sum_{k=1}^{N_{\text{sp}}} \left[ \left( \frac{1}{c_p} \dydx{h_k}{T} - \frac{h_k}{c_p^2} \dydx{c_p}{T} \right) \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{T} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] \nonumber \\
 &=& \frac{-1}{c_p} \sum_{k=1}^{N_{\text{sp}}} \left[ \left( c_{p,k} - \frac{h_k}{c_p} \dydx{c_p}{T} \right) \frac{W_k \dot{\omega}_k}{\rho} + h_k \mathcal{J}_{k+1,1} \right] \\
   \mathcal{J}_{1,j+1} &=& -\sum_{k=1}^{N_{\text{sp}}} \left[ \frac{-h_k}{c_p^2} \dydx{c_p}{Y_j} \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{Y_j} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] \nonumber \\
-  &=& \frac{-1}{c_p} \sum_{k=1}^{N_{\text{sp}}} h_k \left( \frac{-c_{p,j}}{c_p} \frac{W_k \dot{\omega}_k}{\rho} + \mathcal{J}_{k+1,j+1} \right) , \\
-  \text{or} \quad &=& \frac{-1}{c_p} \left( \frac{-c_{p,j}}{\rho c_p} \sum_{k=1}^{N_{\text{sp}}} h_k W_k \dot{\omega}_k + \sum_{k=1}^{N_{\text{sp}}} h_k \mathcal{J}_{k+1,j+1} \right) ,
+%  &=& \frac{-1}{c_p} \sum_{k=1}^{N_{\text{sp}}} h_k \left( \frac{-c_{p,j}}{c_p} \frac{W_k \dot{\omega}_k}{\rho} + \mathcal{J}_{k+1,j+1} \right) , \\
+  \quad &=& \frac{-1}{c_p} \left( \frac{-c_{p,j}}{\rho c_p} \sum_{k=1}^{N_{\text{sp}}} h_k W_k \dot{\omega}_k + \sum_{k=1}^{N_{\text{sp}}} h_k \mathcal{J}_{k+1,j+1} \right) ,
 \label{e:jac_dt}
 \end{IEEEeqnarray}}%
 where $\dydx{c_p}{T}$ is given by Eq.~\eqref{E:dcpdT}.
@@ -1055,13 +1053,13 @@ The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body reaction without f
   \Biggr] \quad k, j = 1, \ldots, N_{\text{sp}}
 \end{IEEEeqnarray}
 
-For reactions with falloff dependence, we define a temporary term corresponding to the $P_r$ polynomial in Eqs.~\eqref{dCidY_falloff}~and~\eqref{dCidY_chem}:\todo{check nomenclature here}
+For reactions with falloff dependence, we define a temporary term corresponding to the $P_r$ polynomial in Eqs.~\eqref{dCidY_falloff}~and~\eqref{dCidY_chem}:
 \begin{equation}
   T_{P_{r, i}}  =
 \begin{dcases}
-  \hfil 0 \; & \text{if Lindemann,} \\
-  \frac{1.0}{1.0 + P_r} \; & \text{if falloff reaction,} \\
-  \frac{-P_r}{1.0 + P_r} \; & \text{if chemically activated reaction.}
+  \hfil 0 \; & \text{if Lindemann falloff,} \\
+  \frac{1.0}{1.0 + P_r} \; & \text{if falloff reaction (Troe\slash SRI), or} \\
+  \frac{-P_r}{1.0 + P_r} \; & \text{if chemically activated reaction (Troe\slash SRI).}
 \end{dcases} 
 \end{equation}
 Following this, we must define a temporary term relating to the falloff function derivative $\dydx{F_i}{Y_j}$:
@@ -1078,7 +1076,7 @@ Finally, we define a temporary product for falloff reactions:
 T_{\partial Y, i,\text{falloff}} = c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{-W}{\rho}+\frac{\hat{\alpha}_i}{\left[X\right]_i}\right)R_i
 \end{equation}
 where the $\hat{\alpha}_i$ term is again zero in the case that the falloff reaction depends on a single species (i.e., $\text{``(+Y}_m\text{)''}$).
-The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $i$ can then be updated as:
+The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $i$ can then be updated as
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \mathcal{J}_{k+1,j+1} &\pluseq& \nu_{ki}\frac{W_k}{W_j} \Biggr[
     T_{\partial Y,i,\text{ind}} + T_{\partial Y, i, \text{falloff}} \; c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{\delta_{M}\left(\alpha_{ij} - \hat{\alpha}_i\right)}{\left[X\right]_i} + \frac{1 - \delta_{\text{M}}}{\rho Y_m}\right)R_i \nonumber \\
@@ -1093,23 +1091,23 @@ The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $
   \Biggr] \quad k, j = 1, \ldots, N_{\text{sp}}
 \label{e:pdep_jac_species}
 \end{IEEEeqnarray}}%
-where $\delta_{\text{M}}$ is defined as:
+where $\delta_{\text{M}}$ is defined as
 \begin{equation}
   \delta_M =
 \begin{dcases}
-1 &\text{if ``(+M)''} \\
-0 &\text{if ``} (+\text{Y}_m\text{)''}
+1 &\text{if ``(+M)'' or} \\
+0 &\text{if ``} (+\text{Y}_m\text{)''.}
 \end{dcases}
 \end{equation}
 
 Finally, all Jacobian entries $\mathcal{J}_{k+1,j+1}$ must be finished with the addition of the species rate term:
-{\allowdisplaybreaks \begin{IEEEeqnarray}{cCc}
-\mathcal{J}_{k+1,j+1} \pluseq \frac{W_k}{W_j} \frac{\dot{\omega}_kW}{\rho}
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\mathcal{J}_{k+1,j+1} \pluseq \frac{W_k}{W_j} \frac{\dot{\omega}_kW}{\rho} \;.
 \end{IEEEeqnarray}}
 
 This update scheme can often be simplified due to the choice of $\hat{\alpha}_i$, which minimizes the number of third-body efficiency correction terms needed for a reaction, and the zeroing of the species molar concentration product terms as discussed above.
 
-Like the update scheme used in Eq.~\eqref{e:jac_temperature_update}, those in Eqs.~\eqref{e:pindep_jac_species},~\eqref{e:thd_jac_species}~and~\eqref{e:pdep_jac_species} significantly reduce the computational overhead of Jacobian evaluation.
+As with the update scheme used in Eq.~\eqref{e:jac_temperature_update}, those in Eqs.~\eqref{e:pindep_jac_species},~\eqref{e:thd_jac_species}~and~\eqref{e:pdep_jac_species} significantly reduce the computational overhead of Jacobian evaluation.
 The bulk of the computation is performed once per reaction, and only minor sub-products must be computed for each species-species pair for a given reaction.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1124,7 +1122,7 @@ The reordering of the reactions is determined as outlined in Algorithm~\eqref{p:
 First, a suitable seed reaction is selected, based on the reaction whose participating species (i.e., not third bodies) themselves participate in the largest number of total reactions.
 The seed reaction is used to initialize the reordered reaction set.
 The next reaction is then selected greedily as the reaction who shares the most participating species with the last reaction added to the reordered reaction set.
-As a practical note, the size of the generated Jacobian subroutines are such that even relatively modern compilers, e.g. \texttt{gcc} 4.4.7 and the CUDA compiler \texttt{nvcc} 7.0 can crash when compiling the generated Jacobian for even modestly sized kinetic mechanisms (e.g. GRI~\cite{smith_gri-mech_30} for \texttt{nvcc} and USC Mech II~\cite{Wang:2007} for \texttt{gcc}).
+As a practical note, the size of the generated Jacobian subroutines are such that even relatively modern compilers, e.g., \texttt{gcc} 4.4.7 and the CUDA compiler \texttt{nvcc} 7.0 can crash when compiling the generated Jacobian for even modestly sized kinetic models (e.g., GRI~\cite{smith_gri-mech_30} for \texttt{nvcc} and USC Mech II~\cite{Wang:2007} for \texttt{gcc}).
 To avoid this limitation \texttt{pyJac} splits large Jacobians into several smaller subroutines when appropriate, which are compiled separately and called from the main Jacobian subroutine.
 When starting a new subfile, the initial seed reaction is re-picked from the set of remaining unordered reactions.
 Finally, the species are reordered to correspond to the order they will be loaded by the resulting Jacobian.
@@ -1260,6 +1258,7 @@ The latter indicates overall error in the matrix but can be dominated by large e
 
 Table~\ref{T:error} presents the correctness testing results for each benchmark case.
 For certain conditions, large relative errors were observed in extremely small nonzero elements (e.g., magnitude $\sim$\num{e-22}) likely due to roundoff errors; thus, error statistics were only based on matrix elements $\mathcal{J}_{ij}$ where $\abs{\mathcal{J}_{ij}} \geq \norm{\mathcal{J}}_p / \num{e20}$.
+For all benchmark cases, the analytical and numerical Jacobian matrices matched closely, with the largest discrepancy below \SI{1}{\percent}.
 
 \begin{table}[tbp]
 \centering
