@@ -1287,6 +1287,7 @@ As in Fig.~\ref{F:cpu_perf} a slightly above linear scaling of the runtimes with
 
 Planned work includes further validation of \texttt{pyJac} using larger and more complex chemical kinetic models, including the butanol mechanism of Merchant et al.~\cite{Merchant:2013kz,Hansen:2013fe}, with 372 species and 8723 reversible reactions.
 In addition, future versions of \texttt{pyJac} will include the option of assuming constant-volume combustion, and support generating Fortran and Matlab source code.
+Finally, a comparison between a hard-coded, compiled Jacobian evaluation subroutine and a loop/branch based Jacobian evaluation subroutine will be run to determine how to obtain the best performance scaling with mechanism size.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section*{Acknowledgments}
