@@ -1214,18 +1214,18 @@ The sample size for each case depended on the number of particles and relevant t
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Performance analysis}
 \label{s:performance}
-In order to test the performance of \texttt{pyJac}, the PaSR thermochemical composition data generated for validation of each kinetic model was used.
-The CPU Jacobian was compiled using \texttt{gcc} 4.4.7, and run a single core of Xeon X5650 processor.
+In order to test the performance of \texttt{pyJac}, the PaSR thermochemical composition data generated for validation of each kinetic model was used as input for timing of Jacobian matrix evaluations.
+The CPU Jacobian was compiled using \texttt{gcc} 4.4.7, and run using a single core of a Xeon X5650 processor.
 The mean and standard deviation evaluation times were computed from the runtime of ten individual runs. 
 %In order to fairly compare results from the different chemical kinetic models, the mean simulation time over ten runs was normalized by the number of conditions in the generated PaSR data.
 %Testing of the CPU Jacobian included timing with and without cache optimization, as described in Section~\eqref{s:cache_opt}, to assess the impact of these features on the performance of the CPU code.
 The GPU Jacobian was tested on a single NVIDIA Tesla C2075, and was compiled using \texttt{nvcc} 7.0.
-The GPU Jacobian in general, was much faster to evaluate large numbers of conditions and therefore the mean and standard deviation were calculated from the runtime of one hundred individual runs.
+In general, the GPU Jacobian evaluated large numbers of conditions much faster than the CPU version, and thus the mean and standard deviation were calculated from the runtime of one hundred individual runs.
 %The performance data for the GPU is presented as the total runtime for each optimization option, plotted against the number of conditions, in order to demonstrate that the GPU has reached full utilization.
 %Again, we performed ten runs for each number of conditions, and report the mean and standard deviation of the timing.
 %Testing of the GPU Jacobian included timing of matrix evaluations with\slash without cache optimization and shared memory caching, as described in Section~\eqref{s:smem}, and all combinations thereof.
 
-The CPU performance of \texttt{pyJac} is compared to the existing \texttt{TChem} package~\cite{Safta:2011vn} in Fig.~\ref{F:cpu_perf}.
+Figure~\ref{F:cpu_perf} displays the performance of the CPU-based \texttt{pyJac} Jacobian matrix evaluations for the three kinetic models; in addition, Fig.~\ref{F:cpu_perf} compares the performance of \texttt{pyJac} against that of the existing \texttt{TChem} package~\cite{Safta:2011vn}.
 For the \ce{H2}\slash \ce{CO} and GRI-Mech 3.0 mechanisms, \texttt{pyJac} offers a significant improvement (as summarized in Table~\ref{t:cpu_comp}) in evaluation speed over the \texttt{TChem} code.
 However, for the USC mechanism the performance of the two codes is very similar.
 It is also noted that the performance of both codes scale slightly above linearly with the number of reactions in the mechanism, as denoted by the dashed line in Fig.~\ref{F:cpu_perf}.
@@ -1236,8 +1236,8 @@ As a result, the Jacobian evaluation must be split into several smaller subrouti
 \begin{figure}[tbp]
     \centering
     \includegraphics[width=0.75\textwidth]{cpu_norm.pdf}
-    \caption{Comparison of \texttt{pyJac} and \texttt{TChem} Jacobian evaluation speeds for the various kinetic mechanisms. 
-    The dashed line indicates a linear scaling of evaluation time with the number of reactions in the mechanism}
+    \caption{Comparison of \texttt{pyJac} and \texttt{TChem} Jacobian matrix evaluation times for the various kinetic models. 
+    The dashed line indicates a linear scaling of evaluation time with the number of reactions in the mechanism.}
     \label{F:cpu_perf}
 \end{figure}
 
@@ -1247,37 +1247,38 @@ As a result, the Jacobian evaluation must be split into several smaller subrouti
 \toprule
 Mechanism & $\bar{R}_{\texttt{TChem}} / \bar{R}_{\texttt{pyJac}}$ \\
 \midrule
-\ce{H2}\slash \ce{CO} & 2.82\\
-GRI-Mech 3.0 &  1.91\\
-USC Mech II &  0.92\\
+\ce{H2}\slash \ce{CO} & 2.82 \\
+GRI-Mech 3.0 &  1.91 \\
+USC Mech II &  0.92 \\
 \bottomrule
 \end{tabular}
-\caption{Mean Jacobian evaluation runtime comparison for \texttt{TChem} and \texttt{pyJac}}
+\caption{Ratio of Jacobian matrix evaluation runtimes for \texttt{TChem} and \texttt{pyJac}.}
 \label{t:cpu_comp}
 \end{table}
 
-The GPU Jacobian evaluation performance of \texttt{pyJac} is investigated in Fig.~\ref{F:gpu_perf}.
-In Fig.~\ref{F:gpu_mean}, the mean runtime for the GPU Jacobian evaluation is plotted against the number of conditions.
-As the number of conditions increases the GPU becomes fully utilized and the growth rate of the runtime begins increasing linearly (here displayed on a semi-log plot).
-In Fig.~\ref{F:gpu_norm}, the longest runtime (normalized by the number of conditions) for each mechanism is plotted against the number of reactions in the mechanism.
-As in Fig.~\ref{F:cpu_perf} a slightly above linear scaling of the runtimes with number of reactions was observed.
+Figure~\ref{F:gpu_perf} demonstrates the performance of the GPU Jacobian matrix implementations.
+Figure~\ref{F:gpu_mean} plots the mean runtime of the GPU Jacobian matrix evaluations against the number of conditions---i.e., the number of thermochemical composition states, with one Jacobian matrix evaluated per state.
+As the number of conditions increases, the GPU becomes fully utilized and the growth rate of the runtime begins increasing linearly (here displayed on a semi-log plot).
+Figure~\ref{F:gpu_norm} shows the longest evaluation time---normalized by the number of conditions---for each mechanism plotted against the number of reactions in the mechanism.
+As in Fig.~\ref{F:cpu_perf}, we observed a slight superlinear scaling of the performance with number of reactions.
 
 \begin{figure}[tbp]
     \centering
     \begin{subfigure}{0.5\textwidth}
         \centering
         \includegraphics[width=\textwidth]{gpu.pdf}
-        \caption{Mean GPU runtime versus the number of conditions evaluated}
+        \caption{Mean GPU runtime versus the number of conditions evaluated.}
         \label{F:gpu_mean}
     \end{subfigure}%
-    ~ 
+    ~
     \begin{subfigure}{0.5\textwidth}
         \centering
         \includegraphics[width=\textwidth]{gpu_norm.pdf}
-        \caption{Normalized GPU runtime versus the number of reactions in the mechanism}
+        \caption{Normalized GPU runtime versus the number of reactions in the mechanism.}
         \label{F:gpu_norm}
     \end{subfigure}
-    \caption{Performance of \texttt{pyJac} Jacobian evaluation for the GPU}
+    \caption{Performance of the GPU-based \texttt{pyJac} Jacobian evaluation.
+    Note the logarithmic scales of the y-axes.}
     \label{F:gpu_perf}
 \end{figure}
 
