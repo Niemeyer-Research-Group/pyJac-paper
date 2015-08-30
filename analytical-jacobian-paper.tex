@@ -1225,11 +1225,11 @@ The GPU Jacobian in general, was much faster to evaluate large numbers of condit
 %Again, we performed ten runs for each number of conditions, and report the mean and standard deviation of the timing.
 %Testing of the GPU Jacobian included timing of matrix evaluations with\slash without cache optimization and shared memory caching, as described in Section~\eqref{s:smem}, and all combinations thereof.
 
-The CPU performance of \texttt{pyJac} is compared to the commonly used \texttt{TChem}~\cite{safta2011tchem} code in Fig.~\ref{F:cpu_perf}.
+The CPU performance of \texttt{pyJac} is compared to the existing \texttt{TChem} package~\cite{Safta:2011vn} in Fig.~\ref{F:cpu_perf}.
 For the \ce{H2}\slash \ce{CO} and GRI-Mech 3.0 mechanisms, \texttt{pyJac} offers a significant improvement (as summarized in Table~\ref{t:cpu_comp}) in evaluation speed over the \texttt{TChem} code.
 However, for the USC mechanism the performance of the two codes is very similar.
 It is also noted that the performance of both codes scale slightly above linearly with the number of reactions in the mechanism, as denoted by the dashed line in Fig.~\ref{F:cpu_perf}.
-This result challenges the assumption that hard-coded and compiled subroutines will outperform a loop / branch based solution.
+This result challenges the assumption that hard-coded and compiled subroutines will outperform a loop\slash branch-based solution.
 Of further note is the difficulties involved in the actual compilation of the Jacobian subroutine; for the USC mechanism the generated subroutine was so large that \texttt{gcc} 4.4.7 crashes during compilation.
 As a result, the Jacobian evaluation must be split into several smaller subroutines, which each evaluate the contributions of a number of reactions.
 
@@ -1243,9 +1243,9 @@ As a result, the Jacobian evaluation must be split into several smaller subrouti
 
 \begin{table}[tbp]
 \centering
-\begin{tabular}{@{}l l l l@{}}
+\begin{tabular}{@{}l l@{}}
 \toprule
-Mechanism & $\frac{\bar{R}_{\texttt{TChem}}}{\bar{R}_{\texttt{pyJac}}}$ \\
+Mechanism & $\bar{R}_{\texttt{TChem}} / \bar{R}_{\texttt{pyJac}}$ \\
 \midrule
 \ce{H2}\slash \ce{CO} & 2.82\\
 GRI-Mech 3.0 &  1.91\\
