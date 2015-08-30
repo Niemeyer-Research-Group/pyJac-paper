@@ -203,8 +203,8 @@
 % Two or three sentences to provide a broader perspective
 Accurate simulations of combustion phenomena require the use of detailed chemical kinetics in order to capture limit phenomena such as ignition and extinction as well as predict pollutant formation.
 However, the chemical kinetic models for hydrocarbon fuels of practical interest exhibit both mathematical stiffness in the governing differential equations and large numbers of species and reactions, particularly for larger molecules.
-In order to integrate the stiff equations governing chemical kinetics, generally implicit algorithms are used that require frequent Jacobian matrix evaluations; in addition, various computational combustion diagnostics methods rely on accurate Jacobian matrices.
-Typically, these are calculated numerically using finite differences, but this poses significant computational demands for larger chemical kinetic models since the number of chemical source term evaluations scales with the square of species count.
+In order to integrate the stiff equations governing chemical kinetics, generally reactive-flow simulations rely on implicit algorithms that require frequent Jacobian matrix evaluations; in addition, various computational combustion diagnostics methods require accurate Jacobian matrices.
+Typically, finite differences numerically approximate these, but for larger chemical kinetic models this poses significant computational demands since the number of chemical source term evaluations scales with the square of species count.
 Furthermore, existing analytical Jacobian tools do not optimize evaluations or support emerging SIMD processors such as GPUs.
 Here we introduce \texttt{pyJac}, a Python-based open-source program that generates analytical Jacobian matrices for use in chemical kinetics modeling and analysis.
 In addition to producing the necessary customized source code for evaluating reaction rates (including all modern reaction rate formulations), the chemical source terms, and the Jacobian matrix, \texttt{pyJac} uses an optimized evaluation order to minimize computational and memory operations.
@@ -303,25 +303,24 @@ Chemical kinetics \sep Jacobian \sep SIMD \sep GPU
 
 As the need for detailed and accurate chemical kinetics models in predictive reactive-flow simulations has become recognized in recent years, simultaneously such models describing the oxidation of hydrocarbon fuels grew orders of magnitude in size and complexity.
 For example, a recently developed detailed kinetic model for 2-methylalkanes, relevant for jet and diesel fuel surrogates, consists of over 7000 species and 30000 reactions~\cite{Sarathy:2011kx}; similarly large surrogate models exist for gasoline~\cite{Mehl:2011cn,Mehl:2011jn} and biodiesel~\cite{Herbinet:2010gu}.
-Since in general the computational cost of solving the associated, generally stiff, systems of equations scales at best quadratically with the number of species---and at worst, cubically---models of this size pose challenges even for lower-dimensional analyses, and cannot practically be used directly in multidimensional reactive-flow simulations.
+Since in general the computational cost of solving the associated generally stiff systems of equations scales quadratically with the number of species at best---and at worst, cubically---models of this size pose challenges even for lower-dimensional analyses, and cannot practically be used directly in multidimensional reactive-flow simulations.
 
 In an effort to reduce the computational demands of using large, detailed kinetic models, a number of techniques have been developed to reduce their size and complexity while retaining predictiveness, as reviewed by Lu and Law~\cite{Lu:2009gh} as well as Turányi and Tomlin~\cite{Turanyi:2014aa}.
 Major classes of such approaches include skeletal reduction methods that remove unimportant species and reactions~\cite{Lu:2006bb,Pepiot-Desjardins:2008,Hiremath:2010jw,Niemeyer:2010bt}, lumping of species that share similar properties~\cite{Lu:2007,Ahmed:2007fa,Pepiot:2008kq}, and time-scale reduction methods that reduce chemical stiffness~\cite{Maas:1992ws,Lam:1994ws,Lu:2001ve,Gou:2010}.
-Such methods can be combined in multiple stages for significant a priori reduction~\cite{Lu:2008bi,Niemeyer:2014,Niemeyer:2015wq}, or applied dynamically during a simulation to achieve greater local savings~\cite{Banerjee:2006,Liang:2009,Shi:2010,Gou:2013eu,Yang:2013ip,Curtis:2015aa}.
+Strategies for achieving significant reduction combine such methods a priori in multiple stages~\cite{Lu:2008bi,Niemeyer:2014,Niemeyer:2015wq}, or apply them dynamically during a simulation to achieve greater local savings~\cite{Banerjee:2006,Liang:2009,Shi:2010,Gou:2013eu,Yang:2013ip,Curtis:2015aa}.
 Techniques such as interpolation\slash tabulation of expensive terms~\cite{Pope:1997wu} can also reduce computational costs.
 
 In addition to the aforementioned cost reduction methods that modify the chemical kinetic models, focusing on improvements to the integration algorithms that actually solve the governing differential equations can also offer significant gains in computational performance.
 Due to the chemical stiffness exhibited by most kinetic models, typically solvers rely on robust, high-order implicit integration algorithms based on backward differentiation formulae~\cite{Curtiss:1952,Byrne:1987wp,Brown:1989vl,Hindmarsh:2005hg}.
 In order to solve the nonlinear algebraic equations that arise in these methods, the Jacobian matrix must be evaluated and factorized, operations that result in the quadratic and cubic costs mentioned previously.
-However, by using an analytical formulation for the Jacobian matrix rather than a typical finite difference approximation, the cost of the numerous evaluations can be reduced from growing with the square of the number of species to a linear dependence~\cite{Lu:2009gh}.
+However, by using an analytical formulation for the Jacobian matrix rather than a typical finite difference approximation, the cost of the numerous evaluations drops from growing with the square of the number of species to a linear dependence~\cite{Lu:2009gh}.
 
-In parallel to the potential improvements in stiff, implicit integrators used for chemical kinetics, developing algorithms tailored for high-performance  hardware accelerators offers another route to reducing computational costs.
-In the past, regular computational power increases could be counted on to enable previously inaccessible simulations (i.e., Moore's Law).
-However, power consumption and heat dissipation issues disrupted this trend recently, slowing the pace of increases in processor speed.
-While the central processing unit (CPU) market has seen performance gains via multi-core parallelism, single-instruction multiple data processors (SIMD), e.g., graphics processing units (GPUs), recently emerged as a low-cost, low-power, and massively parallel high-performance computing alternative. 
+In parallel to the potential improvements in stiff implicit integrators used for chemical kinetics, developing algorithms tailored for high-performance hardware accelerators offers another route to reducing computational costs.
+In the past, central processing unit (CPU) clock speeds increased regularly---i.e., Moore's Law---but power consumption and heat dissipation issues disrupted this trend recently, slowing the pace of increases in CPU clock rates.
+While multi-core parallelism brought about some CPU performance gains, single-instruction multiple data processors (SIMD), e.g., graphics processing units (GPUs), recently emerged as a low-cost, low-power, and massively parallel high-performance computing alternative. 
 GPUs---originally developed for graphics\slash video processing and display purposes---consist of hundreds to thousands of cores, compared to the tens of cores found on a typical CPU.
-Recognizing that the SIMD parallelism model fits well with the operator-split chemistry integration, which forms the basis of most reactive-flow codes~\cite{Oran:2001aa}, a number of studies in recent years~\cite{Spafford:2010aa,Shi:2011aa,Niemeyer:2011aa,Shi:2012aa,Stone:2013aa,Niemeyer:2014aa} explored the use of SIMD processors to accelerate the integration of chemical kinetics in reactive-flow codes.
-While explicit methods offer significant improvements in performance for nonstiff and moderately stiff chemical kinetics~\cite{Niemeyer:2014aa}, experiences thus far suggest that implicit or similar algorithms may still be required to handle stiff chemistry.
+Recognizing that the SIMD parallelism model fits well with the operator-split chemistry integration that forms the basis of many reactive-flow codes~\cite{Oran:2001aa}, a number of studies in recent years~\cite{Spafford:2010aa,Shi:2011aa,Niemeyer:2011aa,Shi:2012aa,Stone:2013aa,Niemeyer:2014aa} explored the use of SIMD processors to accelerate the integration of chemical kinetics in reactive-flow codes.
+While explicit methods offer significant improvements in performance for nonstiff and moderately stiff chemical kinetics~\cite{Niemeyer:2014aa}, experiences thus far suggest that stiff chemistry continues to require the use of implicit or similar algorithms.
 This provides significant motivation to provide the capability of evaluating analytical Jacobian matrices on GPUs as well as CPUs.
 
 % past work
@@ -332,11 +331,11 @@ Youssefi~\cite{Youssefi:2011tm} recognized the importance of using an analytical
 Bisetti~\cite{Bisetti:2012jw} released a utility for producing analytical Jacobian matrix source code based on isothermal and isobaric conditions, with the state vector comprised of species concentrations rather than mass fractions; while incompatible with many existing reacting-flow formulations, this formulation resulted in a significant increase of Jacobian matrix sparsity---such a strategy should be investigated further.
 Perini et al.~\cite{Perini:2012gy} developed an analytical Jacobian matrix formulation for constant-volume combustion, and when used in a multidimensional reactive-flow simulation---combined with tabulation of temperature-dependent properties---reported a performance improvement of around \SI{80}{\percent} over finite-difference-based approximations.
 Recently, Dijkmans et al.~\cite{Dijkmans:2014bb} used a GPU-based analytical Jacobian combined with tabulation of temperature-dependent functions based on polynomial interpolations to accelerate the integration of chemical kinetics equations, similar to the earlier approach of Shi et al.~\cite{Shi:2011aa}.
-As will be discussed in greater detail, unlike the current work, the approach of Dijkmans et al.~\cite{Dijkmans:2014bb} used the GPU to calculate the elements of a single Jacobian matrix in parallel, rather than a large number of different matrices corresponding to different states.
+Unlike the current work, the approach of Dijkmans et al.~\cite{Dijkmans:2014bb} used the GPU to calculate the elements of a single Jacobian matrix in parallel, rather than a large number of matrices corresponding to different states.
 
 To our knowledge, currently no open-source analytical chemical Jacobian tool exists that is capable of generating code specifically optimized for SIMD processors.
 To this end, \texttt{pyJac} is capable of generating subroutines for species and reaction rates, derivative source terms, and analytical chemical Jacobian matrices both for CPU operation via C\slash \CC{} and GPU operation via CUDA~\cite{Nickolls:2008aa}, a widely used programming language for NVIDIA GPUs.
-In addition, since the programming paradigm to achieve efficient code evaluation for SIMD processors differs from that of normal CPUs, optimization strategies specifically targeted at accelerating Jacobian evaluation on GPUs will be laid out and tested.
+In addition, since the programming paradigm to achieve efficient code evaluation for SIMD processors differs from that of normal CPUs, we will describe and test optimization strategies specifically targeted at accelerating Jacobian evaluation on GPUs.
 Furthermore, to the our knowledge, unlike \texttt{pyJac} none of the previously discussed analytical Jacobian generation implementations support the newer pressure-dependent reaction formulations (i.e., based on logarithmic or Chebyshev polynomial interpolation).
 
 The rest of the paper is structured as follows.
@@ -351,45 +350,45 @@ Finally, we summarize our work in Section~\ref{S:conclusions} and outline future
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 This section describes the theoretical background of the analytical Jacobian generator, first in terms of the governing equations and then the components of the Jacobian matrix itself.
-Greater explanation of development of the governing equations may be found in the literature~\cite{Law:2006tu,Warnatz:2006tq,Glassman:2008tq}, but we include the necessary details here for completeness.
+The literature contains more detailed explanations of the governing equations development~\cite{Law:2006tu,Warnatz:2006tq,Glassman:2008tq}, but we include the necessary details here for completeness.
 
 \subsection{Governing equations}
 \label{sec:goveq}
 
-The initial value problem to be solved, whether in the context of a single homogeneous reacting system (e.g., autoignition, perfectly stirred reactor) or the chemistry portion of an operator-split multidimensional reactive-flow simulation~\cite{Oran:2001aa}, is described using an ordinary differential equation for the thermochemical composition vector:
+The initial value problem to be solved, whether in the context of a single homogeneous reacting system (e.g., autoignition, perfectly stirred reactor) or the chemistry portion of an operator-split multidimensional reactive-flow simulation~\cite{Oran:2001aa}, is described using an ordinary differential equation for the thermochemical composition vector
 \begin{equation}
 \label{e:vars}
-\Phi = \left \lbrace T, Y_1, Y_2, \dotsc, Y_{N_{\text{sp}}} \right \rbrace^{\intercal}
+\Phi = \left \lbrace T, Y_1, Y_2, \dotsc, Y_{N_{\text{sp}}} \right \rbrace^{\intercal} \;,
 \end{equation}
 where $T$ is the temperature, $Y_i$ are the species mass fractions, and $N_{\text{sp}}$ is the number of species. 
 In multidimensional simulations where the equations for chemical kinetics are coupled to conservation of energy (or enthalpy), temperature can be determined algebraically in a straightforward manner~\cite{Oran:2001aa}.
-Pressure ($p$) and density ($\rho$) are also state variables, related to temperature through the ideal equation of state:
+Pressure ($p$) and density ($\rho$) are also state variables, related to temperature and the mixture composition through the ideal equation of state
 \begin{equation}
 \label{e:state}
-p = \rho \frac{\mathcal{R}}{W} T = \mathcal{R} T \sum_{k=1}^{N_{\text{sp}}} [X_k] ,
+p = \rho \frac{\mathcal{R}}{W} T = \mathcal{R} T \sum_{k=1}^{N_{\text{sp}}} [X_k] \;,
 \end{equation}
 where $\mathcal{R}$ is the universal gas constant, $W$ is the average molecular weight of the mixture, and $[X_k]$ is the molar concentration of the $k$th species.
-The average molecular weight is defined by:
+The average molecular weight is defined by
 \begin{equation}
 W = \frac{1}{\sum_{k=1}^{N_{\text{sp}}} Y_k / W_k} = \frac{\rho \mathcal{R} T}{p}
 \end{equation}
-and the molar concentrations by:
+and the molar concentrations by
 \begin{equation}
-[X_k] = \rho \frac{Y_k}{W_k} .
+[X_k] = \rho \frac{Y_k}{W_k} \;.
 \end{equation}
 
 The system of ODEs governing the change in thermochemical composition corresponding to Eq.~\eqref{e:vars} is then $ f = \partial \Phi/ \partial t$:
 \begin{equation}
-f = \ddt{\Phi} = \left \lbrace \ddt{T}, \ddt{Y_1}, \ddt{Y_2}, \dotsc, \ddt{Y_{N_{\text{sp}}}} \right \rbrace^{\intercal}
+f = \ddt{\Phi} = \left \lbrace \ddt{T}, \ddt{Y_1}, \ddt{Y_2}, \dotsc, \ddt{Y_{N_{\text{sp}}}} \right\rbrace^{\intercal} \;,
 \label{e:ode}
 \end{equation}
 where
 \begin{align}
-\ddt{T} &= \frac{-1}{\rho c_p} \sum_{k=1}^{N_{\text{sp}}} h_k W_k \dot{\omega}_k , \\
-\ddt{Y_k} &= \frac{W_k}{\rho} \dot{\omega}_k \quad k = 1, \dotsc, N_{\text{sp}}, \label{e:dTdt}
+\ddt{T} &= \frac{-1}{\rho c_p} \sum_{k=1}^{N_{\text{sp}}} h_k W_k \dot{\omega}_k \;, \\
+\ddt{Y_k} &= \frac{W_k}{\rho} \dot{\omega}_k \quad k = 1, \dotsc, N_{\text{sp}} \;, \label{e:dTdt}
 \end{align}
 $\rho$ is the density, $c_p$ is the mass-averaged constant-pressure specific heat, $h_k$ is the enthalpy of the $k$th species in mass units, $W_k$ is the molecular weight of the $k$th species, and $\dot{\omega}_k$ is the $k$th species overall production rate.
-Note that we assume a constant-pressure system in the current approach.\todo{Need to say more?}
+Note that we assume a constant-pressure system in the current approach.
 
 \subsection{Thermodynamic properties}
 
@@ -435,10 +434,10 @@ R_{r, i} &= k_{r, i} \prod_{j = 1}^{N_{\text{sp}}} [X_j]^{\nu_{j i}^{\prime \pri
 and the third-body\slash pressure modification $c_i$ is given by
 \begin{equation}
 c_i = \begin{dcases}
-  1 &\text{elementary reaction,} \\
-  [X]_i &\text{\nth{3}-body enhanced reaction,} \\
-  \frac{P_{r i}}{1 + P_{r i}} F_i &\text{unimolecular/recombination falloff reaction, and} \\
-  \frac{1}{1 + P_{r i}} F_i &\text{chemically-activated bimolecular reaction.}
+  1 &\text{for elementary reactions,} \\
+  [X]_i &\text{for \nth{3}-body enhanced reactions,} \\
+  \frac{P_{r i}}{1 + P_{r i}} F_i &\text{for unimolecular/recombination falloff reactions, and} \\
+  \frac{1}{1 + P_{r i}} F_i &\text{chemically-activated bimolecular reactions.}
   \end{dcases}
 \label{e:rxn_pressure}
 \end{equation}
@@ -446,7 +445,7 @@ c_i = \begin{dcases}
 The forward reaction rate coefficient $k_{f, i}$ is given by the Arrhenius expression:
 \begin{equation}
 \label{e:arrhenius}
-  k_{f, i} = A_i T^{\beta_i} \exp \left( - \frac{T_{a, i}}{T} \right),
+  k_{f, i} = A_i T^{\beta_i} \exp \left( - \frac{T_{a, i}}{T} \right) \;,
 \end{equation}
 where $A_i$ is the pre-exponential factor, $\beta_i$ is the temperature exponent, and $T_{a, i}$ is the activation temperature given by $T_{a, i} = E_{a, i} / \mathcal{R}$.
 
@@ -455,11 +454,11 @@ As given by Lu and Law~\cite{Lu:2009gh}, depending on the value of the Arrhenius
 \label{e:kf_cost}
   k_f = 
   \begin{dcases}
-  A & \text{if } \beta = 0 \text{ and } T_a = 0 \\
-  \exp \left( \log A + \beta \log T \right)   & \text{if } \beta \neq 0 \text{ and } \text{if } T_a = 0 \\
-  \exp \left( \log A + \beta \log T - T_a / T \right) & \text{if } \beta \neq 0 \text{ and } T_a \neq 0 \\
-  \exp \left( \log A - T_a / T \right)  & \text{if } \beta = 0 \text{ and } T_a \neq 0 \\
-  A \prod^b T & \text{if } T_a = 0 \text{ and } b \in \mathbb{Z} \text{ (integers) }
+  A & \text{if } \beta = 0 \text{ and } T_a = 0 \;, \\
+  \exp \left( \log A + \beta \log T \right)   & \text{if } \beta \neq 0 \text{ and } \text{if } T_a = 0 \;, \\
+  \exp \left( \log A + \beta \log T - T_a / T \right) & \text{if } \beta \neq 0 \text{ and } T_a \neq 0 \;, \\
+  \exp \left( \log A - T_a / T \right)  & \text{if } \beta = 0 \text{ and } T_a \neq 0 \;, \text{ and} \\
+  A \prod^b T & \text{if } T_a = 0 \text{ and } b \in \mathbb{Z} \text{ (integers).}
   \end{dcases}
 \end{equation}
 
@@ -468,10 +467,9 @@ As given by Lu and Law~\cite{Lu:2009gh}, depending on the value of the Arrhenius
 \subsubsection{Reverse rate coefficient}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-If the reaction is irreversible, then $k_{r, i}$ is zero.
-If the reaction is reversible, then it has a nonzero reverse rate coefficient $k_{r, i}$.
-This may be defined with explicit reverse Arrhenius parameters and therefore use the same expression as Eq.~\eqref{e:arrhenius}.
-Otherwise, the reverse rate coefficient is related to the forward coefficient through the equilibrium constant:
+By definition, irreversible reactions have a zero reverse rate coefficient $k_{r, i}$, while reversible reactions have nonzero $k_{r, i}$.
+This may be defined with explicit reverse Arrhenius parameters and therefore uses the same expression as Eq.~\eqref{e:arrhenius}.\todo{revisit wording}
+Otherwise, the reverse rate coefficient is related to the forward coefficient through the equilibrium constant via
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 k_{r, i} &=& \frac{k_{f, i}}{K_{c, i}} \label{e:kri} \\
 K_{c, i} &=& K_{p, i} \left( \frac{p_{\text{atm}}}{\mathcal{R} T} \right)^{\sum_{k=1}^{N_{\text{sp}}} \nu_{k i}} \\
@@ -1193,8 +1191,10 @@ However, even use of a small number of shared memory cache spots can accelerate 
 \label{S:results}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The methodology for producing analytical Jacobian matrices described in the previous sections was implemented in the Python package \texttt{pyJac}, available openly online~\cite{Niemeyer:2015im} under a modified BSD license. \todo{Maybe not for WSS paper, but get DOI for v1 release}
-In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, multiple chemical kinetic models were chosen as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., Lindemann\slash Troe\slash SRI falloff formulations). \todo{Add Chebyshev, pressure log when true}
+The Python package \texttt{pyJac} implements the methodology for producing analytical Jacobian matrices described in the previous sections, which we made available openly online~\cite{Niemeyer:2015im} under a modified BSD license.
+\todo{Maybe not for WSS paper, but get DOI for v1 release}
+In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, we chose three chemical kinetic models as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., Lindemann\slash Troe\slash SRI falloff formulations).
+\todo{Add Chebyshev, pressure log when true}
 Table~\ref{T:mechanisms} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, and USC Mech version II~\cite{Wang:2007}.
 
 \begin{table}[tbp]
@@ -1215,9 +1215,9 @@ Summary of chemical kinetic models used as benchmark test cases.
 \label{T:mechanisms}
 \end{table}
 
-For both the correctness and performance tests, thermochemical composition data were generated using stochastic partially stirred reactor (PaSR) simulations.
-A detailed description of the PaSR methodology and implementation can be found in \ref{A:pasr}.
-Nine premixed PaSR simulations were performed for each fuel\slash mechanism, with the parameters given in Table~\ref{T:pasr_parameters}.
+For both the correctness and performance tests, stochastic partially stirred reactor (PaSR) simulations generated thermochemical composition data covering a wide range of temperatures and species mass fractions.
+\ref{A:pasr} contains a detailed description of the PaSR methodology and implementation; in addition, the \texttt{pyJac} package contains the PaSR code used in the present study.
+We performed nine premixed PaSR simulations for each fuel\slash mechanism, with the parameters given in Table~\ref{T:pasr_parameters}.
 Each simulation ran for 10 residence times ($\tau_{\text{res}}$) to ensure reaching statistical steady state.
 
 \begin{table}[tbp]
@@ -1245,23 +1245,23 @@ PaSR parameters used for hydrogen\slash air, methane\slash air, and ethylene\sla
 \subsection{Validation}
 \label{s:validation}
 
-In order to test the correctness of the Jacobian matrices produced by \texttt{pyJac}, the resulting analytical matrices were compared to numerical approximations based on finite differences.
-However, while these are used commonly to provide numerical approximations to Jacobian matrices, potential scaling issues due to large disparities in species mass fractions and associated net production rates can cause challenges in selecting appropriate differencing step sizes~\cite{Shampine:1994aa}.
+In order to test the correctness of the Jacobian matrices produced by \texttt{pyJac}, we compared the resulting analytical matrices against numerical approximations based on finite differences.
+However, while these commonly provide numerical approximations to Jacobian matrices, potential scaling issues due to large disparities in species mass fractions and associated net production rates can cause challenges in selecting appropriate differencing step sizes~\cite{Shampine:1994aa}.
 For example, when initially attempting to evaluate derivatives using sixth-order central differences with increments calculated similarly to that used by the implicit CVODE integrator in the SUNDIALS suite~\cite{Hindmarsh:2005hg}, we encountered large errors in some partial derivatives under certain conditions.
-Adjusting the relative and absolute tolerances reduced some of these errors, but consistent values could not be found that sufficed over all states considered---in particular, unreasonably small tolerances (e.g., \num{1e-20}) were required for states near equilibrium, but these same tolerances caused larger errors at other states.
+Adjusting the relative and absolute tolerances reduced some of these errors, but consistent values could not be found that sufficed over all states considered---in particular, states near equilibrium required unreasonably small tolerances (e.g., \num{1e-20}), but these same tolerances caused larger errors at other states.
 Note that the discussion of our experiences are not intended to imply issues with the numerical Jacobian approach used in SUNDIALS; such implicit solvers only require approximations to the Jacobian matrix.
-However, care should be taken when highly accurate Jacobian matrices are required, as in the current effort and for analysis techniques such as computational singular perturbation~\cite{Lam:1988wc,Lam:1993ub,Lam:1994ws,Lam:2007jq} and chemical explosive mode analysis~\cite{LU:2010hp,Luo:2012hk,Shan:2012dy} that rely on eigendecomposition of the Jacobian matrix.
+However, based on these experiences we recommend taking care when attempting to obtain highly accurate Jacobian matrices, as in the current effort and for analysis techniques such as computational singular perturbation~\cite{Lam:1988wc,Lam:1993ub,Lam:1994ws,Lam:2007jq} and chemical explosive mode analysis~\cite{LU:2010hp,Luo:2012hk,Shan:2012dy} that rely on eigendecomposition of the Jacobian matrix.
 
-With the aforementioned difficulties in mind, the Python package \texttt{numdifftools}~\cite{Brodtkorb:2015aa} was used to calculate highly accurate numerical  Jacobian matrices, via multiple-term Richardson extrapolants~\cite{Richardson:1911cl,Lyness:1966aa,Lyness:1969bt} of central differences that result in maximum derivative orders of 4--10.
+As a result of the aforementioned difficulties, we used the Python package \texttt{numdifftools} \cite{Brodtkorb:2015aa} to calculate highly accurate numerical Jacobian matrices, via multiple-term Richardson extrapolants~\cite{Richardson:1911cl,Lyness:1966aa,Lyness:1969bt} of central differences that result in maximum derivative orders of 4--10.
 Other options for obtaining highly accurate numerical Jacobian approximations include using complex-step derivatives~\cite{Martins:2003fv,Shampine:2007gw,Ridout:2009fn}.
 For all test cases, the correctness of the species and reaction rate subroutines were determined through comparison with Cantera~\cite{Goodwin:2014aa}; however, due to issues with nonphysical (i.e., negative) mass fraction values that arise during the finite differencing, the numerical Jacobian matrices were not calculated using Cantera but rather the generated derivative subroutines directly.
 
-In reporting the discrepancy between the analytical and numerical Jacobian matrices, denoted $\mathcal{J}$ and $\hat{\mathcal{J}}$ respectively, the  norm of the relative errors of matrix elements $E_\text{rel} = \norm{ ( \hat{\mathcal{J}}_{ij} - \mathcal{J}_{ij} ) / \hat{\mathcal{J}}_{ij} }_p$, where $p = 2$ (the Frobenius norm), was used to quantify error.
+In reporting the discrepancy between the analytical and numerical Jacobian matrices, denoted by $\mathcal{J}$ and $\hat{\mathcal{J}}$ respectively, we used the norm of the relative errors of matrix elements $E_\text{rel} = \norm{ ( \hat{\mathcal{J}}_{ij} - \mathcal{J}_{ij} ) / \hat{\mathcal{J}}_{ij} }_p$, where $p = 2$ (the Frobenius norm), to quantify error.
 This differs somewhat from the error metric suggested by Anderson et al.~\cite{Anderson:1999aa} for use quantifying the error of matrices in LAPACK: the relative error $p$-norm $E_\text{norm} = \norm{ \hat{\mathcal{J}} - \mathcal{J} }_p / \norm{\hat{\mathcal{J}}}_p$.
-The latter indicates overall error in the matrix but can be dominated by large elements, so for the current purposes the former error measure can be more useful in identifying discrepancies in both larger and smaller matrix elements.
+The latter indicates overall error in the matrix but can be dominated by large elements, so for the current purposes the we believed the former error measure to be more useful in identifying discrepancies in both larger and smaller matrix elements.
 
 Table~\ref{T:error} presents the correctness testing results for each benchmark case.
-For certain conditions, large relative errors were observed in small nonzero elements (e.g., magnitude $\sim$\num{e-22}) likely due to roundoff errors; thus, error statistics were only based on matrix elements $\mathcal{J}_{ij}$ where $\abs{\mathcal{J}_{ij}} \geq \norm{\mathcal{J}}_p / \num{e20}$.
+For certain conditions, we observed large relative errors in small nonzero elements (e.g., magnitude $\sim$\num{e-22}) likely due to roundoff errors; thus, error statistics comprised only matrix elements $\mathcal{J}_{ij}$ where $\abs{\mathcal{J}_{ij}} \geq \norm{\mathcal{J}}_p / \num{e20}$.
 For all benchmark cases, the analytical and numerical Jacobian matrices matched closely, with the largest discrepancy below \SI{1}{\percent}.
 
 \begin{table}[tbp]
@@ -1289,13 +1289,13 @@ The sample size for each case depended on the number of particles and relevant t
 \label{s:performance}
 In order to test the performance of \texttt{pyJac}, the PaSR thermochemical composition data generated for validation of each kinetic model was used.
 The CPU Jacobian was compiled using \texttt{gcc} 4.4.7, and run on two six-core Xeon X5650 processors, parallelized using OpenMP.
-In order to have a fair comparison between mechanisms, the mean simulation time over ten runs was normalized by the number of conditions in the generated PaSR data.
-The CPU Jacobian was tested both with and without cache optimization, as described in Section~\eqref{s:cache_opt}, to assess it's impact on the performance of the CPU code.
+In order to fairly compare results from the different chemical kinetic models, the mean simulation time over ten runs was normalized by the number of conditions in the generated PaSR data.
+Testing of the CPU Jacobian included timing with and without cache optimization, as described in Section~\eqref{s:cache_opt}, to assess the impact of these features on the performance of the CPU code.
 
 The GPU Jacobian was tested on a single NVIDIA Tesla C2075, and was compiled using \texttt{nvcc} 7.0.
 The performance data for the GPU is presented as the total runtime for each optimization option, plotted against the number of conditions, in order to demonstrate that the GPU has reached full utilization.
-Again, ten runs were performed for each number of conditions for averaging and standard deviation purposes.
-The GPU Jacobian was tested with and without cache optimization and shared memory caching, as described in Section~\eqref{s:smem}, and all combinations thereof.
+Again, we performed ten runs for each number of conditions, and report the mean and standard deviation of the timing.
+Testing of the GPU Jacobian included timing of matrix evaluations with\slash without cache optimization and shared memory caching, as described in Section~\eqref{s:smem}, and all combinations thereof.
 
 
 %\subsection{Jacobian matrix sparsity}
@@ -1317,7 +1317,7 @@ In addition, future versions of \texttt{pyJac} will include the option of assumi
 \pagebreak
 
 
-%% The Appendices part is started with the command \appendix;
+%% The Appendices part starts with the command \appendix;
 %% appendix sections are then done as normal sections
 \appendix
 
@@ -1347,7 +1347,7 @@ Unlike the composition vector described previously (Eq.~\eqref{e:vars}), here we
 \end{equation}
 At discrete time steps of size $\Delta t$, events including inflow, outflow, and pairing cause certain particles to change composition; between these time steps, mixing and reaction fractional steps separated by step size $\Delta t_{\text{sub}}$ evolve the composition of all particles.
 
-Inflow and outflow events at the discrete time steps consist of $N \Delta t / \tau_{\text{res}}$ randomly selected particles being replaced by the inflow stream compositions, where $\tau_{\text{res}}$ is the residence time.
+Inflow and outflow events at the discrete time steps comprise the inflow stream compositions replacing the compositions of $N \Delta t / \tau_{\text{res}}$ randomly selected particles, where $\tau_{\text{res}}$ is the residence time.
 For premixed combustion cases, the inflow streams consist of a fresh fuel\slash air mixture stream at a specified temperature and equivalence ratio and a pilot stream consisting of the adiabatic equilibrium products of the fresh mixture stream, with the mass flow rates of these two streams in a ratio of $0.95 \mathbin{:} 0.05$.
 Non-premixed cases consist of three inflow streams: air, fuel, and a pilot consisting of the adiabatic equilibrium products of a stoichiometric fuel\slash air mixture at the same unburned temperature as the first two streams; the mass flow rates of these streams occur in a ratio of $0.85 \mathbin{:} 0.05 \mathbin{:} 0.1$. 
 Then, $\frac{1}{2} N \Delta t / \tau_{\text{pair}}$ pairs of particles not including the inflowing particles, where $\tau_{\text{pair}}$ is the pairing timescale, are randomly selected for pairing and then randomly shuffled with the inflowing particles to exchange partners.
@@ -1358,11 +1358,11 @@ Although multiple mixing models exist~\cite{Ren:2004fz}, the current mixing frac
 \frac{d \phi^q}{dt} &= - \frac{ \phi^q - \phi^p }{ \tau_{\text{mix}} } \;,
 \end{align}
 where $\tau_{\text{mix}}$ is a characteristic mixing timescale.
-This system of equations can be solved analytically to determine the particle compositions $\phi^p$ and $\phi^q$ after a mixture fractional step 
+The analytical solution to this system of equations determines the particle compositions $\phi^p$ and $\phi^q$ after a mixture fractional step:
 \begin{align}
-\alpha &= \frac{ \phi^p_0 - \phi^q_0 }{2} \left[1 - \exp \left( \frac{-2 \delta t}{\tau_{\text{mix}}} \right) \right] \\
-\phi^p &= \phi^p_0 - \alpha \\
-\phi^q &= \phi^q_0 + \alpha
+\phi^p &= \phi^p_0 - \alpha \;, \\
+\phi^q &= \phi^q_0 + \alpha \;, \text{ and} \\
+\alpha &= \frac{ \phi^p_0 - \phi^q_0 }{2} \left[1 - \exp \left( \frac{-2 \delta t}{\tau_{\text{mix}}} \right) \right] \;,
 \end{align}
 where $\phi^p_0$ and $\phi^q_0$ are the particle compositions at the beginning of the mixture fractional step.
 The reaction fractional step consists of the enthalpy evolving by
@@ -1370,9 +1370,9 @@ The reaction fractional step consists of the enthalpy evolving by
 \frac{dh}{dt} = \frac{-1}{\rho} \sum_{k=1}^{N_{\text{sp}}} h_k W_k \dot{\omega}_k
 \end{equation}
 and the species mass fractions evolving according to Eq.~\eqref{e:dTdt}.
-However, in practice the reaction fractional step is handled by advancing in time a Cantera~\cite{Goodwin:2014aa} \texttt{ReactorNet} that contains a \texttt{IdealGasConstPressureReactor} object, rather than integrating the above equations directly.
+However, in practice our implementation handles the reaction fractional step by advancing in time a Cantera~\cite{Goodwin:2014aa} \texttt{ReactorNet} that contains a \texttt{IdealGasConstPressureReactor} object, rather than integrating the above equations directly.
 
-The discrete time step between inflow\slash outflow and pairing events and the sub-time step size separating mixing\slash reaction fractional steps, both held constant in the current implementation, are determined via 
+The time integration scheme implemented in our approach determines the discrete time step between inflow\slash outflow and pairing events and the sub-time step size separating mixing\slash reaction fractional steps, both held constant in the current implementation, via
 \begin{align}
 \Delta t &= 0.1 \, \min \left( \tau_{\text{res}} , \tau_{\text{pair}} \right) \; \text{and} \\
 \Delta t_{\text{sub}} &= 0.04 \, \tau_{\text{mix}} \;,
@@ -1397,7 +1397,7 @@ Figures~\ref{F:ch4_meantemp} and \ref{F:ch4_particle_temp} demonstrate sample re
 Although a large number of particles reside near the equilibrium temperature of \SI{2367}{\kelvin}, the wide distribution in particle states is evident.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% The appropriate \bibliography command should be placed here.
+%% Place the appropriate \bibliography command here.
 %% Notice that the class file automatically sets \bibliographystyle
 %% and also names the section correctly.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
