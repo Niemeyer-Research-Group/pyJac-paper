@@ -336,7 +336,7 @@ Unlike the current work, the approach of Dijkmans et al.~\cite{Dijkmans:2014bb} 
 
 To our knowledge, currently no open-source analytical chemical Jacobian tool exists that is capable of generating code specifically optimized for SIMD processors.
 To this end, \texttt{pyJac} is capable of generating subroutines for species and reaction rates, derivative source terms, and analytical chemical Jacobian matrices both for CPU operation via C\slash \CC{} and GPU operation via CUDA~\cite{Nickolls:2008aa}, a widely used programming language for NVIDIA GPUs.
-In addition, since the programming paradigm to achieve efficient code evaluation for SIMD processors differs from that of normal CPUs, we will describe and test optimization strategies specifically targeted at accelerating Jacobian evaluation on GPUs.
+%In addition, since the programming paradigm to achieve efficient code evaluation for SIMD processors differs from that of normal CPUs, we will describe and test optimization strategies specifically targeted at accelerating Jacobian evaluation on GPUs.
 Furthermore, to the our knowledge, unlike \texttt{pyJac} none of the previously discussed analytical Jacobian generation implementations support the newer pressure-dependent reaction formulations (i.e., based on logarithmic or Chebyshev polynomial interpolation).
 
 The rest of the paper is structured as follows.
@@ -1109,9 +1109,9 @@ Finally, all Jacobian entries $\mathcal{J}_{k+1,j+1}$ must be finished with the 
 \mathcal{J}_{k+1,j+1} \pluseq \frac{W_k}{W_j} \frac{\dot{\omega}_kW}{\rho} \;.
 \end{IEEEeqnarray}}
 
-This update scheme can often be simplified due to the choice of $\hat{\alpha}_i$, which minimizes the number of third-body efficiency correction terms needed for a reaction, and the zeroing of the species molar concentration product terms as discussed above.
+This update scheme can often be simplified due to the choice of $\hat{\alpha}_i$, which minimizes the number of third-body efficiency correction terms needed for a reaction, and by zeroing the species molar concentration product terms as discussed above.
 As with the update scheme used in Eq.~\eqref{e:jac_temperature_update}, the strategy presented in Eqs.~\eqref{e:pindep_jac_species},~\eqref{e:thd_jac_species}~and~\eqref{e:pdep_jac_species} reduces the computational overhead of Jacobian evaluation.
-The bulk of the computation is performed once per reaction, and only minor sub-products must be computed for each species-species pair for a given reaction.\todo{revisit this paragraph}
+The bulk of the computation is performed once per reaction, and only minor sub-products must be computed for each species-species pair for a given reaction.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results and discussion}
@@ -1291,16 +1291,18 @@ This calls into question our original hypothesis that hard-coded Jacobian matrix
 %\subsection{Jacobian matrix sparsity}
 %\label{s:sparsity}
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
 \label{S:conclusions}
 
+This work developed the theory behind an analytic Jacobian matrix evaluation approach for constant-volume chemical kinetics, including new derivations of partial derivatives with respect to modern reaction pressure-dependence formulations.
+In addition, strategies for efficient evaluation were detailed, including reordering matrix element evaluations in order to enable the reuse of temporary products.
+The presented methodology was implemented in the open-source software package \texttt{pyJac}, which generates custom source code files for evaluating chemical kinetics Jacobian matrices on both CPU and GPU systems.
+Finally, the correctness of the resulting Jacobian matrices was established, and the performance of the CPU and GPU matrix evaluation subroutines investigated.
 
 Planned work includes further validation of \texttt{pyJac} using larger and more complex chemical kinetic models, including the butanol mechanism of Merchant et al.~\cite{Merchant:2013kz,Hansen:2013fe}, with 372 species and 8723 reversible reactions.
 In addition, future versions of \texttt{pyJac} will include the option of assuming constant-volume combustion, and support generating Fortran and Matlab source code.
-Finally, a comparison between a hard-coded, compiled Jacobian evaluation subroutine and a loop/branch based Jacobian evaluation subroutine will be run to determine how to obtain the best performance scaling with mechanism size.
+Finally, further study will be performed into the benefits of the current hard-coded, compiled Jacobian evaluation subroutine approach and a loop\slash branch-based approach, in order to determine how to obtain the best performance scaling with kinetic model size.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section*{Acknowledgments}
