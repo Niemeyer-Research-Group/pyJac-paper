@@ -941,7 +941,7 @@ Furthermore, this formulation produces source code with substantial numbers of l
 Without a strategy to enable the reuse of temporary computed products even reasonably modern compilers (e.g., \texttt{gcc} 4.4.7), struggle to compile the resulting code, resulting in long compilation times, slow execution and even occasionally crashes of the compiler itself.
 This section will lay out a restructuring of Algorithm~\eqref{p:naive_psuedo}, presented in Algorithm~\eqref{p:updated_pseudo}, that greatly accelerates Jacobian evaluation via reuse of temporary products to reduce computational overhead.
 As a side-benefit of this technique, compilation times are greatly reduced and compiler crashes can be avoided.
-Finally, a set of techniques used to optimize the Jacobian for SIMD devices such as GPUs will be outlined.
+%Finally, a set of techniques used to optimize the Jacobian for SIMD devices such as GPUs will be outlined.
 
 \begin{algorithm}
 \caption{A pseudo-code for simple/naive generation of the chemical Jacobian.}\label{p:naive_psuedo}
@@ -1226,12 +1226,9 @@ In general, the GPU Jacobian evaluated large numbers of conditions much faster t
 %Testing of the GPU Jacobian included timing of matrix evaluations with\slash without cache optimization and shared memory caching, as described in Section~\eqref{s:smem}, and all combinations thereof.
 
 Figure~\ref{F:cpu_perf} displays the performance of the CPU-based \texttt{pyJac} Jacobian matrix evaluations for the three kinetic models; in addition, Fig.~\ref{F:cpu_perf} compares the performance of \texttt{pyJac} against that of the existing \texttt{TChem} package~\cite{Safta:2011vn}.
-For the \ce{H2}\slash \ce{CO} and GRI-Mech 3.0 mechanisms, \texttt{pyJac} offers a significant improvement (as summarized in Table~\ref{t:cpu_comp}) in evaluation speed over the \texttt{TChem} code.
-However, for the USC mechanism the performance of the two codes is very similar.
-It is also noted that the performance of both codes scale slightly above linearly with the number of reactions in the mechanism, as denoted by the dashed line in Fig.~\ref{F:cpu_perf}.
-This result challenges the assumption that hard-coded and compiled subroutines will outperform a loop\slash branch-based solution.
-Of further note is the difficulties involved in the actual compilation of the Jacobian subroutine; for the USC mechanism the generated subroutine was so large that \texttt{gcc} 4.4.7 crashes during compilation.
-As a result, the Jacobian evaluation must be split into several smaller subroutines, which each evaluate the contributions of a number of reactions.
+As summarized in Table~\ref{t:cpu_comp}, for the \ce{H2}\slash \ce{CO} and GRI-Mech 3.0 kinetic models, \texttt{pyJac} offers a factor of two to three improvement in evaluation speed over the \texttt{TChem} code.
+However, the codes perform similarly for the larger USC Mech II model, with \texttt{TChem} operating nearly \SI{10}{\percent} faster than \texttt{pyJac}.
+The performance of both codes demonstrate a slight superlinear scaling with the number of reactions in the model, as denoted by the dashed line in Fig.~\ref{F:cpu_perf}.
 
 \begin{figure}[tbp]
     \centering
@@ -1252,15 +1249,17 @@ GRI-Mech 3.0 &  1.91 \\
 USC Mech II &  0.92 \\
 \bottomrule
 \end{tabular}
-\caption{Ratio of Jacobian matrix evaluation runtimes for \texttt{TChem} and \texttt{pyJac}.}
+\caption{Ratio of Jacobian matrix evaluation times for \texttt{TChem} and \texttt{pyJac}. 
+$\bar{R}$ indicates the mean evaluation time.}
 \label{t:cpu_comp}
 \end{table}
 
-Figure~\ref{F:gpu_perf} demonstrates the performance of the GPU Jacobian matrix implementations.
+Figure~\ref{F:gpu_perf} presents the performance of the GPU Jacobian matrix implementations.
 Figure~\ref{F:gpu_mean} plots the mean runtime of the GPU Jacobian matrix evaluations against the number of conditions---i.e., the number of thermochemical composition states, with one Jacobian matrix evaluated per state.
-As the number of conditions increases, the GPU becomes fully utilized and the growth rate of the runtime begins increasing linearly (here displayed on a semi-log plot).
-Figure~\ref{F:gpu_norm} shows the longest evaluation time---normalized by the number of conditions---for each mechanism plotted against the number of reactions in the mechanism.
-As in Fig.~\ref{F:cpu_perf}, we observed a slight superlinear scaling of the performance with number of reactions.
+As the number of conditions increases, the GPU becomes fully utilized and the growth rate of the evaluation time begins increasing linearly (here displayed on a log-log plot).
+This thread saturation point occurs at nearly the same number of conditions for each model.
+Figure~\ref{F:gpu_norm} shows the longest evaluation time---normalized by the number of conditions---for each kinetic model plotted against the number of reactions.
+As with the CPU matrix evaluations shown in Fig.~\ref{F:cpu_perf}, we observed a slight superlinear scaling of the performance with number of reactions.
 
 \begin{figure}[tbp]
     \centering
@@ -1281,6 +1280,13 @@ As in Fig.~\ref{F:cpu_perf}, we observed a slight superlinear scaling of the per
     Note the logarithmic scales of the y-axes.}
     \label{F:gpu_perf}
 \end{figure}
+
+The results presented above raise a number of questions that warrant further study, particularly for the CPU implementations.
+The near-linear scaling of \texttt{pyJac} matrix evaluation time with number of reactions in the kinetic models conforms with the proposed scaling in the literature~\cite{Lu:2009gh}.
+However, while \texttt{pyJac} outperforms \texttt{TChem} by a factor of 2.8 for the \ce{H2}\slash\ce{CO} mechanism, the performance ratio between them drops with increasing kinetic model size, with \texttt{pyJac} performing worse for USC Mech II.
+This trend implies that producing custom CPU source code files for evaluating Jacobian matrices may not be optimal for larger kinetic models, likely due to the large files required.
+For example, the Jacobian evaluation subroutine for USC Mech II comprises \num{363832} total lines spread across 17 files (not including the supporting files for, e.g., species and reaction rate evaluations)---attempting to incorporate the entire matrix evaluation in a single file resulted in the \texttt{gcc} 4.4.7 compiler crashing.
+This calls into question our original hypothesis that hard-coded Jacobian matrix evaluation subroutines would always outperform a loop\slash branch-based implementation, and merits further investigation.
 
 %\subsection{Jacobian matrix sparsity}
 %\label{s:sparsity}
