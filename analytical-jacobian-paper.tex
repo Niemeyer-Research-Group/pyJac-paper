@@ -40,7 +40,6 @@
 \usepackage{nicefrac}
 
 \usepackage{booktabs,multicol}
-\usepackage[retainorgcmds]{IEEEtrantools}
 
 % for math cancellation lines
 \usepackage{cancel}
@@ -469,8 +468,7 @@ As given by Lu and Law~\cite{Lu:2009gh}, depending on the value of the Arrhenius
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 By definition, irreversible reactions have a zero reverse rate coefficient $k_{r, i}$, while reversible reactions have nonzero $k_{r, i}$.
-This may be defined with explicit reverse Arrhenius parameters and therefore uses the same expression as Eq.~\eqref{e:arrhenius}.\todo{revisit wording}
-Otherwise, the reverse rate coefficient is related to the forward coefficient through the equilibrium constant via
+For reversible reactions, the reverse rate coefficient is determined in one of two ways: (1) via explicit reverse Arrhenius parameters as with the forward rate coefficient---thus following the same expression as Eq.~\eqref{e:arrhenius}---or (2) via the ratio of the forward rate coefficient and the equilibrium constant,
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 k_{r, i} &=& \frac{k_{f, i}}{K_{c, i}} \label{e:kri} \\
 K_{c, i} &=& K_{p, i} \left( \frac{p_{\text{atm}}}{\mathcal{R} T} \right)^{\sum_{k=1}^{N_{\text{sp}}} \nu_{k i}} \\
@@ -511,8 +509,8 @@ In this case,
 \subsubsection{Falloff reactions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Pressure-dependent falloff reactions have low- ($k_{0, i}$) and high-pressure-limit ($k_{\infty,i}$) rate coefficients, with corresponding Arrhenius parameters, expressed using Eq.~\eqref{e:arrhenius}.
-These are used to define a reduced pressure, depending on whether the third body is a specific species (e.g.\ ``$(+\text{Y}_m)$'') or the mixture as a whole (including any efficiencies $\alpha_{i j}$):
+Unlike elementary and third-body reactions, falloff reactions exhibit a pressure dependence described as a blending of rates as low- and high-pressure limits; thus, the rate coefficients depend on a mixture of low-pressure- ($k_{0, i}$) and high-pressure-limit ($k_{\infty,i}$) coefficients, each with corresponding Arrhenius parameters and expressed using Eq.~\eqref{e:arrhenius}.
+The ratio of the coefficients $k_{0, i}$ and $k_{\infty, i}$, combined with the third-body concentration (based on either the mixture as a whole including any efficiencies $\alpha_{i,j}$, or a specific species), define a reduced pressure $P_{r,i}$ given by
 \begin{equation}
 P_{r,i} = \begin{dcases}
 \frac{k_{0,i}}{k_{\infty,i}} [X]_i &\text{if ``(+M)'', or} \\
@@ -521,7 +519,7 @@ P_{r,i} = \begin{dcases}
 \label{e:pr_i}
 \end{equation}
 
-The falloff factor $F_i$ used in Eq.~\eqref{e:rxn_pressure} is determined based on one of three representations: the Lindemann~\cite{Lindemann:1922cz}, Troe~\cite{Gilbert:1983bb}, and so-called SRI~\cite{Stewart:1989gj} falloff approaches
+The falloff blending factor $F_i$ used in Eq.~\eqref{e:rxn_pressure} is determined based on one of three representations: the Lindemann~\cite{Lindemann:1922cz}, Troe~\cite{Gilbert:1983bb}, and so-called SRI~\cite{Stewart:1989gj} falloff approaches
 \begin{equation}
 F_i = \begin{dcases}
 1 &\text{for Lindemann,} \\
