@@ -642,9 +642,9 @@ The partial derivative of species specific enthalpy with respect to temperature 
 
 Next, the derivatives of specific heat:
 \begin{align}
-\dydx{c_p}{T} &= \sum Y_k \dydx{c_{p,k}}{T} \label{E:dcpdT} \\
+\dydx{c_p}{T} &= \sum_{k=1}^{N_{\text{sp}}} Y_k \dydx{c_{p,k}}{T} \label{E:dcpdT} \\
 \dydx{c_{p,k}}{T} &= \frac{\mathcal{R}}{W_k} \left( a_{1,k} + T \left( 2 a_{2,k} + T \left( 3 a_{3,k} + 4 a_{4,k} T \right) \right) \right) \\
-\dydx{c_p}{Y_j} &= \ddx{Y_j} \sum Y_k c_{p,k} = c_{p,j}
+\dydx{c_p}{Y_j} &= \ddx{Y_j} \sum_{k=1}^{N_{\text{sp}}} Y_k c_{p,k} = c_{p,j}
 \end{align}
 
 Next, the derivatives of species rate-of-production $\dot{\omega}_k \left(T, [X]_1, \dotsc , [X]_{N_{\text{sp}}} \right)$ are determined.
