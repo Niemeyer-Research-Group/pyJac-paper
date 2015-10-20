@@ -930,10 +930,10 @@ The remaining columns are given by
 \mathcal{J}_{k+1, j+1} & = & \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{Y_j} + \dot{\omega}_k \frac{W}{W_j} \right) \nonumber \\
 &=& \frac{W_k}{\rho} \left( \dot{\omega}_k \frac{W}{W_j} + \mathlarger{\sum_{i=1}^{N_{\text{reac}}}} \nu_{ki} \left( \vphantom{\prod_{\substack{n=1 \\ n \neq l}}^{\numsp}} \dydx{c_i}{Y_j} ( R_{f,i} - R_{r,i} ) \right. \right. \nonumber \\
 %
-&& +\: c_i \sum_{k=1}^{\numsp} \Biggl( \nu_{ki}^{\prime} \biggl( -R_{f,i} W \Bigl( \frac{1}{W_j} - \frac{1}{W_{\numsp}} \Bigr) \nonumber \\
-&& +\: \left( \delta_{k j} - \delta_{k \numsp} \right) k_{f,i} \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime} - 1} \prod_{\substack{l=1 \\ l \ne k}}^{\numsp} [X_l]^{\nu_{li}^{\prime}} \biggr) \nonumber \\
-&& -\: \nu_{ki}^{\prime\prime} \biggl( -R_{r,i} W \Bigl(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \Bigr) \nonumber \\
-&& +\: \left. \left. \left( \delta_{k j} - \delta_{k \numsp} \right) k_{r,i} \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime\prime} - 1} \prod_{\substack{l=1 \\ l \ne k}}^{\numsp} [X_l]^{\nu_{li}^{\prime\prime}} \biggr) \Biggr) \right) \right) \;. \IEEEeqnarraynumspace
+&& +\: c_i \sum_{m=1}^{\numsp} \Biggl( \nu_{mi}^{\prime} \biggl( -R_{f,i} W \Bigl( \frac{1}{W_j} - \frac{1}{W_{\numsp}} \Bigr) \nonumber \\
+&& +\: \left( \delta_{m j} - \delta_{m \numsp} \right) k_{f,i} \frac{\rho}{W_k} [X_m]^{\nu_{mi}^{\prime} - 1} \prod_{\substack{l=1 \\ l \ne m}}^{\numsp} [X_l]^{\nu_{li}^{\prime}} \biggr) \nonumber \\
+&& -\: \nu_{mi}^{\prime\prime} \biggl( -R_{r,i} W \Bigl(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \Bigr) \nonumber \\
+&& +\: \left. \left. \left( \delta_{m j} - \delta_{m \numsp} \right) k_{r,i} \frac{\rho}{W_k} [X_m]^{\nu_{mi}^{\prime\prime} - 1} \prod_{\substack{l=1 \\ l \ne m}}^{\numsp} [X_l]^{\nu_{li}^{\prime\prime}} \biggr) \Biggr) \right) \right) \;. \IEEEeqnarraynumspace
 %
 %&& +\: \left. \left. c_i \left( \sum_{l=1}^{\numsp} \nu_{li}^{\prime} \left( -\frac{W}{W_j} R_{f,i} + \delta_{lj} k_{f,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp} [X_n]^{\nu_{ni}^{\prime}} \right) \right. \right. \right. \nonumber \\ 
 %&& -\: \left. \left. \left. \sum_{l=1}^{\numsp} \nu_{li}^{\prime\prime} \left( -\frac{W}{W_j} R_{r,i} + \delta_{lj} k_{r,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp} [X_n]^{\nu_{ni}^{\prime\prime}} \right) \right) \right) \right) \;. \IEEEeqnarraynumspace
