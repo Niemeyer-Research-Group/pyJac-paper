@@ -116,6 +116,7 @@
 \newcommand{\pluseq}{\mathrel{{+}{=}}}
 \newcommand{\asteq}{\mathrel{{*}{=}}}
 \newcommand{ \numsp }{N_{\text{sp}}}
+\newcommand{ \numreac }{N_{\text{reac}}}
 
 %to highlight text
 %\usepackage{soul}
@@ -970,21 +971,21 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
 \begin{algorithm}
 \caption{A pseudo-code for simple/naive generation of the chemical Jacobian.}\label{p:naive_psuedo}
 \begin{algorithmic}[0]
-  \For {$sp_i$\text{ in mechanism}}
-    \For {$rxn_k$\text{ in mechanism}}
+  \For {$sp_i$\text{ in } $\numsp - 1$}
+    \For {$rxn_k$\text{ in $\numreac$}}
       \If {$\nu_{i,k} \neq 0$}
         \State \text{Generate code for }$rxn_k$\text{'s contribution to }$\dydx{\dot{Y_i}}{T}$
       \EndIf
     \EndFor
-    \For {$sp_j$\text{ in mechanism}}
-      \For {$rxn_k$\text{ in mechanism}}
+    \For {$sp_j$\text{ in } $\numsp - 1$}
+      \For {$rxn_k$\text{ in } $\numreac$}
         \If {$\nu_{j,k} \neq 0$}
           \State \text{Generate code for }$rxn_k$\text{'s contribution to }$\dydx{\dot{Y_k}}{Y_j}$
         \EndIf
       \EndFor
     \EndFor
   \EndFor
-  \For {$sp_i$\text{ in mechanism}}
+  \For {$sp_i$\text{ in } $\numsp -1$}
     \State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
   \EndFor
   \State \text{Generate code for $\dydx{\dot{T}}{T}$}
@@ -994,7 +995,7 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
 \begin{algorithm}
 \caption{A restructured pseudo-code to enable efficient chemical Jacobian evaluation.}\label{p:updated_pseudo}
 \begin{algorithmic}[0]
-  \For {$rxn_k$\text{ in mechanism}}
+  \For {$rxn_k$\text{ in } $\numreac$}
     \State Define reusable products for temperature derivatives\label{op:dt_reusable}
     \For {$sp_i$ in $rxn_k$}
       \If {$\nu_{i,k} \neq 0$}
@@ -1002,7 +1003,7 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
       \EndIf
     \EndFor
     \State Define reusable products for species derivatives\label{op:dy_reusable}
-    \For {$sp_j$ in mechanism}
+    \For {$sp_j$ \text{ in } $\numsp -1$}
       \For {$sp_i$ in $rxn_k$}
         \If {$\nu_{i,k} \neq 0$}
           \State Generate code for $\dydx{\dot{Y_i}}{Y_j}$
@@ -1010,7 +1011,7 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
       \EndFor
     \EndFor
   \EndFor
-  \For {$sp_i$\text{ in mechanism}}
+  \For {$sp_i$\text{ in } $\numsp -1$}
     \State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
   \EndFor
   \State \text{Generate code for $\dydx{\dot{T}}{T}$}
