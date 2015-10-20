@@ -907,7 +907,7 @@ The partial derivative of $k_{r,i}$ with respect to species mass fractions is ze
 \label{section:eval}
 
 The Jacobian matrix can be efficiently filled by arranging the evaluation of elements in an appropriate order.
-First, evaluate the Jacobian entries for partial derivatives of species equations ($\mathcal{J}_{k+1, 1}$ and $\mathcal{J}_{k+1, j+1}$ for $k, j = 1, \dotsc, \numsp$):
+First, evaluate the Jacobian entries for partial derivatives of species equations ($\mathcal{J}_{k+1, 1}$ and $\mathcal{J}_{k+1, j+1}$ for $k, j = 1, \dotsc, \numsp - 1$):
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \mathcal{J}_{k+1, 1} &=& \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{T} + \frac{\dot{\omega}_k}{T} \right) \nonumber \\
 &=& \frac{W_k}{\rho} \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} \left[ \dydx{c_i}{T} \left( R_{f,i} - R_{r,i} \right) + c_i \left( \dydx{R_i}{T} + \frac{R_{f,i} - R_{r,i}}{T} \right) \right] \;, \IEEEeqnarraynumspace
@@ -940,7 +940,7 @@ The remaining columns are given by
 \label{e:jac_dydy}
 \end{IEEEeqnarray}}%
 
-Next, evaluate the Jacobian entries for partial derivatives of the energy equation ($\mathcal{J}_{1, 1}$ and $\mathcal{J}_{1, j+1}$ for $j = 1, \dotsc, \numsp$):
+Next, evaluate the Jacobian entries for partial derivatives of the energy equation ($\mathcal{J}_{1, 1}$ and $\mathcal{J}_{1, j+1}$ for $j = 1, \dotsc, \numsp - 1$):
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \mathcal{J}_{1,1} &=& - \sum_{k=1}^{\numsp} \left[ \left( \frac{1}{c_p} \dydx{h_k}{T} - \frac{h_k}{c_p^2} \dydx{c_p}{T} \right) \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{T} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] \nonumber \\
 &=& \frac{-1}{c_p} \sum_{k=1}^{\numsp} \left[ \left( c_{p,k} - \frac{h_k}{c_p} \dydx{c_p}{T} \right) \frac{W_k \dot{\omega}_k}{\rho} + h_k \mathcal{J}_{k+1,1} \right] \\
