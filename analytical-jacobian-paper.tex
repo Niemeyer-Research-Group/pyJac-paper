@@ -1132,7 +1132,7 @@ and,
 T_{\partial Y, i, \alpha_{f}} = \left(T_{P_{r,i}} + T_{F_i}\right)
 								\left(
 									\delta_{\text{M}}\left(\hat{\alpha}_{i} - \alpha_{i\numsp} \frac{W_j}{W_{\numsp}}\right) + 
-									\left(1 - \delta_{\text{M}}\right) 
+									\left(1 - \delta_{\text{M}}\right) \left(-\delta_{m\numsp}\right)
 								\right)R_i
 \end{equation}
 where $\delta_{\text{M}}$ is defined as:
@@ -1150,7 +1150,11 @@ The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $
 \Biggr[
     T_{\partial Y, i, \text{falloff}}\left(1 - \frac{W_j}{W_{\numsp}}\right) +
     T_{\partial Y, i, \alpha_{f}} \nonumber \\
-&& +\:  \delta_{M}\left(T_{P_{r,i}} + T_{F_i}\right)\left(\alpha_{ij} - \hat{\alpha}_i\right)R_i \nonumber \\
+&& +\:  \left(T_{P_{r,i}} + T_{F_i}\right)
+		\left(
+			\delta_{M}\left(\alpha_{ij} - \hat{\alpha}_i\right) + 
+			\left(1 - \delta_{\text{M}}\right)\delta_{mj}
+		\right)R_i \nonumber \\
 && +\:  c_i 
 	\left( k_{f,i} \left( S_j^{\prime} - S_{\numsp}^{\prime} \right) +
 			\left( k_{r,i} \left( S_j^{\prime\prime} - S_{\numsp}^{\prime\prime} \right) 
