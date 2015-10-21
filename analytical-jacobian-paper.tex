@@ -116,6 +116,7 @@
 \newcommand{\pluseq}{\mathrel{{+}{=}}}
 \newcommand{\asteq}{\mathrel{{*}{=}}}
 \newcommand{ \numsp }{N_{\text{sp}}}
+\newcommand{ \numreac }{N_{\text{reac}}}
 
 %to highlight text
 %\usepackage{soul}
@@ -969,21 +970,21 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
 \begin{algorithm}
 \caption{A pseudo-code for simple/naive generation of the chemical Jacobian.}\label{p:naive_psuedo}
 \begin{algorithmic}[0]
-  \For {$sp_i$\text{ in mechanism}}
-    \For {$rxn_k$\text{ in mechanism}}
+  \For {$sp_i$\text{ in } $\numsp - 1$}
+    \For {$rxn_k$\text{ in $\numreac$}}
       \If {$\nu_{i,k} \neq 0$}
         \State \text{Generate code for }$rxn_k$\text{'s contribution to }$\dydx{\dot{Y_i}}{T}$
       \EndIf
     \EndFor
-    \For {$sp_j$\text{ in mechanism}}
-      \For {$rxn_k$\text{ in mechanism}}
+    \For {$sp_j$\text{ in } $\numsp - 1$}
+      \For {$rxn_k$\text{ in } $\numreac$}
         \If {$\nu_{j,k} \neq 0$}
           \State \text{Generate code for }$rxn_k$\text{'s contribution to }$\dydx{\dot{Y_k}}{Y_j}$
         \EndIf
       \EndFor
     \EndFor
   \EndFor
-  \For {$sp_i$\text{ in mechanism}}
+  \For {$sp_i$\text{ in } $\numsp -1$}
     \State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
   \EndFor
   \State \text{Generate code for $\dydx{\dot{T}}{T}$}
@@ -993,7 +994,7 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
 \begin{algorithm}
 \caption{A restructured pseudo-code to enable efficient chemical Jacobian evaluation.}\label{p:updated_pseudo}
 \begin{algorithmic}[0]
-  \For {$rxn_k$\text{ in mechanism}}
+  \For {$rxn_k$\text{ in } $\numreac$}
     \State Define reusable products for temperature derivatives\label{op:dt_reusable}
     \For {$sp_i$ in $rxn_k$}
       \If {$\nu_{i,k} \neq 0$}
@@ -1001,7 +1002,7 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
       \EndIf
     \EndFor
     \State Define reusable products for species derivatives\label{op:dy_reusable}
-    \For {$sp_j$ in mechanism}
+    \For {$sp_j$ \text{ in } $\numsp -1$}
       \For {$sp_i$ in $rxn_k$}
         \If {$\nu_{i,k} \neq 0$}
           \State Generate code for $\dydx{\dot{Y_i}}{Y_j}$
@@ -1009,7 +1010,7 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
       \EndFor
     \EndFor
   \EndFor
-  \For {$sp_i$\text{ in mechanism}}
+  \For {$sp_i$\text{ in } $\numsp -1$}
     \State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
   \EndFor
   \State \text{Generate code for $\dydx{\dot{T}}{T}$}
@@ -1041,42 +1042,56 @@ For all reactions $i$, the following temporary product can be defined:
 \end{equation}
 The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a pressure-independent reaction $i$ can then be updated as:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\mathcal{J}_{k+1,j+1} &\pluseq& \nu_{ki}\frac{W_k}{W_j} \left[ T_{dY_,i,\text{ind}} + \left( c_i\nu_{ji}^{\prime}k_{f,i} \left[X_j \right]^{\nu_{ji}^{\prime}-1} \right) \prod_{\substack{n=1 \\ n \neq j}}^{\numsp}[X_n]^{\nu_{ni}^{\prime}} \right. \nonumber \\
+\mathcal{J}_{k+1,j+1} &\pluseq& \nu_{ki}\frac{W_k}{W_j} \Biggl[ T_{\partial Y,i,\text{ind}} \left(1 - \frac{W_j}{W_{\numsp}}\right) +  c_i \left( k_{f,i} \left( S_j^{\prime} - S_{\numsp}^{\prime} \right) \right. \nonumber \\
 && -\: \left.
-  \left( c_i\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1} \right)
-  \prod_{\substack{n=1 \\ n \neq j}}^{\numsp}[X_n]^{\nu_{ni}^{\prime\prime}} \right] \quad
+  k_{r,i} \left( S_j^{\prime\prime} - S_{\numsp}^{\prime\prime} \right) \right) \Biggr] \quad
   k, j = 1, \ldots, \numsp
 \label{e:pindep_jac_species}
 \end{IEEEeqnarray}}%
-Note that either one or both of $\nu_{ji}^{\prime}$ and $\nu_{ji}^{\prime\prime}$ can be zero.
-This means that the added species molar concentration product terms are often zero, and may be omitted for most species $j$.
+where $S_m^{\prime}$ and $S_m^{\prime\prime}$ are defined as:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+S_m^{\prime} &=& \nu_{mi}^{\prime} [X_m]^{\nu_{mi}^{\prime}} \prod_{\substack{n=1 \\ n \neq m}}^{\numsp}[X_n]^{\nu_{ni}^{\prime}} \nonumber \\
+S_m^{\prime\prime} &=& \nu_{mi}^{\prime\prime} [X_m]^{\nu_{mi}^{\prime\prime}} \prod_{\substack{n=1 \\ n \neq m}}^{\numsp}[X_n]^{\nu_{ni}^{\prime\prime}} \nonumber \\
+\end{IEEEeqnarray}}%
+Note that either one or both of $\nu_{ji}^{\prime}$ and $\nu_{ji}^{\prime\prime}$ can be zero, while $\nu_{{\numsp}i}^{\prime}$ and $\nu_{{\numsp}i}^{\prime\prime}$ are typically both zero if the last species is an inert abundant gas, e.g. \ce{N2} in air-fed combustion.
+This means that the added $S_m^{\prime}$ and $S_m^{\prime\prime}$ terms are often zero, and may be omitted in many cases.
 
 For third-body enhanced or falloff reactions, the $\dydx{c_i}{Y_j}$ term in Eq.~\eqref{e:jac_dydy} is inherently dependent on the $j$th species; however, certain simplifications can still be made.
-First, for any third-body enhanced or falloff reaction where all third-body efficiencies $\alpha_{i,j}$ are unity the derivative $\dydx{c_i}{Y_j}$ is identically zero as seen in Eq.~\eqref{e:dcdyequalzero}, and the updating scheme defined in Eq.~\eqref{e:pindep_jac_species} can be used.
+First, for any third-body enhanced or falloff reaction where all third-body efficiencies $\alpha_{i,j}$ are unity the derivative $\dydx{c_i}{Y_j}$ is identically zero as seen in Eq.~\eqref{e:dcdyequalzero}, and the updating scheme defined in Eq.~\eqref{e:pindep_jac_species} can be used.  Otherwise, the appropriate update schemes described below must be employed
 
-For third body-enhanced reactions, we define a simple temporary term
+For third body-enhanced reactions, we define:
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+  T_{\partial Y, i, \text{third-body}} &=& 
+  	T_{\partial Y,i,\text{ind}} + \frac{-Wc_i}{\rho}R_i \nonumber \\
+  	&=& 
+  		-\frac{Wc_i}{\rho} 
+  		\left( 
+  			R_{f,i}\left(1 + \sum_{l}^{N_{sp}}\nu_{li}^{\prime} \right) - 
+  			R_{r,i}\left(1 + \sum_{l}^{N_{sp}}\nu_{li}^{\prime\prime}\right)
+  		\right)
+\end{IEEEeqnarray}}%
+and, 
 \begin{equation}
-  T_{\partial Y, i, \text{third-body}} = \left(\frac{-W\left[X\right]_i}{\rho} + \hat{\alpha}_i\right)R_i \;,
+T_{\partial Y, i, \alpha} = \left(\hat{\alpha}_{i} - \alpha_{i\numsp} \frac{W_j}{W_{\numsp}}\right)R_i
 \end{equation}
-where $\hat{\alpha}_i$ is defined as the median third-body efficiency for reaction $i$ (typically unity).
+where $\hat{\alpha}_{i}$ is the median third-body efficiency for reaction $i$ (typically unity).
+
 This choice will result in the least additional correction term additions needed for individual species.
-If the third-body reaction does not depend on the whole mixture (i.e., $\text{``(+Y}_m\text{)''}$), then the $\hat{\alpha}_i$ term is defined as zero.
 The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body reaction without falloff dependence can then be updated with
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \label{e:thd_jac_species}
 \mathcal{J}_{k+1,j+1} &\pluseq&
   \nu_{ki}\frac{W_k}{W_j}
   \Biggl[
-    T_{\partial Y, i,\text{ind}} + T_{\partial Y, i, \text{third-body}} +
-  \left(\alpha_{ij} - \hat{\alpha}_i \right)R_i \nonumber \\
-&& +\: \left(
-    c_i\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
-  \right)
-  \prod_{\substack{n=1 \\ n \neq j}}^{\numsp}[X_n]^{\nu_{ni}^{\prime}} \nonumber \\
-&& +\: \left(
-    c_i\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1}
-  \right)
-  \prod_{\substack{n=1 \\ n \neq j}}^{\numsp}[X_n]^{\nu_{ni}^{\prime\prime}}
+    T_{\partial Y, i,\text{third-body}}\left(1 - \frac{W_j}{W_{\numsp}}\right) +
+    T_{\partial Y, i, \alpha} +  
+    	\left(\alpha_{ij} - \hat{\alpha}_{i}\right)R_i
+    \nonumber \\
+&& +\:  c_i 
+	\left( k_{f,i} \left( S_j^{\prime} - S_{\numsp}^{\prime} \right) +
+			\left( k_{r,i} \left( S_j^{\prime\prime} - S_{\numsp}^{\prime\prime} \right) 
+			\right) 
+	\right)
   \Biggr] \quad k, j = 1, \ldots, \numsp
 \end{IEEEeqnarray}
 
@@ -1098,27 +1113,28 @@ T_{F_i} =
   \hfil X^2 \frac{2\log10 P_{r,i}}{\ln 10} \ln\left(a\cdot\exp\frac{-b}{T} + \exp\frac{-T}{c}\right) \; &\text{if SRI.}
 \end{dcases}
 \end{equation}
-Using the above components, we then define a temporary product for falloff reactions:
-\begin{equation}
-T_{\partial Y, i,\text{falloff}} = c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{-W}{\rho}+\frac{\hat{\alpha}_i}{\left[X\right]_i}\right)R_i
-\end{equation}
-where the $\hat{\alpha}_i$ term is again zero in the case that the falloff reaction depends on a single species (i.e., $\text{``(+Y}_m\text{)''}$).
-The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $i$ can then be updated as
+Using the above components, we then define the temporary products for falloff reactions:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\mathcal{J}_{k+1,j+1} &\pluseq& \nu_{ki}\frac{W_k}{W_j} \Biggr[
-    T_{\partial Y,i,\text{ind}} + T_{\partial Y, i, \text{falloff}} \; c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{\delta_{M}\left(\alpha_{ij} - \hat{\alpha}_i\right)}{\left[X\right]_i} + \frac{1 - \delta_{\text{M}}}{\rho Y_m}\right)R_i \nonumber \\
-&& +\: \left(
-    c_i\nu_{ji}^{\prime}k_{f,i}\left[X_j\right]^{\nu_{ji}^{\prime}-1}
-  \right)
-  \prod_{\substack{n=1 \\ n \neq j}}^{\numsp}[X_n]^{\nu_{ni}^{\prime}} \nonumber \\
-&& +\: \left(
-    c_i\nu_{ji}^{\prime\prime}k_{r,i}\left[X_j\right]^{\nu_{ji}^{\prime\prime}-1}
-  \right)
-  \prod_{\substack{n=1 \\ n \neq j}}^{\numsp}[X_n]^{\nu_{ni}^{\prime\prime}}
-  \Biggr] \quad k, j = 1, \ldots, \numsp
-\label{e:pdep_jac_species}
+T_{\partial Y, i,\text{falloff}} &=& 
+	T_{\partial Y, i,\text{ind}} + 
+	c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{-W}{\rho}\right)R_i \nonumber \\
+&=&
+	\frac{-Wc_i}{\rho} 
+	\left( 
+		R_{f,i}\left(\sum_{l}^{N_{sp}}\nu_{li}^{\prime} \right) - 
+		R_{r,i}\left(\sum_{l}^{N_{sp}}\nu_{li}^{\prime\prime}\right) +
+		R_i \left(T_{P_{r,i}} + T_{F_{i}} \right)
+	\right)
 \end{IEEEeqnarray}}%
-where $\delta_{\text{M}}$ is defined as
+and, 
+\begin{equation}
+T_{\partial Y, i, \alpha_{f}} = \left(T_{P_{r,i}} + T_{F_i}\right)
+								\left(
+									\delta_{\text{M}}\left(\hat{\alpha}_{i} - \alpha_{i\numsp} \frac{W_j}{W_{\numsp}}\right) + 
+									\left(1 - \delta_{\text{M}}\right) 
+								\right)R_i
+\end{equation}
+where $\delta_{\text{M}}$ is defined as:
 \begin{equation}
   \delta_M =
 \begin{dcases}
@@ -1126,6 +1142,22 @@ where $\delta_{\text{M}}$ is defined as
 0 &\text{if ``} (+\text{Y}_m\text{)''.}
 \end{dcases}
 \end{equation}
+
+The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $i$ can then be updated as
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\mathcal{J}_{k+1,j+1} &\pluseq& \nu_{ki}\frac{W_k}{W_j} 
+\Biggr[
+    T_{\partial Y, i, \text{falloff}}\left(1 - \frac{W_j}{W_{\numsp}}\right) +
+    T_{\partial Y, i, \alpha_{f}} \nonumber \\
+&& +\:  \delta_{M}\left(T_{P_{r,i}} + T_{F_i}\right)\left(\alpha_{ij} - \hat{\alpha}_i\right)R_i \nonumber \\
+&& +\:  c_i 
+	\left( k_{f,i} \left( S_j^{\prime} - S_{\numsp}^{\prime} \right) +
+			\left( k_{r,i} \left( S_j^{\prime\prime} - S_{\numsp}^{\prime\prime} \right) 
+			\right) 
+	\right)
+  \Biggr] \quad k, j = 1, \ldots, \numsp
+\label{e:pdep_jac_species}
+\end{IEEEeqnarray}}%
 
 Finally, all Jacobian entries $\mathcal{J}_{k+1,j+1}$ must be finished with the addition of the species rate term:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
