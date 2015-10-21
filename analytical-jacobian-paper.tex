@@ -931,10 +931,10 @@ The remaining columns are given by
 \mathcal{J}_{k+1, j+1} & = & \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{Y_j} + \dot{\omega}_k \frac{W}{W_j} \right) \nonumber \\
 &=& \frac{W_k}{\rho} \left( \dot{\omega}_k \frac{W}{W_j} + \mathlarger{\sum_{i=1}^{N_{\text{reac}}}} \nu_{ki} \left( \vphantom{\prod_{\substack{n=1 \\ n \neq l}}^{\numsp}} \dydx{c_i}{Y_j} ( R_{f,i} - R_{r,i} ) \right. \right. \nonumber \\
 %
-&& +\: c_i \sum_{m=1}^{\numsp} \Biggl( \nu_{mi}^{\prime} \biggl( -R_{f,i} W \Bigl( \frac{1}{W_j} - \frac{1}{W_{\numsp}} \Bigr) \nonumber \\
-&& +\: \left( \delta_{m j} - \delta_{m \numsp} \right) k_{f,i} \frac{\rho}{W_k} [X_m]^{\nu_{mi}^{\prime} - 1} \prod_{\substack{l=1 \\ l \ne m}}^{\numsp} [X_l]^{\nu_{li}^{\prime}} \biggr) \nonumber \\
-&& -\: \nu_{mi}^{\prime\prime} \biggl( -R_{r,i} W \Bigl(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \Bigr) \nonumber \\
-&& +\: \left. \left. \left( \delta_{m j} - \delta_{m \numsp} \right) k_{r,i} \frac{\rho}{W_k} [X_m]^{\nu_{mi}^{\prime\prime} - 1} \prod_{\substack{l=1 \\ l \ne m}}^{\numsp} [X_l]^{\nu_{li}^{\prime\prime}} \biggr) \Biggr) \right) \right) \;. \IEEEeqnarraynumspace
+&& +\: c_i \sum_{l=1}^{\numsp} \Biggl( \nu_{li}^{\prime} \biggl( -R_{f,i} W \Bigl( \frac{1}{W_j} - \frac{1}{W_{\numsp}} \Bigr) \nonumber \\
+&& +\: \left( \delta_{l j} - \delta_{l \numsp} \right) k_{f,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime} - 1} \prod_{\substack{n=1 \\ n \ne l}}^{\numsp} [X_n]^{\nu_{ni}^{\prime}} \biggr) \nonumber \\
+&& -\: \nu_{li}^{\prime\prime} \biggl( -R_{r,i} W \Bigl(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \Bigr) \nonumber \\
+&& +\: \left. \left. \left( \delta_{l j} - \delta_{l \numsp} \right) k_{r,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime\prime} - 1} \prod_{\substack{n=1 \\ n \ne l}}^{\numsp} [X_n]^{\nu_{ni}^{\prime\prime}} \biggr) \Biggr) \right) \right) \;. \IEEEeqnarraynumspace
 %
 %&& +\: \left. \left. c_i \left( \sum_{l=1}^{\numsp} \nu_{li}^{\prime} \left( -\frac{W}{W_j} R_{f,i} + \delta_{lj} k_{f,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp} [X_n]^{\nu_{ni}^{\prime}} \right) \right. \right. \right. \nonumber \\ 
 %&& -\: \left. \left. \left. \sum_{l=1}^{\numsp} \nu_{li}^{\prime\prime} \left( -\frac{W}{W_j} R_{r,i} + \delta_{lj} k_{r,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp} [X_n]^{\nu_{ni}^{\prime\prime}} \right) \right) \right) \right) \;. \IEEEeqnarraynumspace
@@ -1049,13 +1049,13 @@ The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a pressure-independent reaction
   k, j = 1, \ldots, \numsp
 \label{e:pindep_jac_species}
 \end{IEEEeqnarray}}%
-where $S_m^{\prime}$ and $S_m^{\prime\prime}$ are defined as:
+where $S_l^{\prime}$ and $S_l^{\prime\prime}$ are defined as:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-S_m^{\prime} &=& \nu_{mi}^{\prime} [X_m]^{\nu_{mi}^{\prime}} \prod_{\substack{n=1 \\ n \neq m}}^{\numsp}[X_n]^{\nu_{ni}^{\prime}} \nonumber \\
-S_m^{\prime\prime} &=& \nu_{mi}^{\prime\prime} [X_m]^{\nu_{mi}^{\prime\prime}} \prod_{\substack{n=1 \\ n \neq m}}^{\numsp}[X_n]^{\nu_{ni}^{\prime\prime}} \nonumber \\
+S_l^{\prime} &=& \nu_{li}^{\prime} [X_l]^{\nu_{li}^{\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp}[X_n]^{\nu_{ni}^{\prime}} \nonumber \\
+S_l^{\prime\prime} &=& \nu_{li}^{\prime\prime} [X_l]^{\nu_{li - 1}^{\prime\prime}} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp}[X_n]^{\nu_{ni}^{\prime\prime}}
 \end{IEEEeqnarray}}%
 Note that either one or both of $\nu_{ji}^{\prime}$ and $\nu_{ji}^{\prime\prime}$ can be zero, while $\nu_{{\numsp}i}^{\prime}$ and $\nu_{{\numsp}i}^{\prime\prime}$ are typically both zero if the last species is an inert abundant gas, e.g. \ce{N2} in air-fed combustion.
-This means that the added $S_m^{\prime}$ and $S_m^{\prime\prime}$ terms are often zero, and may be omitted in many cases.
+This means that the added $S_l^{\prime}$ and $S_l^{\prime\prime}$ terms are often zero, and may be omitted in many cases.
 
 For third-body enhanced or falloff reactions, the $\dydx{c_i}{Y_j}$ term in Eq.~\eqref{e:jac_dydy} is inherently dependent on the $j$th species; however, certain simplifications can still be made.
 First, for any third-body enhanced or falloff reaction where all third-body efficiencies $\alpha_{i,j}$ are unity the derivative $\dydx{c_i}{Y_j}$ is identically zero as seen in Eq.~\eqref{e:dcdyequalzero}, and the updating scheme defined in Eq.~\eqref{e:pindep_jac_species} can be used.  Otherwise, the appropriate update schemes described below must be employed
