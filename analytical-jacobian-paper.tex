@@ -1039,7 +1039,7 @@ In doing so, the temporary product $T_{\partial T,  i}$ must only be evaluated a
 Similarly, for Eq.~\eqref{e:jac_dydy} we can define similar temporary products, although more care must be taken to ensure the correctness for all of the different reaction types.
 For all reactions $i$, the following temporary product can be defined:
 \begin{equation}
-  T_{\partial Y, i,\text{ind}} = -\frac{Wc_i}{\rho} \left( R_{f,i}\sum_{l}^{N_{sp}}\nu_{li}^{\prime} - R_{r,i}\sum_{l}^{N_{sp}}\nu_{li}^{\prime\prime}\right)
+  T_{\partial Y, i,\text{ind}} = -\frac{Wc_i}{\rho} \left( R_{f,i}\sum_{l=1}^{N_{sp}}\nu_{li}^{\prime} - R_{r,i}\sum_{l=1}^{N_{sp}}\nu_{li}^{\prime\prime}\right)
 \end{equation}
 The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a pressure-independent reaction $i$ can then be updated as:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
@@ -1067,8 +1067,8 @@ For third body-enhanced reactions, we define:
   	&=& 
   		-\frac{Wc_i}{\rho} 
   		\left( 
-  			R_{f,i}\left(1 + \sum_{l}^{N_{sp}}\nu_{li}^{\prime} \right) - 
-  			R_{r,i}\left(1 + \sum_{l}^{N_{sp}}\nu_{li}^{\prime\prime}\right)
+  			R_{f,i}\left(1 + \sum_{l=1}^{N_{sp}}\nu_{li}^{\prime} \right) - 
+  			R_{r,i}\left(1 + \sum_{l=1}^{N_{sp}}\nu_{li}^{\prime\prime}\right)
   		\right)
 \end{IEEEeqnarray}}%
 and, 
