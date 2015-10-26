@@ -927,8 +927,8 @@ where all terms were expressed previously; note that $c_i = 1$ and $\dydx{c_i}{T
 %\end{IEEEeqnarray}}%
 The remaining columns are given by
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\mathcal{J}_{k+1, j+1} & = & \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{Y_j} + \dot{\omega}_k \frac{W}{W_j} \right) \nonumber \\
-&=& \frac{W_k}{\rho} \left( \dot{\omega}_k \frac{W}{W_j} + \mathlarger{\sum_{i=1}^{N_{\text{reac}}}} \nu_{ki} \left( \vphantom{\prod_{\substack{n=1 \\ n \neq l}}^{\numsp}} \dydx{c_i}{Y_j} ( R_{f,i} - R_{r,i} ) \right. \right. \nonumber \\
+\mathcal{J}_{k+1, j+1} & = & \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{Y_j} + \dot{\omega}_k W\left(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \right) \right) \nonumber \\
+&=& \frac{W_k}{\rho} \left( \dot{\omega}_k W\left(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \right) + \mathlarger{\sum_{i=1}^{N_{\text{reac}}}} \nu_{ki} \left( \vphantom{\prod_{\substack{n=1 \\ n \neq l}}^{\numsp}} \dydx{c_i}{Y_j} ( R_{f,i} - R_{r,i} ) \right. \right. \nonumber \\
 %
 && +\: c_i \sum_{l=1}^{\numsp} \Biggl( \nu_{li}^{\prime} \biggl( -R_{f,i} W \Bigl( \frac{1}{W_j} - \frac{1}{W_{\numsp}} \Bigr) \nonumber \\
 && +\: \left( \delta_{l j} - \delta_{l \numsp} \right) k_{f,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime} - 1} \prod_{\substack{n=1 \\ n \ne l}}^{\numsp} [X_n]^{\nu_{ni}^{\prime}} \biggr) \nonumber \\
