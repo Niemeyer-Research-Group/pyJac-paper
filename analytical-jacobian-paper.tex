@@ -927,8 +927,8 @@ where all terms were expressed previously; note that $c_i = 1$ and $\dydx{c_i}{T
 %\end{IEEEeqnarray}}%
 The remaining columns are given by
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\mathcal{J}_{k+1, j+1} & = & \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{Y_j} + \dot{\omega}_k \frac{W}{W_j} \right) \nonumber \\
-&=& \frac{W_k}{\rho} \left( \dot{\omega}_k \frac{W}{W_j} + \mathlarger{\sum_{i=1}^{N_{\text{reac}}}} \nu_{ki} \left( \vphantom{\prod_{\substack{n=1 \\ n \neq l}}^{\numsp}} \dydx{c_i}{Y_j} ( R_{f,i} - R_{r,i} ) \right. \right. \nonumber \\
+\mathcal{J}_{k+1, j+1} & = & \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{Y_j} + \dot{\omega}_k W\left(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \right) \right) \nonumber \\
+&=& \frac{W_k}{\rho} \left( \dot{\omega}_k W\left(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \right) + \mathlarger{\sum_{i=1}^{N_{\text{reac}}}} \nu_{ki} \left( \vphantom{\prod_{\substack{n=1 \\ n \neq l}}^{\numsp}} \dydx{c_i}{Y_j} ( R_{f,i} - R_{r,i} ) \right. \right. \nonumber \\
 %
 && +\: c_i \sum_{l=1}^{\numsp} \Biggl( \nu_{li}^{\prime} \biggl( -R_{f,i} W \Bigl( \frac{1}{W_j} - \frac{1}{W_{\numsp}} \Bigr) \nonumber \\
 && +\: \left( \delta_{l j} - \delta_{l \numsp} \right) k_{f,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime} - 1} \prod_{\substack{n=1 \\ n \ne l}}^{\numsp} [X_n]^{\nu_{ni}^{\prime}} \biggr) \nonumber \\
@@ -1070,12 +1070,6 @@ For third body-enhanced reactions, we define:
   			R_{r,i}\left(1 + \sum_{l=1}^{N_{sp}}\nu_{li}^{\prime\prime}\right)
   		\right)
 \end{IEEEeqnarray}}%
-and, 
-\begin{equation}
-T_{\partial Y, i, \alpha} = \hat{\alpha}_{i}R_i
-\end{equation}
-where $\hat{\alpha}_{i}$ is the median third-body efficiency for reaction $i$ (typically unity).
-This choice will result in the least additional correction term additions needed for individual species; corrections for individual species are unavoidable however when $\alpha_{i \numsp}$ is non-zero, due to the division by a different molecular weight.
 
 The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body reaction without falloff dependence can then be updated with
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
@@ -1083,9 +1077,8 @@ The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body reaction without f
 \mathcal{J}_{k+1,j+1} &\pluseq&
   \nu_{ki}\frac{W_k}{W_j}
   \Biggl[
-    T_{\partial Y, i,\text{third-body}}\left(1 - \frac{W_j}{W_{\numsp}}\right) +
-    T_{\partial Y, i, \alpha} +  
-    	\left(\alpha_{ij} - \hat{\alpha}_{i} - \alpha_{i \numsp}\frac{W_j}{W_{\numsp}}\right)R_i
+    T_{\partial Y, i,\text{third-body}}\left(1 - \frac{W_j}{W_{\numsp}}\right) + 
+    \left(\alpha_{ij} - \alpha_{i \numsp}\frac{W_j}{W_{\numsp}}\right)R_i
     \nonumber \\
 && +\:  c_i 
 	\left( k_{f,i} \left( S_j^{\prime} - S_{\numsp}^{\prime} \right) +
@@ -1126,31 +1119,15 @@ T_{\partial Y, i,\text{falloff}} &=&
 		R_i \left(T_{P_{r,i}} + T_{F_{i}} \right)
 	\right)
 \end{IEEEeqnarray}}%
-and, 
-\begin{equation}
-T_{\partial Y, i, \alpha_{f}} = \delta_{\text{M}}
-								\left(T_{P_{r,i}} + T_{F_i}\right)
-								\hat{\alpha}_{i}
-								R_i
-\end{equation}
-where $\delta_{\text{M}}$ is defined as:
-\begin{equation}
-  \delta_M =
-\begin{dcases}
-1 &\text{if ``(+M)'' or} \\
-0 &\text{if ``} (+\text{Y}_m\text{)''.}
-\end{dcases}
-\end{equation}
 
 The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $i$ can then be updated as
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \mathcal{J}_{k+1,j+1} &\pluseq& \nu_{ki}\frac{W_k}{W_j} 
 \Biggr[
-    T_{\partial Y, i, \text{falloff}}\left(1 - \frac{W_j}{W_{\numsp}}\right) +
-    T_{\partial Y, i, \alpha_{f}} \nonumber \\
-&& +\:  \left(T_{P_{r,i}} + T_{F_i}\right)
+    T_{\partial Y, i, \text{falloff}}\left(1 - \frac{W_j}{W_{\numsp}}\right) \nonumber \\
+&& +\:  c_i\left(T_{P_{r,i}} + T_{F_i}\right)
 		\left(
-			\delta_{M}\left(\alpha_{ij} - \hat{\alpha}_i - \alpha_{i \numsp}\frac{W_j}{W_{\numsp}}\right) \right. \nonumber \\
+			\frac{\delta_{M}}{\left[X\right]_i}\left(\alpha_{ij} - \alpha_{i \numsp}\frac{W_j}{W_{\numsp}}\right) \right. \nonumber \\
 && +\:			
 			\left. \left(1 - \delta_{\text{M}}\right)\left(\delta_{mj} - \delta_{m \numsp}\frac{W_j}{W_{\numsp}}\right)
 		\right)R_i \nonumber \\
@@ -1162,10 +1139,18 @@ The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $
   \Biggr] \quad k, j = 1, \ldots, \numsp
 \label{e:pdep_jac_species}
 \end{IEEEeqnarray}}%
+where $\delta_{\text{M}}$ is defined as:
+\begin{equation}
+  \delta_M =
+\begin{dcases}
+1 &\text{if ``(+M)'' or} \\
+0 &\text{if ``} (+\text{Y}_m\text{)''.}
+\end{dcases}
+\end{equation}
 
 Finally, all Jacobian entries $\mathcal{J}_{k+1,j+1}$ must be finished with the addition of the species rate term:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\mathcal{J}_{k+1,j+1} \pluseq \frac{W_k}{W_j} \frac{\dot{\omega}_kW}{\rho} \;.
+\mathcal{J}_{k+1,j+1} \pluseq \frac{W_k}{W_j} \frac{\dot{\omega}_kW}{\rho}\left(1 - \frac{W_j}{W_{\numsp}}\right) \;.
 \end{IEEEeqnarray}}
 
 This update scheme can often be simplified due to the choice of $\hat{\alpha}_i$, which minimizes the number of third-body efficiency correction terms needed for a reaction, and by zeroing the species molar concentration product terms as discussed above.
