@@ -129,7 +129,7 @@
 \graphicspath{{./figures/}}
 
 % Add [disable] option to quickly remove any
-\usepackage[textsize=small,textwidth=2.5cm,disable]{todonotes}
+\usepackage[textsize=small,textwidth=2.5cm]{todonotes}
 
 
 % line numbers
@@ -1168,8 +1168,11 @@ The bulk of the computation is performed once per reaction, and only minor sub-p
 \label{S:results}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The Python package \texttt{pyJac} implements the methodology for producing analytical Jacobian matrices described in the previous sections, which we released openly online~\cite{Niemeyer:2015im} under a modified BSD license.
-\todo{Maybe not for WSS paper, but get DOI for v1 release}
+The Python~\cite{Python:2015} package \texttt{pyJac} implements the methodology for producing analytical Jacobian matrices described in the previous sections, which we released openly online~\cite{Niemeyer:2015im} under a modified BSD license.
+\todo{Get DOI for v1 release}
+\texttt{pyJac} requires the Python modules NumPy~\cite{Walt:2011aa}; optional dependencies include Numberjack~\cite{Hebrard:2010aa} with SCIP~\cite{Achterberg:2009aa} for the cache optimizer, and performance testing module additionally requires Cython~\cite{Behnel:2011aa}, Cantera~\cite{Goodwin:2014aa}, PyYAML~\cite{Simonov:2014aa}, and numdifftools~\cite{Brodtkorb:2015aa}.
+In addition, interpreting Cantera-format mechanisms~\cite{Goodwin:2014aa} requires that module, although Chemkin-format mechanisms do not require any additional components.
+
 In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, we chose three chemical kinetic models as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., Lindemann\slash Troe falloff formulations).
 \todo{Add Chebyshev, pressure log when true}
 Table~\ref{T:mechanisms} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, and USC Mech version II~\cite{Wang:2007}.
