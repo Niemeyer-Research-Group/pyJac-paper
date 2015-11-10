@@ -1264,6 +1264,10 @@ The sample size for each case depended on the number of particles and relevant t
 \label{T:error}
 \end{table}
 
+We also made comparisons with the \texttt{TChem} package~\cite{Safta:2011vn} for validation purposes.
+However, while many quantities calculated via \texttt{TChem} agreed closely with those from both Cantera and \texttt{pyJac}, we observed discrepancies in the species net production rates that correlated with errors in the derivative source term and Jacobian matrix.
+These discrepancies occurred mainly for low species production rates, where the (larger) rates for other species agreed closely, and in general for near-equilibrium states.
+As a result, we will not present detailed Jacobian matrix comparisons between \texttt{TChem} and \texttt{pyJac} here.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Performance analysis}
