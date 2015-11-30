@@ -584,15 +584,16 @@ where $T_{\min} \leq T \leq T_{\max}$ and $p_{\min} \leq p \leq p_{\max}$ descri
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Jacobian matrix}
+\section{Jacobian matrix formulation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Next, we detail the construction of the Jacobian matrix, and provide a simple method for evaluating it efficiently by calculating elements in the appropriate order.
 More sophisticated approaches for reducing the cost of evaluating the matrix will be proposed in Section~\ref{S:opt}.
 
-\subsubsection{Elements of the Jacobian matrix}
+\subsection{Elements of the Jacobian matrix}
 
-Let $\mathcal{J}$ denote the Jacobian matrix corresponding to the vector of ODEs given by Eq.~\eqref{e:ode}. $\mathcal{J}$ is filled by the partial derivatives $\partial f / \partial \Phi$, such that
+Let $\mathcal{J}$ denote the Jacobian matrix corresponding to the vector of ODEs given by Eq.~\eqref{e:ode}.
+$\mathcal{J}$ is filled by the partial derivatives $\partial f / \partial \Phi$, such that
 \begin{equation}
 \mathcal{J}_{i,j} = \dydx{f_i}{\Phi_j} \;.
 \end{equation}
@@ -627,6 +628,7 @@ The remaining lines of $\mathcal{J}$ are filled with the partial derivatives of 
 & = & \frac{W_k}{\rho} \left(\dydx{\dot{\omega}_k}{T} - \frac{\dot{\omega}_k}{\rho} \dydx{\rho}{T} \right) , \IEEEeqnarraynumspace \\
 \mathcal{J}_{k+1, j+1} & = & \dydx{f_{k+1}}{Y_j} = \ddx{Y_j} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \nonumber \\
 & = & \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{Y_j} - \frac{\dot{\omega}_k}{\rho} \dydx{\rho}{Y_j} \right) , \IEEEeqnarraynumspace
+\label{e:jac_spec}
 \end{IEEEeqnarray}}%
 for $k = 1, \dotsc, \numsp - 1$ and $j = 1, \dotsc, \numsp - 1$.
 
@@ -904,7 +906,7 @@ The partial derivative of the reverse rate coefficient $k_{r, i}$ with respect t
 The partial derivative of $k_{r,i}$ with respect to species mass fractions is zero, for the same reason as the forward rate coefficient.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Efficient evaluation of Jacobian matrix}
+\subsection{Efficient evaluation of Jacobian matrix}
 \label{section:eval}
 
 The Jacobian matrix can be efficiently filled by arranging the evaluation of elements in an appropriate order.
@@ -951,6 +953,20 @@ Next, evaluate the Jacobian entries for partial derivatives of the energy equati
 \end{IEEEeqnarray}}%
 where $\dydx{c_p}{T}$ is given by Eq.~\eqref{E:dcpdT}.
 %The following terms should be evaluated and reused: $R_{f,i}$, $R_{r,i}$, $c_i$, $\dot{\omega}_k$, $h_k$, and $c_p$.
+
+\subsection{Jacobian matrix sparsity}
+
+Although others discuss sparsity of chemical kinetics Jacobian matrices (Lu and Law, Perini et al.~\cite{Perini:2012gy}); however, while many assume that large kinetic models exhibit a sparse Jacobian matrix, the Jacobian for the governing equations of constant-pressure kinetics is actually dense.
+This results from the partial derivative of density with respect to species mass fraction, $\partial \rho / \partial Y_j$, that appears in Eq.~\eqref{e:jac_spec}.
+As a result, the partial derivatives of all species $k$ rate-of-change $\dot{Y}_k$ with respect to the $j$th species' mass fraction of species $Y_j$, or $\mathcal{J}_{k+1, j+1}$, are nonzero.
+However, if the constant-volume assumption instead holds true, then $\partial \rho / \partial Y_j = 0$ and Jacobian matrices exhibit the sparsity shown by Perini et al.~\cite{Perini:2012gy}.
+In that case, off-diagonal elements of the Jacobian matrix arise due to direct species interactions and falloff\slash pressure-dependent reactions.
+However, simulations of low-speed open combustion systems typically rely on the constant-pressure assumption~\cite{Law:2006tu}, with constant volume applicable to enclosed systems (e.g., internal combustion engine cylinder).
+\todo[inline]{finish and revise discussion}
+
+Alternatively, the governing equations could be formulated in terms of species molar concentrations rather than mass fractions~\cite{Lu:2009gh,Bisetti:2012jw}.
+This would eliminate the presence of $\rho$ in the cross-species Jacobian matrix elements and thus significantly increase matrix sparsity for constant-pressure combustion.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Optimization of Jacobian evaluation}
@@ -1173,24 +1189,25 @@ The Python~\cite{Python:2015} package \texttt{pyJac} implements the methodology 
 \texttt{pyJac} requires the Python modules \texttt{NumPy}~\cite{Walt:2011aa}; optional dependencies include \texttt{Numberjack}~\cite{Hebrard:2010aa} with \texttt{SCIP}~\cite{Achterberg:2009aa} for the cache optimizer, and the performance testing module additionally requires \texttt{Cython}~\cite{Behnel:2011aa}, Cantera~\cite{Goodwin:2014aa}, \texttt{PyYAML}~\cite{Simonov:2014aa}, and \texttt{numdifftools}~\cite{Brodtkorb:2015aa}.
 In addition, interpreting Cantera-format mechanisms~\cite{Goodwin:2014aa} requires that module, although Chemkin-format mechanisms do not require any additional components.
 
-In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, we chose three chemical kinetic models as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., Lindemann\slash Troe falloff formulations).
-\todo{Add Chebyshev, pressure log when true}
-Table~\ref{T:mechanisms} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, and USC Mech version II~\cite{Wang:2007}.
+In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, we chose three chemical kinetic models as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., Lindemann\slash Troe\slash SRI falloff formulations, Chebyshev, pressure-log).
+Table~\ref{T:mechanisms} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, USC Mech version II~\cite{Wang:2007}, the isopentanol model of Sarathy et al.~\cite{Sarathy:2013jr}, and version 3.1 of the LLNL \emph{n}-heptane model~\cite{Mehl:2009aa,Mehl:2011cn}.
 
 \begin{table}[tbp]
 \centering
-\begin{tabular}{@{}l l l l@{}}
+\begin{tabular}{@{}l l l c c c c c l@{}}
 \toprule
-Fuel species & Number of species & Number of reactions & Reference \\
+Model & $\numsp$ & $\numreac$ & Lind.\ & Troe & SRI & P-log & Cheb.\ & Ref.\ \\
 \midrule
-\ce{H2}\slash \ce{CO} & 13 & 27 & \cite{Burke:2011fh} \\
-\ce{CH4} & 53 & 325 & \cite{smith_gri-mech_30} \\
-\ce{C2H4} & 111 & 784 & \cite{Wang:2007} \\
-%\ce{C4H9OH} & 372 & 8723 & \cite{Merchant:2013kz,Hansen:2013fe} \\
+\ce{H2}\slash \ce{CO} & 13 & 27 & & $\times$ & & & & \cite{Burke:2011fh} \\
+GRI Mech.~3.0 & 53 & 325 & $\times$ & $\times$ & & & & \cite{smith_gri-mech_30} \\
+USC Mech II & 111 & 784 & $\times$ & $\times$ & & & & \cite{Wang:2007}\\
+%MIT butanol & 372 & 8329 & $\times$ & $\times$ & & $\times$ & $\times$ & \cite{Merchant:2013kz,Hansen:2013fe} \\
+Sarathy isopentanol & 360 & 2172 & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & \cite{Sarathy:2013jr} \\
+LLNL \emph{n}-heptane & 654 & 5258 & $\times$ & $\times$ & & & & \cite{Mehl:2009aa,Mehl:2011cn} \\
 \bottomrule
 \end{tabular}
 \caption{
-Summary of chemical kinetic models used as benchmark test cases.
+Summary of chemical kinetic models used as benchmark test cases. All mechanisms contain third-body reactions with enhanced third bodies. The ``Lind.'', ``Troe'', ``SRI'', ``P-log'', and ``Cheb.'' columns indicate the presence of Lindemann, Troe, and SRI falloff; logarithmic pressure interpolation; and Chebyshev pressure-dependent reactions, respectively. Two reactions with photons were removed from the Sarathy et al.~\cite{Sarathy:2013jr} model since neither Cantera nor \texttt{pyJac} support these.
 }
 \label{T:mechanisms}
 \end{table}
