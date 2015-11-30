@@ -1383,7 +1383,7 @@ Finally, further study will be performed into the benefits of the current hard-c
 \section*{Acknowledgments}
 
 This material is based upon work supported by the National Science Foundation under Grant Nos.~1535065 and 1534688.
-In addition, we would like to thank James Sutherland and Mike Hansen for helpful discussions on appropriate formulation of state vectors.
+In addition, we thank James Sutherland and Mike Hansen for helpful discussions on appropriate formulation of state vectors.
 
 \pagebreak
 
@@ -1391,7 +1391,7 @@ In addition, we would like to thank James Sutherland and Mike Hansen for helpful
 %% The Appendices part starts with the command \appendix;
 %% appendix sections are then done as normal sections
 \appendix
-
+\setcounter{figure}{0}
 
 \section{Proof of partial derivative of pressure}
 \label{A:pres_deriv}
@@ -1473,6 +1473,9 @@ Although a large number of particles reside near the equilibrium temperature of 
 %% Notice that the class file automatically sets \bibliographystyle
 %% and also names the section correctly.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% shouldn't need to do this...
+\section*{\refname}
 
 \bibliography{refs}
 \bibliographystyle{elsarticle-num}
