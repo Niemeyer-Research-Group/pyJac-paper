@@ -1147,9 +1147,9 @@ The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $
 \mathcal{J}_{k+1,j+1} &\pluseq& \nu_{ki}\frac{W_k}{W_j} 
 \Biggr[
     T_{\partial Y, i, \text{falloff}}\left(1 - \frac{W_j}{W_{\numsp}}\right) \nonumber \\
-&& +\:  c_i\left(T_{P_{r,i}} + T_{F_i}\right)
+&& +\:  \frac{\frac{k_0}{k_{\infty}}F_i}{1 + Pr_i}\left(T_{P_{r,i}} + T_{F_i}\right)
 		\left(
-			\frac{\delta_{M}}{\left[X\right]_i}\left(\alpha_{ij} - \alpha_{i \numsp}\frac{W_j}{W_{\numsp}}\right) \right. \nonumber \\
+			\delta_{M}\left(\alpha_{ij} - \alpha_{i \numsp}\frac{W_j}{W_{\numsp}}\right) \right. \nonumber \\
 && +\:			
 			\left. \left(1 - \delta_{\text{M}}\right)\left(\delta_{mj} - \delta_{m \numsp}\frac{W_j}{W_{\numsp}}\right)
 		\right)R_i \nonumber \\
