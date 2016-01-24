@@ -557,7 +557,7 @@ The parameters $d$ and $e$ are optional; if not specified, $d = 1$ and $e = 0$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 In addition to the falloff approach given previously, two additional formulations can be used to describe the pressure dependence of reactions that do not follow the modification factor $c_i$ approach.
-The first involves logarithmic interpolation between Arrhenius rates at two pressures~\cite{chemkin:2012,Goodwin:2014aa}, each evaluated using Eq.~\eqref{e:arrhenius}:
+The first involves logarithmic interpolation between Arrhenius rates at two pressures~\cite{chemkin:2012,Goodwin:2015aa}, each evaluated using Eq.~\eqref{e:arrhenius}:
 \begin{align}
 k_1 (T) &= A_1 T^{\beta_1} \exp \left( -\frac{T_{a, 1}}{T} \right) \text{ at } p_1 \text{ and} \label{e:plog_k1} \\
 k_2 (T) &= A_2 T^{\beta_2} \exp \left( -\frac{T_{a, 2}}{T} \right) \text{ at } p_2 \;, \label{e:plog_k2}
@@ -568,7 +568,7 @@ Then, the reaction rate coefficient at a particular pressure $p$ between $p_1$ a
 \log k_{f,i}(T, p) = \log k_1 (T) + \left( \log k_2 (T) - \log k_1 (T) \right) \frac{\log p - \log p_1}{\log p_2 - \log p_1} \;. \label{e:plog}
 \end{equation}
 
-In addition, the pressure dependence of a reaction can be expressed through a bivariate Chebyshev polynomial fit~\cite{Venkatesh:1997hv,Venkatesh:1997ik,Venkatesh:2000gj,chemkin:2012,Goodwin:2014aa}:
+In addition, the pressure dependence of a reaction can be expressed through a bivariate Chebyshev polynomial fit~\cite{Venkatesh:1997hv,Venkatesh:1997ik,Venkatesh:2000gj,chemkin:2012,Goodwin:2015aa}:
 \begin{equation}
 \log_{10} k_{f}(T, p) = \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \phi_i (\tilde{T}) \phi_j \left(\tilde{p}\right) \label{e:cheb} \;,
 \end{equation}
@@ -1187,8 +1187,8 @@ The bulk of the computation is performed once per reaction, and only minor sub-p
 
 The Python~\cite{Python:2015} package \texttt{pyJac} implements the methodology for producing analytical Jacobian matrices described in the previous sections, which we released openly online~\cite{Niemeyer:2015im} under a modified BSD license.
 \todo{Get DOI for v1 release}
-\texttt{pyJac} requires the Python modules \texttt{NumPy}~\cite{Walt:2011aa}; optional dependencies include \texttt{bitarray}~\cite{bitarray:2015} for the cache optimizer, and the performance testing module additionally requires \texttt{Cython}~\cite{Behnel:2011aa}, Cantera~\cite{Goodwin:2014aa}, \texttt{PyYAML}~\cite{Simonov:2014aa}, and \texttt{Adept}~\cite{adept-v11}.
-In addition, interpreting Cantera-format mechanisms~\cite{Goodwin:2014aa} requires that module, although Chemkin-format mechanisms do not require any additional components.
+\texttt{pyJac} requires the Python modules \texttt{NumPy}~\cite{Walt:2011aa}; optional dependencies include \texttt{bitarray}~\cite{bitarray:2015} for the cache optimizer, and the performance testing module additionally requires \texttt{Cython}~\cite{Behnel:2011aa}, Cantera~\cite{Goodwin:2015aa}, \texttt{PyYAML}~\cite{Simonov:2014aa}, and \texttt{Adept}~\cite{adept-v11}.
+In addition, interpreting Cantera-format mechanisms~\cite{Goodwin:2015aa} requires that module, although Chemkin-format mechanisms do not require any additional components.
 
 In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, we chose three chemical kinetic models as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., Lindemann\slash Troe\slash SRI falloff formulations, Chebyshev, pressure-log).
 Table~\ref{T:mechanisms} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, USC Mech version II~\cite{Wang:2007}, the isopentanol model of Sarathy et al.~\cite{Sarathy:2013jr}, and version 3.1 of the LLNL \emph{n}-heptane model~\cite{Mehl:2009aa,Mehl:2011cn}.
@@ -1254,7 +1254,7 @@ However, based on these experiences we recommend taking care when attempting to 
 As a result of the aforementioned difficulties, we used the \texttt{Adept} software library~\cite{hogan2014fast,adept-v11} to obtain accurate Jacobian matrices, via automatic differentiation using expression templates.
 In our experiences, even highly accurate numerical Jacobians obtained using multiple-term Richardson extrapolants~\cite{Richardson:1911cl,Lyness:1966aa,Lyness:1969bt} exhibited non-negligible errors for some conditions.
 We did not explore other options for obtaining highly accurate numerical Jacobian approximations using, e.g., complex-step derivatives~\cite{Martins:2003fv,Shampine:2007gw,Ridout:2009fn}.
-For all test cases, the correctness of the species and reaction rate subroutines were determined through comparison with Cantera~\cite{Goodwin:2014aa}; however, due to issues with nonphysical (i.e., negative) mass fraction values that arise during the finite differencing, the numerical Jacobian matrices were not calculated using Cantera but rather the generated derivative subroutines directly.
+For all test cases, the correctness of the species and reaction rate subroutines were determined through comparison with Cantera~\cite{Goodwin:2015aa}; however, due to issues with nonphysical (i.e., negative) mass fraction values that arise during the finite differencing, the numerical Jacobian matrices were not calculated using Cantera but rather the generated derivative subroutines directly.
 
 In reporting the discrepancy between the analytical and numerical Jacobian matrices, denoted by $\mathcal{J}$ and $\hat{\mathcal{J}}$ respectively, we used the norm of the relative errors of matrix elements $E_\text{rel} = \norm{ ( \hat{\mathcal{J}}_{ij} - \mathcal{J}_{ij} ) / \hat{\mathcal{J}}_{ij} }_p$, where $p = 2$ (the Frobenius norm), to quantify error.
 This differs somewhat from the error metric suggested by Anderson et al.~\cite{Anderson:1999aa} for use quantifying the error of matrices in LAPACK: the relative error $p$-norm $E_\text{norm} = \norm{ \hat{\mathcal{J}} - \mathcal{J} }_p / \norm{\hat{\mathcal{J}}}_p$.
@@ -1445,7 +1445,7 @@ The reaction fractional step consists of the enthalpy evolving by
 \frac{dh}{dt} = \frac{-1}{\rho} \sum_{k=1}^{\numsp} h_k W_k \dot{\omega}_k
 \end{equation}
 and the species mass fractions evolving according to Eq.~\eqref{e:dTdt}.
-However, in practice our implementation handles the reaction fractional step by advancing in time a Cantera~\cite{Goodwin:2014aa} \texttt{ReactorNet} that contains a \texttt{IdealGasConstPressureReactor} object, rather than integrating the above equations directly.
+However, in practice our implementation handles the reaction fractional step by advancing in time a Cantera~\cite{Goodwin:2015aa} \texttt{ReactorNet} that contains a \texttt{IdealGasConstPressureReactor} object, rather than integrating the above equations directly.
 
 The time integration scheme implemented in our approach determines the discrete time step between inflow\slash outflow and pairing events and the sub-time step size separating mixing\slash reaction fractional steps, both held constant in the current implementation, via
 \begin{align}
