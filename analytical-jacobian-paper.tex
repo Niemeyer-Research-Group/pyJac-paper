@@ -1244,25 +1244,25 @@ PaSR parameters used for hydrogen\slash air, methane\slash air, ethylene\slash a
 \subsection{Validation}
 \label{s:validation}
 
-In order to test the correctness of the Jacobian matrices produced by \texttt{pyJac}, we compared the resulting analytical matrices against numerical approximations based on finite differences.
+In order to test the correctness of the Jacobian matrices produced by \texttt{pyJac}, we initially compared the resulting analytical matrices against numerical approximations based on finite differences.
 However, while these commonly provide numerical approximations to Jacobian matrices, potential scaling issues due to large disparities in species mass fractions and associated net production rates can cause challenges in selecting appropriate differencing step sizes~\cite{Shampine:1994aa}.
 For example, when initially attempting to evaluate derivatives using sixth-order central differences with increments calculated similarly to that used by the implicit CVODE integrator in the SUNDIALS suite~\cite{Hindmarsh:2005hg}, we encountered large errors in some partial derivatives under certain conditions.
 Adjusting the relative and absolute tolerances reduced some of these errors, but consistent values could not be found that sufficed over all states considered---in particular, states near equilibrium required unreasonably small tolerances (e.g., \num{1e-20}), but these same tolerances caused larger errors at other states.
 Note that the discussion of our experiences are not intended to imply issues with the numerical Jacobian approach used in SUNDIALS; such implicit solvers only require approximations to the Jacobian matrix.
 However, based on these experiences we recommend taking care when attempting to obtain highly accurate Jacobian matrices, as in the current effort and for analysis techniques such as computational singular perturbation~\cite{Lam:1988wc,Lam:1993ub,Lam:1994ws,Lam:2007jq} and chemical explosive mode analysis~\cite{LU:2010hp,Luo:2012hk,Shan:2012dy} that rely on eigendecomposition of the Jacobian matrix.
 
-As a result of the aforementioned difficulties, we used the \texttt{Adept} software library~\cite{hogan2014fast,adept-v11} to obtain accurate Jacobian matrices, via automatic differentiation using expression templates.
-In our experiences, even highly accurate numerical Jacobians obtained using multiple-term Richardson extrapolants~\cite{Richardson:1911cl,Lyness:1966aa,Lyness:1969bt} exhibited non-negligible errors for some conditions.
+As a result of the aforementioned difficulties with finite differences, we used the \texttt{Adept} software library~\cite{hogan2014fast,adept-v11} to obtain accurate Jacobian matrices via automatic differentiation using expression templates.
+In our experience, even highly accurate numerical Jacobians obtained using multiple-term Richardson extrapolants~\cite{Richardson:1911cl,Lyness:1966aa,Lyness:1969bt} exhibited non-negligible errors for some conditions.
 We did not explore other options for obtaining highly accurate numerical Jacobian approximations using, e.g., complex-step derivatives~\cite{Martins:2003fv,Shampine:2007gw,Ridout:2009fn}.
-For all test cases, the correctness of the species and reaction rate subroutines were determined through comparison with Cantera~\cite{Goodwin:2015aa}; however, due to issues with nonphysical (i.e., negative) mass fraction values that arise during the finite differencing, the numerical Jacobian matrices were not calculated using Cantera but rather the generated derivative subroutines directly.
+For all test cases, the correctness of the species and reaction rate subroutines were established through comparison with Cantera~\cite{Goodwin:2015aa}.
 
-In reporting the discrepancy between the analytical and numerical Jacobian matrices, denoted by $\mathcal{J}$ and $\hat{\mathcal{J}}$ respectively, we used the norm of the relative errors of matrix elements $E_\text{rel} = \norm{ ( \hat{\mathcal{J}}_{ij} - \mathcal{J}_{ij} ) / \hat{\mathcal{J}}_{ij} }_p$, where $p = 2$ (the Frobenius norm), to quantify error.
+In reporting the discrepancy between the analytical and automatically differentiated Jacobian matrices, denoted by $\mathcal{J}$ and $\hat{\mathcal{J}}$ respectively, we used the norm of the relative errors of matrix elements $E_\text{rel} = \norm{ ( \hat{\mathcal{J}}_{ij} - \mathcal{J}_{ij} ) / \hat{\mathcal{J}}_{ij} }_p$, where $p = 2$ (the Frobenius norm), to quantify error.
 This differs somewhat from the error metric suggested by Anderson et al.~\cite{Anderson:1999aa} for use quantifying the error of matrices in LAPACK: the relative error $p$-norm $E_\text{norm} = \norm{ \hat{\mathcal{J}} - \mathcal{J} }_p / \norm{\hat{\mathcal{J}}}_p$.
 The latter indicates overall error in the matrix but can be dominated by large elements, so for the current purposes the we believed the former error measure to be more useful in identifying discrepancies in both larger and smaller matrix elements.
 
 Table~\ref{T:error} presents the correctness testing results for each benchmark case.
 For certain conditions, we observed large relative errors in small nonzero elements (e.g., magnitude $\sim$\num{e-22}) likely due to roundoff errors; thus, error statistics comprised only matrix elements $\mathcal{J}_{ij}$ where $\abs{\mathcal{J}_{ij}} \geq \norm{\mathcal{J}}_p / \num{e20}$.
-For all benchmark cases, the analytical and numerical Jacobian matrices matched closely, with the largest discrepancy below \SI{1}{\percent}.
+For all benchmark cases, the analytical Jacobian matrices matched closely with those obtained via automatic differentiation, with the largest discrepancy below \SI{1e-3}{\percent}.
 
 \begin{table}[tbp]
 \centering
@@ -1270,7 +1270,7 @@ For all benchmark cases, the analytical and numerical Jacobian matrices matched 
 \toprule
 Mechanism & Sample size & Mean & Maximum \\
 \midrule
-\ce{H2}\slash \ce{CO} & \num{900900} & \SI{3.170e-8}{\percent} & \SI{9.828e-4}{\percent} \\
+\ce{H2}\slash \ce{CO} & \num{900900}	& \SI{3.170e-8}{\percent} & \SI{9.828e-4}{\percent} \\
 GRI-Mech 3.0		& \num{450900}	& \SI{2.946e-8}{\percent} & \SI{1.240e-4}{\percent} \\
 USC Mech II		& \num{900900}	& \SI{9.046e-9}{\percent} & \SI{2.356e-4}{\percent} \\
 \ce{iC5H11OH}		& \num{450900}	& \SI{8.686e-10}{\percent}	& \SI{1.680e-5}{\percent} \\
@@ -1285,9 +1285,9 @@ The sample size for each case depended on the number of particles and relevant t
 \end{table}
 
 We also made comparisons with the \texttt{TChem} package~\cite{Safta:2011vn} for validation purposes.
-However, while many quantities calculated via \texttt{TChem} agreed closely with those from both Cantera and \texttt{pyJac}, we observed discrepancies in the species net production rates that correlated with errors in the derivative source term and Jacobian matrix.
+However, while many quantities calculated via \texttt{TChem} agreed closely with those from both Cantera and \texttt{pyJac}, we observed discrepancies in the \texttt{TChem} species net production rates that correlated with errors in the derivative source term and Jacobian matrix.
 These discrepancies occurred mainly for low species production rates, where the (larger) rates for other species agreed closely, and in general for near-equilibrium states.
-As a result, we will not present detailed Jacobian matrix comparisons between \texttt{TChem} and \texttt{pyJac} here.
+As a result, we do not present detailed Jacobian matrix comparisons between \texttt{TChem} and \texttt{pyJac} here.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Performance analysis}
@@ -1379,9 +1379,9 @@ In addition, strategies for efficient evaluation were detailed, including reorde
 The presented methodology was implemented in the open-source software package \texttt{pyJac}~\cite{Niemeyer:2015im}, which generates custom source code files for evaluating chemical kinetics Jacobian matrices on both CPU and GPU systems.
 Finally, the correctness of the resulting Jacobian matrices was established, and the performance of the CPU and GPU matrix evaluation subroutines investigated.
 
-Planned work includes further validation of \texttt{pyJac} using larger and more complex chemical kinetic models, including the butanol mechanism of Merchant et al.~\cite{Merchant:2013kz,Hansen:2013fe}, with 372 species and 8723 reversible reactions.
-In addition, future versions of \texttt{pyJac} will include the option of assuming constant-volume combustion, and support for generating Fortran and Matlab source code.
-Finally, further study will be performed into the benefits of the current hard-coded, compiled Jacobian evaluation subroutine approach versus a loop\slash branch-based approach, in order to determine how to obtain the best performance scaling with kinetic model size.
+Planned work includes further development of \texttt{pyJac} to handle the assumption of constant volume, and support for generating Fortran and Matlab source code.
+Further study will be performed into the benefits of the current hard-coded, compiled Jacobian evaluation subroutine approach versus a loop\slash branch-based approach, in order to determine how to obtain the best performance scaling with kinetic model size.
+Finally, we will investigate the performance benefits of converting from a differential system based on species mass fractions to molar concentrations, which offers a marked improvement in matrix sparsity.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgments}
