@@ -1252,7 +1252,7 @@ Note that the discussion of our experiences are not intended to imply issues wit
 However, based on these experiences we recommend taking care when attempting to obtain highly accurate Jacobian matrices, as in the current effort and for analysis techniques such as computational singular perturbation~\cite{Lam:1988wc,Lam:1993ub,Lam:1994ws,Lam:2007jq} and chemical explosive mode analysis~\cite{LU:2010hp,Luo:2012hk,Shan:2012dy} that rely on eigendecomposition of the Jacobian matrix.
 
 As a result of the aforementioned difficulties with finite differences, we used the \texttt{Adept} software library~\cite{hogan2014fast,adept-v11} to obtain accurate Jacobian matrices via automatic differentiation using expression templates.
-In our experience, even highly accurate numerical Jacobians obtained using multiple-term Richardson extrapolants~\cite{Richardson:1911cl,Lyness:1966aa,Lyness:1969bt} exhibited non-negligible errors for some conditions.
+In our experience, numerical Jacobians obtained using multiple-term Richardson extrapolants~\cite{Richardson:1911cl,Lyness:1966aa,Lyness:1969bt} are of similar accuracy but have a much higher computational cost due to the large number of function evaluations required.
 We did not explore other options for obtaining highly accurate numerical Jacobian approximations using, e.g., complex-step derivatives~\cite{Martins:2003fv,Shampine:2007gw,Ridout:2009fn}.
 For all test cases, the correctness of the species and reaction rate subroutines were established through comparison with Cantera~\cite{Goodwin:2015aa}.
 
