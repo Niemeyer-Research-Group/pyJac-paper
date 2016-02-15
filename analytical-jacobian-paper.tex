@@ -304,7 +304,7 @@ Chemical kinetics \sep Jacobian \sep SIMD \sep GPU
 \section{Introduction}
 \label{sec:intro}
 
-As the need for detailed and accurate chemical kinetics models~\footnote{Note that the term ``reaction mechanism'' is also used commonly in the literature.} in predictive reactive-flow simulations has become recognized in recent years, simultaneously such models describing the oxidation of hydrocarbon fuels grew orders of magnitude in size and complexity.
+As the need for detailed and accurate chemical kinetics models~\footnote{Note that the term ``reaction mechanism'' is also used commonly in the literature; we adopted our preferred terminology ``chemical kinetic model'' here.} in predictive reactive-flow simulations has become recognized in recent years, simultaneously such models describing the oxidation of hydrocarbon fuels grew orders of magnitude in size and complexity.
 For example, a recently developed detailed kinetic model for 2-methylalkanes, relevant for jet and diesel fuel surrogates, consists of over 7000 species and 30000 reactions~\cite{Sarathy:2011kx}; similarly large surrogate models exist for gasoline~\cite{Mehl:2011cn,Mehl:2011jn} and biodiesel~\cite{Herbinet:2010gu}.
 Since in general the computational cost of solving the associated generally stiff systems of equations scales quadratically with the number of species at best---and at worst, cubically---models of this size pose challenges even for lower-dimensional analyses, and cannot practically be used directly in multidimensional reactive-flow simulations.
 
@@ -329,7 +329,7 @@ This provides significant motivation to provide the capability of evaluating ana
 % past work
 %Adifor~\cite{Bischof:1996cc}, automatic differentiation
 Thus, motivated by the potential cost reductions offered by analytical Jacobian matrix formulations, over the past five years a number of research groups developed analytical Jacobian generators for chemical kinetics, although as will be discussed the software package introduced here offers a number of improvements.
-The \texttt{TChem} toolkit developed by Safta et al.~\cite{Safta:2011vn} was one of the first software packages developed for calculating the analytical Jacobian matrix, but provides this functionality through an interface rather than generating customized source code for each mechanism.
+The \texttt{TChem} toolkit developed by Safta et al.~\cite{Safta:2011vn} was one of the first software packages developed for calculating the analytical Jacobian matrix, but provides this functionality through an interface rather than generating customized source code for each model.
 Youssefi~\cite{Youssefi:2011tm} recognized the importance of using an analytical Jacobian over a numerical approximation both for reduction in computational cost and when performing eigendecomposition of the matrix.
 Bisetti~\cite{Bisetti:2012jw} released a utility for producing analytical Jacobian matrix source code based on isothermal and isobaric conditions, with the state vector comprised of species concentrations rather than mass fractions; while incompatible with many existing reacting-flow formulations, this formulation resulted in a significant increase of Jacobian matrix sparsity---such a strategy should be investigated further.
 Perini et al.~\cite{Perini:2012gy} developed an analytical Jacobian matrix formulation for constant-volume combustion, and when used in a multidimensional reactive-flow simulation---combined with tabulation of temperature-dependent properties---reported a performance improvement of around \SI{80}{\percent} over finite-difference-based approximations.
@@ -977,7 +977,7 @@ This would eliminate the presence of $\rho$ in the cross-species Jacobian matrix
 %A simple implementation of the outlined chemical Jacobian is presented in pseudo-code in Algorithm~\eqref{p:naive_psuedo} based on the equations presented in Section~\ref{section:eval}.
 Algorithm~\eqref{p:naive_psuedo} presents pseudocode for a simple implementation of the outlined Jacobian evaluation approach based on the equations in Section~\ref{section:eval}.
 Although attractive as a straight-forward implementation, it minimizes potential reuse of computed products and thus unnecessarily recomputes terms.
-Furthermore, this formulation produces source code with substantial numbers of lines even for small kinetic mechanisms such as GRI-Mech 3.0~\cite{smith_gri-mech_30} (e.g., $\sim$\num{100000} lines).
+Furthermore, this formulation produces source code with substantial numbers of lines even for small kinetic models such as GRI-Mech 3.0~\cite{smith_gri-mech_30} (e.g., $\sim$\num{100000} lines).
 
 Without a strategy to enable the reuse of temporary computed products even reasonably modern compilers (e.g., \texttt{gcc} 4.4.7), struggle to compile the resulting code, resulting in long compilation times, slow execution and even occasionally crashes of the compiler itself.
 This section will lay out a restructuring of Algorithm~\eqref{p:naive_psuedo}, presented in Algorithm~\eqref{p:updated_pseudo}, that greatly accelerates Jacobian evaluation via reuse of temporary products to reduce computational overhead.
@@ -1188,10 +1188,10 @@ The bulk of the computation is performed once per reaction, and only minor sub-p
 The Python~\cite{Python:2015} package \texttt{pyJac} implements the methodology for producing analytical Jacobian matrices described in the previous sections, which we released openly online~\cite{Niemeyer:2015im} under a modified BSD license.
 \todo{Get DOI for v1 release}
 \texttt{pyJac} requires the Python modules \texttt{NumPy}~\cite{Walt:2011aa}; optional dependencies include \texttt{bitarray}~\cite{bitarray:2015} for the cache optimizer, and the performance testing module additionally requires \texttt{Cython}~\cite{Behnel:2011aa}, Cantera~\cite{Goodwin:2015aa}, \texttt{PyYAML}~\cite{Simonov:2014aa}, and \texttt{Adept}~\cite{adept-v11}.
-In addition, interpreting Cantera-format mechanisms~\cite{Goodwin:2015aa} requires that module, although Chemkin-format mechanisms do not require any additional components.
+In addition, interpreting Cantera-format models~\cite{Goodwin:2015aa} requires that module, although Chemkin-format models do not require any additional components.
 
 In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, we chose three chemical kinetic models as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., Lindemann\slash Troe\slash SRI falloff formulations, Chebyshev, pressure-log).
-Table~\ref{T:mechanisms} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, USC Mech version II~\cite{Wang:2007}, and the isopentanol model of Sarathy et al.~\cite{Sarathy:2013jr}.
+Table~\ref{T:models} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, USC Mech version II~\cite{Wang:2007}, and the isopentanol model of Sarathy et al.~\cite{Sarathy:2013jr}.
 
 \begin{table}[tbp]
 \centering
@@ -1208,9 +1208,9 @@ Sarathy isopentanol & 360 & 2172 & $\times$ & $\times$ & $\times$ & $\times$ & $
 \bottomrule
 \end{tabular}
 \caption{
-Summary of chemical kinetic models used as benchmark test cases. All mechanisms contain third-body reactions with enhanced third bodies. The ``Lind.'', ``Troe'', ``SRI'', ``P-log'', and ``Cheb.'' columns indicate the presence of Lindemann, Troe, and SRI falloff; logarithmic pressure interpolation; and Chebyshev pressure-dependent reactions, respectively. Two reactions with photons were removed from the Sarathy et al.~\cite{Sarathy:2013jr} model since neither Cantera nor \texttt{pyJac} support these.
+Summary of chemical kinetic models used as benchmark test cases. All models contain third-body reactions with enhanced third bodies. The ``Lind.'', ``Troe'', ``SRI'', ``P-log'', and ``Cheb.'' columns indicate the presence of Lindemann, Troe, and SRI falloff; logarithmic pressure interpolation; and Chebyshev pressure-dependent reactions, respectively. Two reactions with photons were removed from the Sarathy et al.~\cite{Sarathy:2013jr} model since neither Cantera nor \texttt{pyJac} support these.
 }
-\label{T:mechanisms}
+\label{T:models}
 \end{table}
 
 For both the correctness and performance tests, stochastic partially stirred reactor (PaSR) simulations generated thermochemical composition data covering a wide range of temperatures and species mass fractions.
@@ -1268,7 +1268,7 @@ For all benchmark cases, the analytical Jacobian matrices matched closely with t
 \centering
 \begin{tabular}{@{}l l l l@{}}
 \toprule
-Mechanism & Sample size & Mean & Maximum \\
+Model & Sample size & Mean & Maximum \\
 \midrule
 \ce{H2}\slash \ce{CO} & \num{900900}	& \SI{3.170e-8}{\percent} & \SI{9.828e-4}{\percent} \\
 GRI-Mech 3.0		& \num{450900}	& \SI{2.946e-8}{\percent} & \SI{1.240e-4}{\percent} \\
@@ -1311,7 +1311,7 @@ The performance of both codes demonstrate a slight superlinear scaling with the 
     \centering
     \includegraphics[width=0.75\textwidth]{cpu_norm.pdf}
     \caption{Comparison of \texttt{pyJac} and \texttt{TChem} Jacobian matrix evaluation times for the various kinetic models. 
-    The dashed line indicates a linear scaling of evaluation time with the number of reactions in the mechanism.}
+    The dashed line indicates a linear scaling of evaluation time with the number of reactions in the model.}
     \label{F:cpu_perf}
 \end{figure}
 
@@ -1319,7 +1319,7 @@ The performance of both codes demonstrate a slight superlinear scaling with the 
 \centering
 \begin{tabular}{@{}l l@{}}
 \toprule
-Mechanism & $\bar{R}_{\texttt{TChem}} / \bar{R}_{\texttt{pyJac}}$ \\
+Model & $\bar{R}_{\texttt{TChem}} / \bar{R}_{\texttt{pyJac}}$ \\
 \midrule
 \ce{H2}\slash \ce{CO} & 2.82 \\
 GRI-Mech 3.0 &  1.91 \\
@@ -1351,7 +1351,7 @@ As with the CPU matrix evaluations shown in Fig.~\ref{F:cpu_perf}, we observed a
     \begin{subfigure}{0.5\textwidth}
         \centering
         \includegraphics[width=\textwidth]{gpu_norm.pdf}
-        \caption{Normalized GPU runtime versus the number of reactions in the mechanism.}
+        \caption{Normalized GPU runtime versus the number of reactions in the model.}
         \label{F:gpu_norm}
     \end{subfigure}
     \caption{Performance of the GPU-based \texttt{pyJac} Jacobian evaluation.
@@ -1361,7 +1361,7 @@ As with the CPU matrix evaluations shown in Fig.~\ref{F:cpu_perf}, we observed a
 
 The results presented above raise a number of questions that warrant further study, particularly for the CPU implementations.
 The near-linear scaling of \texttt{pyJac} matrix evaluation time with number of reactions in the kinetic models conforms with the proposed scaling in the literature~\cite{Lu:2009gh}.
-However, while \texttt{pyJac} outperforms \texttt{TChem} by a factor of 2.8 for the \ce{H2}\slash\ce{CO} mechanism, the performance ratio between them drops with increasing kinetic model size, with \texttt{pyJac} performing worse for USC Mech II.
+However, while \texttt{pyJac} outperforms \texttt{TChem} by a factor of 2.8 for the \ce{H2}\slash\ce{CO} model, the performance ratio between them drops with increasing kinetic model size, with \texttt{pyJac} performing worse for USC Mech II.
 This trend implies that producing custom CPU source code files for evaluating Jacobian matrices may not be optimal for larger kinetic models, likely due to the large files required.
 For example, the Jacobian evaluation subroutine for USC Mech II comprises \num{363832} total lines spread across 17 files (not including the supporting files for, e.g., species and reaction rate evaluations)---attempting to incorporate the entire matrix evaluation in a single file resulted in the \texttt{gcc} 4.4.7 compiler crashing.\todo{update these numbers}{}
 This calls into question our original hypothesis that hard-coded Jacobian matrix evaluation subroutines would always outperform a loop\slash branch-based implementation, and merits further investigation.
