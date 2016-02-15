@@ -210,7 +210,7 @@ Typically, finite differences numerically approximate these, but for larger chem
 Furthermore, existing analytical Jacobian tools do not optimize evaluations or support emerging SIMD processors such as GPUs.
 Here we introduce \texttt{pyJac}, a Python-based open-source program that generates analytical Jacobian matrices for use in chemical kinetics modeling and analysis.
 In addition to producing the necessary customized source code for evaluating reaction rates (including all modern reaction rate formulations), the chemical source terms, and the Jacobian matrix, \texttt{pyJac} uses an optimized evaluation order to minimize computational and memory operations.
-First, we establish the correctness of the Jacobian matrices for kinetic models of hydrogen, methane, and ethylene oxidation (number of species ranging \SIrange{13}{111}) by showing agreement within \SI{1}{\percent} of high-order finite difference approximations.
+First, we establish the correctness of the Jacobian matrices for kinetic models of hydrogen, methane, ethylene, and isopentanol oxidation (number of species ranging \SIrange{13}{360}) by showing agreement within \SI{1e-3}{\percent} of matrices obtained via automatic differentiation.
 We then demonstrate the performance, via matrix evaluation timing comparisons, achievable on CPUs and GPUs using \texttt{pyJac}.
 % by optimizing the order of matrix element calculations.
 %Finally, we explore the sparsity and characteristics of Jacobian matrices for these chemical kinetic models.
@@ -1191,7 +1191,7 @@ The Python~\cite{Python:2015} package \texttt{pyJac} implements the methodology 
 In addition, interpreting Cantera-format mechanisms~\cite{Goodwin:2015aa} requires that module, although Chemkin-format mechanisms do not require any additional components.
 
 In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, we chose three chemical kinetic models as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., Lindemann\slash Troe\slash SRI falloff formulations, Chebyshev, pressure-log).
-Table~\ref{T:mechanisms} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, USC Mech version II~\cite{Wang:2007}, the isopentanol model of Sarathy et al.~\cite{Sarathy:2013jr}, and version 3.1 of the LLNL \emph{n}-heptane model~\cite{Mehl:2009aa,Mehl:2011cn}.
+Table~\ref{T:mechanisms} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, USC Mech version II~\cite{Wang:2007}, and the isopentanol model of Sarathy et al.~\cite{Sarathy:2013jr}.
 
 \begin{table}[tbp]
 \centering
@@ -1204,7 +1204,7 @@ GRI Mech.~3.0 & 53 & 325 & $\times$ & $\times$ & & & & \cite{smith_gri-mech_30} 
 USC Mech II & 111 & 784 & $\times$ & $\times$ & & & & \cite{Wang:2007}\\
 %MIT butanol & 372 & 8329 & $\times$ & $\times$ & & $\times$ & $\times$ & \cite{Merchant:2013kz,Hansen:2013fe} \\
 Sarathy isopentanol & 360 & 2172 & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & \cite{Sarathy:2013jr} \\
-LLNL \emph{n}-heptane & 654 & 5258 & $\times$ & $\times$ & & & & \cite{Mehl:2009aa,Mehl:2011cn} \\
+%LLNL \emph{n}-heptane & 654 & 5258 & $\times$ & $\times$ & & & & \cite{Mehl:2009aa,Mehl:2011cn} \\
 \bottomrule
 \end{tabular}
 \caption{
@@ -1215,27 +1215,27 @@ Summary of chemical kinetic models used as benchmark test cases. All mechanisms 
 
 For both the correctness and performance tests, stochastic partially stirred reactor (PaSR) simulations generated thermochemical composition data covering a wide range of temperatures and species mass fractions.
 \ref{A:pasr} contains a detailed description of the PaSR methodology and implementation; in addition, the \texttt{pyJac} package contains the PaSR code used in the present study.
-We performed nine premixed PaSR simulations for each fuel\slash mechanism, with the parameters given in Table~\ref{T:pasr_parameters}.
+We performed nine premixed PaSR simulations for each fuel\slash model, with the parameters given in Table~\ref{T:pasr_parameters}.
 Each simulation ran for 10 residence times ($\tau_{\text{res}}$) to ensure reaching statistical steady state.
 
 \begin{table}[tbp]
 \centering
-\begin{tabular}{@{}l l l l l l@{}}
+\begin{tabular}{@{}l l l l l@{}}
 \toprule
-Parameter & \ce{H2} & \ce{CH4} & \ce{C2H4} & \ce{iC5H11OH} & \ce{nC7H16} \\
+Parameter & \ce{H2} & \ce{CH4} & \ce{C2H4} & \ce{iC5H11OH} \\
 \midrule
-$\phi$ & \multicolumn{5}{c}{1} \\
-$T_{\text{in}}$ & \multicolumn{5}{c}{\SIlist{400;600;800}{\kelvin}} \\
-$p$ & \multicolumn{5}{c}{\SIlist{1;10;25}{\atm}} \\
-$N_{\text{p}}$ & \multicolumn{5}{c}{100} \\
-$\tau_{\text{res}}$ & \SI{10}{\milli\second} & \SI{5}{\milli\second} & \SI{100}{\micro\second} & \SI{100}{\micro\second} & \SI{100}{\micro\second} \\
-$\tau_{\text{mix}}$ & \SI{1}{\milli\second} & \SI{1}{\milli\second} & \SI{10}{\micro\second} & \SI{10}{\micro\second} & \SI{10}{\micro\second} \\
-$\tau_{\text{pair}}$ & \SI{1}{\milli\second} & \SI{1}{\milli\second} & \SI{10}{\micro\second} & \SI{10}{\micro\second} & \SI{10}{\micro\second} \\
-$N_{\text{res}}$ & 10 & 10 & 10 & 5 & 5 \\
+$\phi$ & \multicolumn{4}{c}{1} \\
+$T_{\text{in}}$ & \multicolumn{4}{c}{\SIlist{400;600;800}{\kelvin}} \\
+$p$ & \multicolumn{4}{c}{\SIlist{1;10;25}{\atm}} \\
+$N_{\text{p}}$ & \multicolumn{4}{c}{100} \\
+$\tau_{\text{res}}$ & \SI{10}{\milli\second} & \SI{5}{\milli\second} & \SI{100}{\micro\second} & \SI{100}{\micro\second} \\
+$\tau_{\text{mix}}$ & \SI{1}{\milli\second} & \SI{1}{\milli\second} & \SI{10}{\micro\second} & \SI{10}{\micro\second} \\
+$\tau_{\text{pair}}$ & \SI{1}{\milli\second} & \SI{1}{\milli\second} & \SI{10}{\micro\second} & \SI{10}{\micro\second} \\
+$N_{\text{res}}$ & 10 & 10 & 10 & 5 \\
 \bottomrule
 \end{tabular}
 \caption{
-PaSR parameters used for hydrogen\slash air, methane\slash air, ethylene\slash air, isopentanol\slash air, and \emph{n}-heptane\slash air premixed combustion cases, where $\phi$ indicates equivalence ratio, $T_{\text{in}}$ is the temperature of the inflowing particles, $p$ is the pressure, $N_{\text{p}}$ is the number of particles, $\tau_{\text{res}}$ is the residence time, $\tau_{\text{mix}}$ is the mixing time, $\tau_{\text{pair}}$ is the pairing time. and $N_{\text{res}}$ is the number of residence times simulated.
+PaSR parameters used for hydrogen\slash air, methane\slash air, ethylene\slash air, and isopentanol\slash air premixed combustion cases, where $\phi$ indicates equivalence ratio, $T_{\text{in}}$ is the temperature of the inflowing particles, $p$ is the pressure, $N_{\text{p}}$ is the number of particles, $\tau_{\text{res}}$ is the residence time, $\tau_{\text{mix}}$ is the mixing time, $\tau_{\text{pair}}$ is the pairing time. and $N_{\text{res}}$ is the number of residence times simulated.
 }
 \label{T:pasr_parameters}
 \end{table}
@@ -1274,7 +1274,6 @@ Mechanism & Sample size & Mean & Maximum \\
 GRI-Mech 3.0		& \num{450900}	& \SI{2.946e-8}{\percent} & \SI{1.240e-4}{\percent} \\
 USC Mech II		& \num{900900}	& \SI{9.046e-9}{\percent} & \SI{2.356e-4}{\percent} \\
 \ce{iC5H11OH}		& \num{450900}	& \SI{8.686e-10}{\percent}	& \SI{1.680e-5}{\percent} \\
-LLNL \ce{nC7H16}	& \num{450900}	&	& \\
 \bottomrule
 \end{tabular}
 \caption{Summary of Jacobian matrix correctness study results.
@@ -1293,11 +1292,11 @@ As a result, we do not present detailed Jacobian matrix comparisons between \tex
 \subsection{Performance analysis}
 \label{s:performance}
 In order to test the performance of \texttt{pyJac}, the PaSR thermochemical composition data generated for validation of each kinetic model was used as input for timing of Jacobian matrix evaluations.
-The CPU Jacobian was compiled using \texttt{gcc} 4.4.7, and run using a single core of a Xeon X5650 processor.
+The CPU Jacobian was compiled using \texttt{gcc} 4.4.7, and run using a single core of a Xeon X5650 processor.\todo{insert citation for gcc?}{}
 The mean evaluation times were computed from the runtime of ten individual runs. 
 %In order to fairly compare results from the different chemical kinetic models, the mean simulation time over ten runs was normalized by the number of conditions in the generated PaSR data.
 %Testing of the CPU Jacobian included timing with and without cache optimization, as described in Section~\eqref{s:cache_opt}, to assess the impact of these features on the performance of the CPU code.
-The GPU Jacobian was tested on a single NVIDIA Tesla C2075, and was compiled using \texttt{nvcc} 7.0.
+The GPU Jacobian was tested on a single NVIDIA Tesla C2075, and was compiled using \texttt{nvcc} 7.0.\todo{insert citation for nvcc?}{}
 In general, the GPU Jacobian evaluated large numbers of conditions much faster than the CPU version, and thus the mean evaluation times were calculated from the runtime of one hundred individual runs.
 %The performance data for the GPU is presented as the total runtime for each optimization option, plotted against the number of conditions, in order to demonstrate that the GPU has reached full utilization.
 %Again, we performed ten runs for each number of conditions, and report the mean and standard deviation of the timing.
@@ -1364,7 +1363,7 @@ The results presented above raise a number of questions that warrant further stu
 The near-linear scaling of \texttt{pyJac} matrix evaluation time with number of reactions in the kinetic models conforms with the proposed scaling in the literature~\cite{Lu:2009gh}.
 However, while \texttt{pyJac} outperforms \texttt{TChem} by a factor of 2.8 for the \ce{H2}\slash\ce{CO} mechanism, the performance ratio between them drops with increasing kinetic model size, with \texttt{pyJac} performing worse for USC Mech II.
 This trend implies that producing custom CPU source code files for evaluating Jacobian matrices may not be optimal for larger kinetic models, likely due to the large files required.
-For example, the Jacobian evaluation subroutine for USC Mech II comprises \num{363832} total lines spread across 17 files (not including the supporting files for, e.g., species and reaction rate evaluations)---attempting to incorporate the entire matrix evaluation in a single file resulted in the \texttt{gcc} 4.4.7 compiler crashing.
+For example, the Jacobian evaluation subroutine for USC Mech II comprises \num{363832} total lines spread across 17 files (not including the supporting files for, e.g., species and reaction rate evaluations)---attempting to incorporate the entire matrix evaluation in a single file resulted in the \texttt{gcc} 4.4.7 compiler crashing.\todo{update these numbers}{}
 This calls into question our original hypothesis that hard-coded Jacobian matrix evaluation subroutines would always outperform a loop\slash branch-based implementation, and merits further investigation.
 
 %\subsection{Jacobian matrix sparsity}
