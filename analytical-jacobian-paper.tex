@@ -1180,6 +1180,32 @@ This update scheme can often be simplified due to the choice of $\hat{\alpha}_i$
 As with the update scheme used in Eq.~\eqref{e:jac_temperature_update}, the strategy presented in Eqs.~\eqref{e:pindep_jac_species}, \eqref{e:thd_jac_species}, and~\eqref{e:pdep_jac_species} reduces the computational overhead of Jacobian evaluation.
 The bulk of the computation is performed once per reaction, and only minor sub-products must be computed for each species-species pair for a given reaction.
 
+\subsection{Acceleration of Evaluation via Cache-Optimization of Chemical Kinetic Models}
+Further speed-ups can be achieved by reordering the species and reactions within the mechanism to attempt to improve cache-hit rates.
+Two general strategies can be identified to achieve this.
+First, the order of the reactions in the model can be rearranged such that a species is more likely to be used in consecutive reactions, improving the chances of a cache-hit upon subsequent loads of species data (i.e. temporal cache-locality).
+Second, the species can be reordered in the model such that species that participate in a given reaction are more likely to be stored near each other in memory, improving spatial cache-locality.
+To determine the new species\slash reaction orders, the reordering is framed as an optimization problem and solved using a greedy selection algorithm.
+A seed reaction is determined as the reaction for which the participating species are involved in the most distinct reactions in the model.
+The next reaction is determined as the one that maximizes:
+\begin{equation}
+  \left| \{ S_{seed} \} \cup \{ S_j \} \right| - \left| \{ S_{seed} \} \setminus \{ S_j \} \right|
+  \label{e:rxn_cache}
+\end{equation}
+where $\{ S_j \}$ is the set of participating species in reaction $j$.
+The next reaction is determined using Eq.~\eqref{e:rxn_cache} with the previously selected reaction in place of the seed reaction; the process is applied repeatedly until all reactions have been reordered.
+In the case of a tie, the reaction that's species participate in the most distinct unassigned reactions is chosen.
+
+The seed species is selected as the one that participates in the most reactions.
+The next species is determined to maximize:
+\begin{equation}
+  \left| \{ R_{seed} \} \cup \{ R_j \} \right| - \left| \{ R_{seed} \} \setminus \{ R_j \} \right|
+  \label{e:spec_cache}
+\end{equation}
+where $\{ R_j \}$ is the set of reactions species $j$ participates in.
+The rest of the species ordering is populated as with the reactions, using a tiebreaker score of the most reactions remaining.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results and discussion}
 \label{S:results}
