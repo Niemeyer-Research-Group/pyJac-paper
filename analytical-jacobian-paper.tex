@@ -1318,11 +1318,11 @@ As a result, we do not present detailed Jacobian matrix comparisons between \tex
 \subsection{Performance analysis}
 \label{s:performance}
 In order to test the performance of \texttt{pyJac}, the PaSR thermochemical composition data generated for validation of each kinetic model was used as input for timing of Jacobian matrix evaluations.
-The CPU Jacobian was compiled using \texttt{gcc} 4.4.7, and run using a single core of a Xeon X5650 processor.\todo{insert citation for gcc?}{}
+The CPU Jacobian was compiled using \texttt{gcc} 4.4.7~\cite{gcc-4.4.7}, and run using a single core of a Xeon X5650 processor.
 The mean evaluation times were computed from the runtime of ten individual runs. 
 %In order to fairly compare results from the different chemical kinetic models, the mean simulation time over ten runs was normalized by the number of conditions in the generated PaSR data.
 %Testing of the CPU Jacobian included timing with and without cache optimization, as described in Section~\eqref{s:cache_opt}, to assess the impact of these features on the performance of the CPU code.
-The GPU Jacobian was tested on a single NVIDIA Tesla C2075, and was compiled using \texttt{nvcc} 7.0.\todo{insert citation for nvcc?}{}
+The GPU Jacobian was tested on a single NVIDIA Tesla C2075, and was compiled using \texttt{nvcc} 7.5.17~\cite{cuda-7.5}.
 In general, the GPU Jacobian evaluated large numbers of conditions much faster than the CPU version, and thus the mean evaluation times were calculated from the runtime of one hundred individual runs.
 %The performance data for the GPU is presented as the total runtime for each optimization option, plotted against the number of conditions, in order to demonstrate that the GPU has reached full utilization.
 %Again, we performed ten runs for each number of conditions, and report the mean and standard deviation of the timing.
