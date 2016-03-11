@@ -1216,7 +1216,7 @@ The Python~\cite{Python:2015} package \texttt{pyJac} implements the methodology 
 The module used to test the correctness of \texttt{pyJac} isincluded in this release, and additionally requires \texttt{Cython}~\cite{Behnel:2011aa}, Cantera~\cite{Goodwin:2015aa}, \texttt{PyYAML}~\cite{Simonov:2014aa}, and \texttt{Adept}~\cite{adept-v11}; these are not required for Jacobian/rate subroutine generation however.
 In addition, interpreting Cantera-format models~\cite{Goodwin:2015aa} requires that module, although interpretation of Chemkin-format models do not require any additional components.
 
-In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, we chose three chemical kinetic models as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., Lindemann\slash Troe\slash SRI falloff formulations, Chebyshev, pressure-log).
+In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, we chose four chemical kinetic models as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., Lindemann\slash Troe\slash SRI falloff formulations, Chebyshev, pressure-log).
 Table~\ref{T:models} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, USC-Mech version II~\cite{Wang:2007}, and the isopentanol model of Sarathy et al.~\cite{Sarathy:2013jr}.
 
 \begin{table}[tbp]
