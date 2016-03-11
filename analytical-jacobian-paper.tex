@@ -1217,7 +1217,7 @@ The Python~\cite{Python:2015} package \texttt{pyJac} implements the methodology 
 In addition, interpreting Cantera-format models~\cite{Goodwin:2015aa} requires that module, although Chemkin-format models do not require any additional components.
 
 In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, we chose three chemical kinetic models as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., Lindemann\slash Troe\slash SRI falloff formulations, Chebyshev, pressure-log).
-Table~\ref{T:models} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, USC Mech version II~\cite{Wang:2007}, and the isopentanol model of Sarathy et al.~\cite{Sarathy:2013jr}.
+Table~\ref{T:models} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, USC-Mech version II~\cite{Wang:2007}, and the isopentanol model of Sarathy et al.~\cite{Sarathy:2013jr}.
 
 \begin{table}[tbp]
 \centering
@@ -1226,8 +1226,8 @@ Table~\ref{T:models} summarizes the chemical kinetics models used as benchmarks 
 Model & $\numsp$ & $\numreac$ & Lind.\ & Troe & SRI & P-log & Cheb.\ & Ref.\ \\
 \midrule
 \ce{H2}\slash \ce{CO} & 13 & 27 & & $\times$ & & & & \cite{Burke:2011fh} \\
-GRI Mech.~3.0 & 53 & 325 & $\times$ & $\times$ & & & & \cite{smith_gri-mech_30} \\
-USC Mech II & 111 & 784 & $\times$ & $\times$ & & & & \cite{Wang:2007}\\
+GRI-Mech.~3.0 & 53 & 325 & $\times$ & $\times$ & & & & \cite{smith_gri-mech_30} \\
+USC-Mech II & 111 & 784 & $\times$ & $\times$ & & & & \cite{Wang:2007}\\
 %MIT butanol & 372 & 8329 & $\times$ & $\times$ & & $\times$ & $\times$ & \cite{Merchant:2013kz,Hansen:2013fe} \\
 Sarathy isopentanol & 360 & 2172 & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & \cite{Sarathy:2013jr} \\
 %LLNL \emph{n}-heptane & 654 & 5258 & $\times$ & $\times$ & & & & \cite{Mehl:2009aa,Mehl:2011cn} \\
@@ -1298,7 +1298,7 @@ Model & Sample size & Mean & Maximum \\
 \midrule
 \ce{H2}\slash \ce{CO} & \num{900900}	& \SI{3.170e-8}{\percent} & \SI{9.828e-4}{\percent} \\
 GRI-Mech 3.0		& \num{450900}	& \SI{2.946e-8}{\percent} & \SI{1.240e-4}{\percent} \\
-USC Mech II		& \num{900900}	& \SI{9.046e-9}{\percent} & \SI{2.356e-4}{\percent} \\
+USC-Mech II		& \num{900900}	& \SI{9.046e-9}{\percent} & \SI{2.356e-4}{\percent} \\
 \ce{iC5H11OH}		& \num{450900}	& \SI{8.686e-10}{\percent}	& \SI{1.680e-5}{\percent} \\
 \bottomrule
 \end{tabular}
@@ -1330,7 +1330,7 @@ In general, the GPU Jacobian evaluated large numbers of conditions much faster t
 
 Figure~\ref{F:cpu_perf} displays the performance of the CPU-based \texttt{pyJac} Jacobian matrix evaluations for the three kinetic models; in addition, Fig.~\ref{F:cpu_perf} compares the performance of \texttt{pyJac} against that of the existing \texttt{TChem} package~\cite{Safta:2011vn}.
 As summarized in Table~\ref{t:cpu_comp}, for the \ce{H2}\slash \ce{CO} and GRI-Mech 3.0 kinetic models, \texttt{pyJac} offers a factor of two to three improvement in evaluation speed over the \texttt{TChem} code.
-However, the codes perform similarly for the larger USC Mech II model, with \texttt{TChem} operating nearly \SI{10}{\percent} faster than \texttt{pyJac}.
+However, the codes perform similarly for the larger USC-Mech II model, with \texttt{TChem} operating nearly \SI{10}{\percent} faster than \texttt{pyJac}.
 The performance of both codes demonstrate a slight superlinear scaling with the number of reactions in the model, as denoted by the dashed line in Fig.~\ref{F:cpu_perf}.
 
 \begin{figure}[tbp]
@@ -1349,7 +1349,7 @@ Model & $\bar{R}_{\texttt{TChem}} / \bar{R}_{\texttt{pyJac}}$ \\
 \midrule
 \ce{H2}\slash \ce{CO} & 2.82 \\
 GRI-Mech 3.0 &  1.91 \\
-USC Mech II &  0.92 \\
+USC-Mech II &  0.92 \\
 \ce{iC5H11OH} & \\
 \bottomrule
 \end{tabular}
@@ -1387,9 +1387,9 @@ As with the CPU matrix evaluations shown in Fig.~\ref{F:cpu_perf}, we observed a
 
 The results presented above raise a number of questions that warrant further study, particularly for the CPU implementations.
 The near-linear scaling of \texttt{pyJac} matrix evaluation time with number of reactions in the kinetic models conforms with the proposed scaling in the literature~\cite{Lu:2009gh}.
-However, while \texttt{pyJac} outperforms \texttt{TChem} by a factor of 2.8 for the \ce{H2}\slash\ce{CO} model, the performance ratio between them drops with increasing kinetic model size, with \texttt{pyJac} performing worse for USC Mech II.
+However, while \texttt{pyJac} outperforms \texttt{TChem} by a factor of 2.8 for the \ce{H2}\slash\ce{CO} model, the performance ratio between them drops with increasing kinetic model size, with \texttt{pyJac} performing worse for USC-Mech II.
 This trend implies that producing custom CPU source code files for evaluating Jacobian matrices may not be optimal for larger kinetic models, likely due to the large files required.
-For example, the Jacobian evaluation subroutine for USC Mech II comprises \num{363832} total lines spread across 17 files (not including the supporting files for, e.g., species and reaction rate evaluations)---attempting to incorporate the entire matrix evaluation in a single file resulted in the \texttt{gcc} 4.4.7 compiler crashing.\todo{update these numbers}{}
+For example, the Jacobian evaluation subroutine for USC-Mech II comprises \num{363832} total lines spread across 17 files (not including the supporting files for, e.g., species and reaction rate evaluations)---attempting to incorporate the entire matrix evaluation in a single file resulted in the \texttt{gcc} 4.4.7 compiler crashing.\todo{update these numbers}{}
 This calls into question our original hypothesis that hard-coded Jacobian matrix evaluation subroutines would always outperform a loop\slash branch-based implementation, and merits further investigation.
 
 %\subsection{Jacobian matrix sparsity}
