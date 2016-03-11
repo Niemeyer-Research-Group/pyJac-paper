@@ -1176,7 +1176,6 @@ Finally, all Jacobian entries $\mathcal{J}_{k+1,j+1}$ must be finished with the 
 \mathcal{J}_{k+1,j+1} \pluseq \frac{W_k}{W_j} \frac{\dot{\omega}_kW}{\rho}\left(1 - \frac{W_j}{W_{\numsp}}\right) \;.
 \end{IEEEeqnarray}}
 
-This update scheme can often be simplified due to the choice of $\hat{\alpha}_i$, which minimizes the number of third-body efficiency correction terms needed for a reaction, and by zeroing the species molar concentration product terms as discussed above.
 As with the update scheme used in Eq.~\eqref{e:jac_temperature_update}, the strategy presented in Eqs.~\eqref{e:pindep_jac_species}, \eqref{e:thd_jac_species}, and~\eqref{e:pdep_jac_species} reduces the computational overhead of Jacobian evaluation.
 The bulk of the computation is performed once per reaction, and only minor sub-products must be computed for each species-species pair for a given reaction.
 
