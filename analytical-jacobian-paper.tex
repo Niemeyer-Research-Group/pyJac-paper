@@ -956,6 +956,7 @@ where $\dydx{c_p}{T}$ is given by Eq.~\eqref{E:dcpdT}.
 %The following terms should be evaluated and reused: $R_{f,i}$, $R_{r,i}$, $c_i$, $\dot{\omega}_k$, $h_k$, and $c_p$.
 
 \subsection{Jacobian matrix sparsity}
+\label{S:sparsity}
 
 Although others discuss sparsity of chemical kinetics Jacobian matrices (Lu and Law, Perini et al.~\cite{Perini:2012gy}); however, while many assume that large kinetic models exhibit a sparse Jacobian matrix, the Jacobian for the governing equations of constant-pressure kinetics is actually dense.
 This results from the partial derivative of density with respect to species mass fraction, $\partial \rho / \partial Y_j$, that appears in Eq.~\eqref{e:jac_spec}.
@@ -1318,20 +1319,31 @@ As a result, we do not present detailed Jacobian matrix comparisons between \tex
 \subsection{Performance analysis}
 \label{s:performance}
 In order to test the performance of \texttt{pyJac}, the PaSR thermochemical composition data generated for validation of each kinetic model was used as input for timing of Jacobian matrix evaluations.
-The CPU Jacobian was compiled using \texttt{gcc} 4.4.7, and run using a single core of a Xeon X5650 processor.\todo{insert citation for gcc?}{}
+The CPU Jacobian was compiled using \texttt{gcc} 4.4.7, and run using two six-core Xeon X5650 processors.\todo{insert citation for gcc?}{}
+Parallelization was achieved using OpenMP~\cite{Dagum:1998}, where each OpenMP thread was used to evaluate an entire Jacobian.
 The mean evaluation times were computed from the runtime of ten individual runs. 
 %In order to fairly compare results from the different chemical kinetic models, the mean simulation time over ten runs was normalized by the number of conditions in the generated PaSR data.
 %Testing of the CPU Jacobian included timing with and without cache optimization, as described in Section~\eqref{s:cache_opt}, to assess the impact of these features on the performance of the CPU code.
-The GPU Jacobian was tested on a single NVIDIA Tesla C2075, and was compiled using \texttt{nvcc} 7.0.\todo{insert citation for nvcc?}{}
-In general, the GPU Jacobian evaluated large numbers of conditions much faster than the CPU version, and thus the mean evaluation times were calculated from the runtime of one hundred individual runs.
+The GPU Jacobian was tested on a single NVIDIA Tesla C2075, and was compiled using \texttt{nvcc} 7.5\todo{insert citation for nvcc?}{}.
+The mean GPU evaluation times were again computed from ten individual runs.
+The finite difference routine for both the CPU and GPU was a simple first order forward difference adapted from CVODE~\cite{Hindmarsh:2005hg} to give a realistic comparison to a commonly used finite difference technique.
 %The performance data for the GPU is presented as the total runtime for each optimization option, plotted against the number of conditions, in order to demonstrate that the GPU has reached full utilization.
 %Again, we performed ten runs for each number of conditions, and report the mean and standard deviation of the timing.
 %Testing of the GPU Jacobian included timing of matrix evaluations with\slash without cache optimization and shared memory caching, as described in Section~\eqref{s:smem}, and all combinations thereof.
 
-Figure~\ref{F:cpu_perf} displays the performance of the CPU-based \texttt{pyJac} Jacobian matrix evaluations for the three kinetic models; in addition, Fig.~\ref{F:cpu_perf} compares the performance of \texttt{pyJac} against that of the existing \texttt{TChem} package~\cite{Safta:2011vn}.
-As summarized in Table~\ref{t:cpu_comp}, for the \ce{H2}\slash \ce{CO} and GRI-Mech 3.0 kinetic models, \texttt{pyJac} offers a factor of two to three improvement in evaluation speed over the \texttt{TChem} code.
-However, the codes perform similarly for the larger USC-Mech II model, with \texttt{TChem} operating nearly \SI{10}{\percent} faster than \texttt{pyJac}.
-The performance of both codes demonstrate a slight superlinear scaling with the number of reactions in the model, as denoted by the dashed line in Fig.~\ref{F:cpu_perf}.
+Figure~\ref{F:cpu_perf} displays the performance of the CPU-based \texttt{pyJac} Jacobian matrix evaluations for the four kinetic models; in addition, Fig.~\ref{F:cpu_perf} compares the performance of \texttt{pyJac} against that of the existing \texttt{TChem} package~\cite{Safta:2011vn}.
+As summarized in Table~\ref{t:cpu_comp} \texttt{pyJac} is approximately \SIrange{4}{40}{$\times$} faster than \texttt{TChem} depending on the model in question.
+\texttt{pyJac} is significantly faster than the first order finite difference technique as well, ranging from \SIrange{3}{6}{$\times$} faster depending on the model.
+
+Additionally Fig.~\ref{F:cpu_perf} shows lines of best fit for the available data (the corresponding $R^2$ values were 0.86, 0.72, and 0.99 for the finite difference, \texttt{pyJac} and \texttt{TChem} respectively).
+These fits suggest that all the available codes scale super-linearly with the number of species in the model.
+This is expected for the finite difference technique, but merits some explanation for the analytical Jacobian methods.
+Lu and Law argued~\cite{Lu:2009gh} that the cost of analytical Jacobian evaluation should scale linearly with the number of reactions in a model.
+However, this argument is predicated on the assumption that the resulting Jacobian was sparse, namely that only a change in species concentrations that participate in a reaction can change the resulting reaction rate.
+This provides a significant incentive for development of a sparse concentration based constant pressure Jacobian system, and is a planned upgrade for \texttt{pyJac}.
+This is not true in the constant pressure\slash mass-fraction based system due to the dependence of density on mass fraction as discussed previously (Sec.~\ref{S:sparsity}), hence we expect the execution times exhibit a higher order dependence on number of species (or reactions) in a model.
+If we use the developed fits to get a rough order of magnitude estimate of the crossover points of the various models we see that \texttt{pyJac} is expected to outperform \texttt{TChem} for models with up to $\sim$2500 reactions, and outperform the finite difference technique for models with over eighty-million reactions.
+
 
 \begin{figure}[tbp]
     \centering
@@ -1343,17 +1355,17 @@ The performance of both codes demonstrate a slight superlinear scaling with the 
 
 \begin{table}[tbp]
 \centering
-\begin{tabular}{@{}l l@{}}
+\begin{tabular}{@{}l l l@{}}
 \toprule
-Model & $\bar{R}_{\texttt{TChem}} / \bar{R}_{\texttt{pyJac}}$ \\
+Model & $\bar{R}_{\texttt{TChem}} / \bar{R}_{\texttt{pyJac}}$ & $\bar{R}_{\text{F.D.}} / \bar{R}_{\texttt{pyJac}}$ \\
 \midrule
-\ce{H2}\slash \ce{CO} & 40.95 \\
-GRI-Mech 3.0 &  11.11 \\
-USC-Mech II &  3.93 \\
-\ce{iC5H11OH} & N\slash A\\
+\ce{H2}\slash \ce{CO} & 40.95 & 5.28 \\
+GRI-Mech 3.0 &  11.11 & 6.30 \\
+USC-Mech II &  3.93 & 4.28 \\
+\ce{iC5H11OH} & N\slash A & 2.89 \\
 \bottomrule
 \end{tabular}
-\caption{Ratio of Jacobian matrix evaluation times for \texttt{TChem} and \texttt{pyJac}. 
+\caption{Ratio of Jacobian matrix evaluation times for \texttt{TChem} and finite differencing with \texttt{pyJac}. 
 $\bar{R}$ indicates the mean evaluation time.}
 \label{t:cpu_comp}
 \end{table}
@@ -1362,8 +1374,19 @@ Figure~\ref{F:gpu_perf} presents the performance of the GPU Jacobian matrix impl
 Figure~\ref{F:gpu_mean} plots the mean runtime of the GPU Jacobian matrix evaluations against the number of conditions---i.e., the number of thermochemical composition states, with one Jacobian matrix evaluated per state.
 As the number of conditions increases, the GPU becomes fully utilized and the growth rate of the evaluation time begins increasing linearly (here displayed on a log-log plot).
 This thread saturation point occurs at nearly the same number of conditions for each model.
+It is noted that a `per-thread` evaluation model has been adopted in this work, in which a single GPU thread is responsible for evaluation of a single Jacobian matrix, rather than a `per-block` model where GPU threads in a block cooperate to evaluate a Jacobian.
+This is advantageous in that it significantly simplifies generation of highly optimized code for SIMD processors and provides a higher theoretical bound on the number of Jacobians that can be evaluated in parallel.
+However, this is a topic that merits further investigation; the current Jacobian implementation is memory bandwidth limited due to the small cache sizes available on the GPU's streaming microprocessors.
+A per-block implementation would likely be able to utilize this small cache more effectively, but it remains to be seen if this will translate into an overall speedup.
 Figure~\ref{F:gpu_norm} shows the longest evaluation time---normalized by the number of conditions---for each kinetic model plotted against the number of reactions.
-As with the CPU matrix evaluations shown in Fig.~\ref{F:cpu_perf}, we observed a slight superlinear scaling of the performance with number of reactions.
+As with the CPU matrix evaluations shown in Fig.~\ref{F:cpu_perf}, we observed a superlinear scaling of the performance with number of reactions.
+The best fits for the \texttt{pyJac} and the finite difference technique (with $R^2$ values of 0.95 and 0.77 respectively) are of similar polynomial orders as those of the CPU-based Jacobian evaluation, providing evidence that this is close to the scaling of the method itself.
+
+Table~\ref{t:gpu_comp} shows the ratios of average evaluation time between the finite difference and \texttt{pyJac} on the GPU.
+Interestingly, the speedup for using \texttt{pyJac} over the finite-difference technique on the isopentanol model is significantly higher than those of the other models.
+This is again due to the small cache size of the GPU, in this case the much larger model size (360 species compared to say 111 species for USC-Mech II) likely makes it difficult to store a majority of species concentrations in the cache, forcing more loads from global memory.
+This implies that it is potentially significantly more efficient to use an analytical Jacobian formulation on the GPU than a finite difference formulation for larger models.
+Additionally, a sparse Jacobian formulation would greatly benefit GPU Jacobian evaluation due to the greatly reduced memory traffic requirements (i.e. a greatly reduced number a global writes).
 
 \begin{figure}[tbp]
     \centering
@@ -1385,12 +1408,30 @@ As with the CPU matrix evaluations shown in Fig.~\ref{F:cpu_perf}, we observed a
     \label{F:gpu_perf}
 \end{figure}
 
-The results presented above raise a number of questions that warrant further study, particularly for the CPU implementations.
-The near-linear scaling of \texttt{pyJac} matrix evaluation time with number of reactions in the kinetic models conforms with the proposed scaling in the literature~\cite{Lu:2009gh}.
-However, while \texttt{pyJac} outperforms \texttt{TChem} by a factor of 2.8 for the \ce{H2}\slash\ce{CO} model, the performance ratio between them drops with increasing kinetic model size, with \texttt{pyJac} performing worse for USC-Mech II.
-This trend implies that producing custom CPU source code files for evaluating Jacobian matrices may not be optimal for larger kinetic models, likely due to the large files required.
-For example, the Jacobian evaluation subroutine for USC-Mech II comprises \num{363832} total lines spread across 17 files (not including the supporting files for, e.g., species and reaction rate evaluations)---attempting to incorporate the entire matrix evaluation in a single file resulted in the \texttt{gcc} 4.4.7 compiler crashing.\todo{update these numbers}{}
-This calls into question our original hypothesis that hard-coded Jacobian matrix evaluation subroutines would always outperform a loop\slash branch-based implementation, and merits further investigation.
+\begin{table}[tbp]
+\centering
+\begin{tabular}{@{}l l@{}}
+\toprule
+Model & $\bar{R}_{\text{F.D.}} / \bar{R}_{\texttt{pyJac}}$ \\
+\midrule
+\ce{H2}\slash \ce{CO} & 1.80 \\
+GRI-Mech 3.0 &  1.74 \\
+USC-Mech II &  1.61 \\
+\ce{iC5H11OH} & 3.19 \\
+\bottomrule
+\end{tabular}
+\caption{Ratio of Jacobian matrix evaluation times for finite differencing with \texttt{pyJac} on the GPU. 
+$\bar{R}$ indicates the mean evaluation time.}
+\label{t:gpu_comp}
+\end{table}
+
+The results presented above raise a number of issues that warrant further study.
+The super-linear scaling of \texttt{pyJac} matrix evaluation time with number of reactions in the kinetic models is expected due to the density of the Jacobian, but points to the large potential benefits of a sparse species concentration based Jacobian implementation.
+However, while \texttt{pyJac} outperforms \texttt{TChem} in all cases, the performance ratio between them drops with increasing kinetic model size, indicating that the performance benefit of a hard-coded Jacobian matrix evaluation subroutine is less important with increasing model size.
+Although it appears from these results that the performance of a hard-coded Jacobian subroutine can surpass that of an interface based Jacobian routine, the hard-coded method has additional difficulties due to the size and number of files created.
+For example, the CPU Jacobian evaluation subroutine for USC-Mech II comprises over \num{360000} total lines spread across 22 files (not including the supporting files for, e.g., species and reaction rate evaluations)---attempting to incorporate the entire matrix evaluation in a single file resulted in the \texttt{gcc} 4.4.7 compiler crashing.\todo{update these numbers}{}
+This not only caused longer compile times (on the order of ten minutes to an hour when using a 24 separate compiler instances), but could cause compiler crashes and inexplicable behavior, particularly for the less mature \texttt{nvcc} compiler.
+While we expect a sparse Jacobian formulation would significantly alleviate these issues, it is worthwhile to directly compare the performance of hard-coded and interface based Jacobian subroutines in the future.
 
 %\subsection{Jacobian matrix sparsity}
 %\label{s:sparsity}
