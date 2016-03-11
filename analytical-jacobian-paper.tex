@@ -1212,7 +1212,7 @@ The bulk of the computation is performed once per reaction, and only minor sub-p
 
 The Python~\cite{Python:2015} package \texttt{pyJac} implements the methodology for producing analytical Jacobian matrices described in the previous sections, which we released openly online~\cite{Niemeyer:2015im} under a modified BSD license.
 \todo{Get DOI for v1 release}
-\texttt{pyJac} requires the Python modules \texttt{NumPy}~\cite{Walt:2011aa}; optional dependencies include \texttt{bitarray}~\cite{bitarray:2015} for the cache optimizer, and the performance testing module additionally requires \texttt{Cython}~\cite{Behnel:2011aa}, Cantera~\cite{Goodwin:2015aa}, \texttt{PyYAML}~\cite{Simonov:2014aa}, and \texttt{Adept}~\cite{adept-v11}.
+\texttt{pyJac} requires the Python modules \texttt{NumPy}~\cite{Walt:2011aa}; the performance testing module additionally requires \texttt{Cython}~\cite{Behnel:2011aa}, Cantera~\cite{Goodwin:2015aa}, \texttt{PyYAML}~\cite{Simonov:2014aa}, and \texttt{Adept}~\cite{adept-v11}.
 In addition, interpreting Cantera-format models~\cite{Goodwin:2015aa} requires that module, although Chemkin-format models do not require any additional components.
 
 In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, we chose three chemical kinetic models as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., Lindemann\slash Troe\slash SRI falloff formulations, Chebyshev, pressure-log).
