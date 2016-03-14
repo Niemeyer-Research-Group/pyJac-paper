@@ -1411,7 +1411,7 @@ Table~\ref{t:gpu_comp} shows the ratios of average evaluation times between fini
 Interestingly, \texttt{pyJac} performs noticeably better than the finite-difference technique with the isopentanol model ($\sim$\SI{3}{$\times$}) than the three smaller models (\SIrange{1}{2}{$\times$}).
 This likely occurs due to the small cache size of the GPU; in this case, the larger model size (360 species compared to, e.g., 111 species for USC-Mech II) makes it difficult to store a majority of species concentrations in the cache, forcing more loads from global memory.
 Thus, for larger models, a relatively larger performance benefit (compared to smaller models) is realized by use of an analytical Jacobian formulation versus a finite difference method.
-A sparse Jacobian formulation would further benefit GPU evaluation due to the greatly reduced memory traffic requirements (i.e., reduced number of global reads and writes).
+A sparse Jacobian formulation would similarly greatly benefit GPU evaluation due to the greatly reduced memory traffic requirements (i.e., reduced number of global reads and writes).
 
 \begin{table}[tbp]
 \centering
