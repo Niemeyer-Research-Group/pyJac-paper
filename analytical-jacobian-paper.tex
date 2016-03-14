@@ -1321,7 +1321,7 @@ The performance of \texttt{pyJac}-generated subroutines for CPU and GPU executio
 In both cases, the performance of \texttt{pyJac} was compared with that of a finite-difference-based Jacobian; in addition, the CPU routines were compared with \texttt{TChem} where possible.
 The CPU Jacobian subroutines were compiled using \texttt{gcc} 4.4.7~\cite{gcc-4.4.7}, and run on two six-core Xeon X5650 processors.
 Although not strictly necessary, we accelerated the performance testing by evaluating Jacobian matrices in parallel via OpenMP~\cite{Dagum:1998}, where each OpenMP thread calculated a single Jacobian matrix.
-Reported mean evaluation times were computed from the wall-clock run times of ten individual calculations.\todo{was number of cores\slash threads taken into account?}{}
+Reported mean evaluation times were computed from the wall-clock run times of ten individual calculations; the results were not normalized by number of OpenMP threads (all cases used twelve threads).
 %In order to fairly compare results from the different chemical kinetic models, the mean simulation time over ten runs was normalized by the number of conditions in the generated PaSR data.
 %Testing of the CPU Jacobian included timing with and without cache optimization, as described in Section~\eqref{s:cache_opt}, to assess the impact of these features on the performance of the CPU code.
 The GPU Jacobian subroutines were compiled using \texttt{nvcc} 7.5.17~\cite{cuda-7.5} and tested on a single NVIDIA Tesla C2075 GPU.
