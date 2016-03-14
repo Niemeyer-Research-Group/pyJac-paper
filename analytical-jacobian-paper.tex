@@ -1442,7 +1442,10 @@ While we expect a sparse Jacobian formulation would significantly alleviate thes
 This work developed the theory behind an analytic Jacobian matrix evaluation approach for constant-pressure chemical kinetics, including new derivations of partial derivatives with respect to modern reaction pressure-dependence formulations.
 In addition, strategies for efficient evaluation were detailed, including reordering matrix element evaluations in order to enable the reuse of temporary products.
 The presented methodology was implemented in the open-source software package \texttt{pyJac}~\cite{Niemeyer:2015im}, which generates custom source code files for evaluating chemical kinetics Jacobian matrices on both CPU and GPU systems.
-Finally, the correctness of the resulting Jacobian matrices was established, and the performance of the CPU and GPU matrix evaluation subroutines investigated.
+The correctness of the resulting Jacobian matrices was established through comparison with matrices obtained by automatic differentiation.
+The results agreed within \SI{1e-3}{\percent} for kinetic models describing the oxidation of hydrogen, methane, ethylene, and isopentanol, with 13 to 360 species (and 27 to 2172 reactions).
+Finally, the performance of the CPU and GPU matrix evaluation subroutines was investigated by evaluating the matrix calculation time for the same kinetic models.
+The \texttt{pyJac} CPU-based Jacobian evaluation performed \numrange{2.9}{5.3} times faster than a forward finite difference approach and \numrange{3.9}{41} times faster than the existing \texttt{TChem} software.
 
 Planned work includes further development of \texttt{pyJac} to handle the assumption of constant volume, and support for generating Fortran and Matlab source code.
 Further study will be performed into the benefits of the current hard-coded, compiled Jacobian evaluation subroutine approach versus a loop\slash branch-based approach, in order to determine how to obtain the best performance scaling with kinetic model size.
