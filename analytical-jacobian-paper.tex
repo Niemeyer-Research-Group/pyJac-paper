@@ -960,7 +960,7 @@ where $\dydx{c_p}{T}$ is given by Eq.~\eqref{E:dcpdT}.
 \subsection{Jacobian matrix sparsity}
 \label{S:sparsity}
 
-Although others discuss sparsity of chemical kinetics Jacobian matrices (Lu and Law, Perini et al.~\cite{Perini:2012gy}); however, while many assume that large kinetic models exhibit a sparse Jacobian matrix, the Jacobian for the governing equations of constant-pressure kinetics using mass-fractions are actually dense.
+Although others discuss sparsity of chemical kinetics Jacobian matrices (Lu and Law, Perini et al.~\cite{Perini:2012gy}); however, while many assume that large kinetic models exhibit a sparse Jacobian matrix, the Jacobian is actually dense for the governing equations of constant-pressure kinetics using mass fractions.
 This results from the partial derivative of density with respect to species mass fraction, $\partial \rho / \partial Y_j$, that appears in Eq.~\eqref{e:jac_spec}.
 As a result, the partial derivatives of all species $k$ rate-of-change $\dot{Y}_k$ with respect to the $j$th species' mass fraction of species $Y_j$, or $\mathcal{J}_{k+1, j+1}$, are potentially nonzero.
 However, if the constant-volume assumption instead holds true, then $\partial \rho / \partial Y_j = 0$ and Jacobian matrices exhibit the sparsity shown by Perini et al.~\cite{Perini:2012gy}.
