@@ -7,7 +7,7 @@
 %% completed and which will give the correct layout in the
 %% preprint and the journal.
 %% The `elsarticle' style is used and more information on this style
-%% can be found at 
+%% can be found at
 %% http://www.elsevier.com/wps/find/authorsview.authors/elsarticle.
 %%
 %%
@@ -61,7 +61,7 @@
 \usepackage{braket}
 %abs and norm
 \DeclarePairedDelimiter\abs{\lvert}{\rvert}%
-\DeclarePairedDelimiter\norm{\lVert}{\rVert}% 
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
 %set notation
 
 
@@ -78,7 +78,7 @@
 \MHInternalSyntaxOff
 
 % Swap the definition of \abs* and \norm*, so that \abs
-% and \norm resizes the size of the brackets, and the 
+% and \norm resizes the size of the brackets, and the
 % starred version does not.
 \makeatletter
 \let\oldabs\abs
@@ -95,7 +95,7 @@
      binary-units,
      list-units = single,
      range-units = single,
-     tophrase = --, 
+     tophrase = --,
      per-mode = symbol-or-fraction,
      separate-uncertainty = true,
      list-final-separator = {, and }
@@ -119,7 +119,7 @@
 
 %to highlight text
 %\usepackage{soul}
-\usepackage[usenames, dvipsnames]{color}
+%\usepackage[usenames, dvipsnames]{color}
 %\newcommand{\hly}[1]{{\sethlcolor{yellow}\hl{#1}}}
 %\newcommand{\hlb}[1]{{\sethlcolor{SkyBlue}\hl{#1}}}
 %\newcommand{\hlg}[1]{{\sethlcolor{green}\hl{#1}}}
@@ -138,7 +138,7 @@
 %  \expandafter\let\csname oldend#1\expandafter\endcsname\csname end#1\endcsname
 %  \renewenvironment{#1}%
 %     {\linenomath\csname old#1\endcsname}%
-%     {\csname oldend#1\endcsname\endlinenomath}}% 
+%     {\csname oldend#1\endcsname\endlinenomath}}%
 %\newcommand*\patchBothAmsMathEnvironmentsForLineno[1]{%
 %  \patchAmsMathEnvironmentForLineno{#1}%
 %  \patchAmsMathEnvironmentForLineno{#1*}}%
@@ -285,10 +285,10 @@ Chemical kinetics \sep Jacobian \sep SIMD \sep GPU
    \\
 
 %\begin{thebibliography}{0}
-%\bibitem{1}Reference 1         % This list should only contain those items referenced in the                 
-%\bibitem{2}Reference 2         % Program Summary section.   
+%\bibitem{1}Reference 1         % This list should only contain those items referenced in the
+%\bibitem{2}Reference 2         % Program Summary section.
 %\bibitem{3}Reference 3         % Type references in text as [1], [2], etc.
-%                               % This list is different from the bibliography at the end of 
+%                               % This list is different from the bibliography at the end of
 %                               % the Long Write-Up.
 %\end{thebibliography}
 %* Items marked with an asterisk are only required for new versions
@@ -308,7 +308,7 @@ As the need for detailed and accurate chemical kinetics models~\footnote{Note th
 For example, a recently developed detailed kinetic model for 2-methylalkanes, relevant for jet and diesel fuel surrogates, consists of over 7000 species and 30000 reactions~\cite{Sarathy:2011kx}; similarly large surrogate models exist for gasoline~\cite{Mehl:2011cn,Mehl:2011jn} and biodiesel~\cite{Herbinet:2010gu}.
 Since in general the computational cost of solving the associated generally stiff systems of equations scales quadratically with the number of species at best---and at worst, cubically---models of this size pose challenges even for lower-dimensional analyses, and cannot practically be used directly in multidimensional reactive-flow simulations.
 
-In an effort to reduce the computational demands of using large, detailed kinetic models, a number of techniques have been developed to reduce their size and complexity while retaining predictiveness, as reviewed by Lu and Law~\cite{Lu:2009gh} as well as Turányi and Tomlin~\cite{Turanyi:2014aa}.
+In an effort to reduce the computational demands of using large, detailed kinetic models, a number of techniques have been developed to reduce their size and complexity while retaining predictiveness, as reviewed by Lu and Law~\cite{Lu:2009gh} as well as Turï¿½nyi and Tomlin~\cite{Turanyi:2014aa}.
 Major classes of such approaches include skeletal reduction methods that remove unimportant species and reactions~\cite{Lu:2006bb,Pepiot-Desjardins:2008,Hiremath:2010jw,Niemeyer:2010bt}, lumping of species that share similar properties~\cite{Lu:2007,Ahmed:2007fa,Pepiot:2008kq}, and time-scale reduction methods that reduce chemical stiffness~\cite{Maas:1992ws,Lam:1994ws,Lu:2001ve,Gou:2010}.
 Strategies for achieving significant reduction combine such methods a priori in multiple stages~\cite{Lu:2008bi,Niemeyer:2014,Niemeyer:2015wq}, or apply them dynamically during a simulation to achieve greater local savings~\cite{Banerjee:2006,Liang:2009,Shi:2010,Gou:2013eu,Yang:2013ip,Curtis:2015aa}.
 Techniques such as interpolation\slash tabulation of expensive terms~\cite{Pope:1997wu} can also reduce computational costs.
@@ -320,7 +320,7 @@ However, by using an analytical formulation for the Jacobian matrix rather than 
 
 In parallel to the potential improvements in stiff implicit integrators used for chemical kinetics, developing algorithms tailored for high-performance hardware accelerators offers another route to reducing computational costs.
 In the past, central processing unit (CPU) clock speeds increased regularly---i.e., Moore's Law---but power consumption and heat dissipation issues disrupted this trend recently, slowing the pace of increases in CPU clock rates.
-While multi-core parallelism brought about some CPU performance gains, single-instruction multiple data processors (SIMD), e.g., graphics processing units (GPUs), recently emerged as a low-cost, low-power, and massively parallel high-performance computing alternative. 
+While multi-core parallelism brought about some CPU performance gains, single-instruction multiple data processors (SIMD), e.g., graphics processing units (GPUs), recently emerged as a low-cost, low-power, and massively parallel high-performance computing alternative.
 GPUs---originally developed for graphics\slash video processing and display purposes---consist of hundreds to thousands of cores, compared to the tens of cores found on a typical CPU.
 Recognizing that the SIMD parallelism model fits well with the operator-split chemistry integration that forms the basis of many reactive-flow codes~\cite{Oran:2001aa}, a number of studies in recent years~\cite{Spafford:2010aa,Shi:2011aa,Niemeyer:2011aa,Shi:2012aa,Stone:2013aa,Niemeyer:2014aa} explored the use of SIMD processors to accelerate the integration of chemical kinetics in reactive-flow codes.
 While explicit methods offer significant improvements in performance for nonstiff and moderately stiff chemical kinetics~\cite{Niemeyer:2014aa}, experiences thus far suggest that stiff chemistry continues to require the use of implicit or similar algorithms.
@@ -363,7 +363,7 @@ The initial value problem to be solved, whether in the context of a single homog
 \label{e:vars}
 \Phi = \left \lbrace T, Y_1, Y_2, \dotsc, Y_{\numsp - 1} \right \rbrace^{\intercal} \;,
 \end{equation}
-where $T$ is the temperature, $Y_i$ are the species mass fractions, and $\numsp$ is the number of species. 
+where $T$ is the temperature, $Y_i$ are the species mass fractions, and $\numsp$ is the number of species.
 The mass fraction of the final species, $Y_{\numsp}$, is determined through conservation of mass:
 \begin{equation}
 Y_{\numsp} = 1 - \sum_{k=1}^{\numsp - 1} Y_k \;,
@@ -438,7 +438,7 @@ The base rate-of-progress for a reversible reaction is
 \begin{align}
 R_i &= R_{f, i} - R_{r, i} \;, \\
 R_{f, i} &= k_{f, i} \prod_{j = 1}^{\numsp} [X_j]^{\nu_{j i}^{\prime}} \;, \\
-R_{r, i} &= k_{r, i} \prod_{j = 1}^{\numsp} [X_j]^{\nu_{j i}^{\prime \prime}} \;, 
+R_{r, i} &= k_{r, i} \prod_{j = 1}^{\numsp} [X_j]^{\nu_{j i}^{\prime \prime}} \;,
 \end{align}
 and the third-body\slash pressure modification $c_i$ is given by
 \begin{equation}
@@ -461,7 +461,7 @@ where $A_i$ is the pre-exponential factor, $\beta_i$ is the temperature exponent
 As given by Lu and Law~\cite{Lu:2009gh}, depending on the value of the Arrhenius parameters, $k_f$ can be calculated in different ways to minimize the computational cost:
 \begin{equation}
 \label{e:kf_cost}
-  k_f = 
+  k_f =
   \begin{dcases}
   A & \text{if } \beta = 0 \text{ and } T_a = 0 \;, \\
   \exp \left( \log A + \beta \log T \right)   & \text{if } \beta \neq 0 \text{ and } \text{if } T_a = 0 \;, \\
@@ -543,7 +543,7 @@ F_{\text{cent}} &= (1 - a) \exp \left( -\frac{T}{T^{***}} \right) + a\cdot \exp 
 A &= \log_{10} P_{r,i} - 0.67 \log_{10} F_{\text{cent}} - 0.4 \;, \text{and} \\
 B &= 0.806 - 1.1762 \log_{10} F_{\text{cent}} - 0.14 \log_{10} P_{r,i} \;,
 \end{align}
-where $a$, $T^{***}$, $T^*$, and $T^{**}$ are specified parameters. 
+where $a$, $T^{***}$, $T^*$, and $T^{**}$ are specified parameters.
 The final parameter $T^{**}$ is optional, and, if it is not used, the final term of $F_{\text{cent}}$ is omitted.
 The expression used in the SRI representation is given by
 \begin{equation}
@@ -576,7 +576,7 @@ where $\alpha_{ij}$ is the coefficient corresponding to the grid points $i$ and 
 \begin{equation}
 \phi_n (x) = T_{n-1} (x) = \cos \left( (n - 1) \arccos (x) \right) \quad \text{for } |x| \leq 1 \;.
 \end{equation}
-The reduced temperature $\tilde{T}$ and pressure $\tilde{p}$ are given by 
+The reduced temperature $\tilde{T}$ and pressure $\tilde{p}$ are given by
 \begin{align}
 \tilde{T} &\equiv \frac{2 T^{-1} - T^{-1}_{\min} - T^{-1}_{\max}}{T^{-1}_{\max} - T^{-1}_{\min}} \quad\text{and} \\
 \tilde{p} &\equiv \frac{2\log_{10} p - \log_{10} p_{\min} - \log_{10} p_{\max}}{\log_{10} p_{\max} - \log_{10} p_{\min}} \;,
@@ -673,7 +673,7 @@ The partial derivatives of species concentration are
 where $i = 1, \ldots, \numsp$, $j = 1, \ldots, \numsp - 1$, and $\delta_{ij}$ is the Kronecker delta.
 
 The partial derivatives of $R_i$ vary depending on whether the reaction is reversible.
-For irreversible reactions, 
+For irreversible reactions,
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{R_{f, i}}{T} &=& \dydx{k_{f, i}}{T} \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right) \nonumber \\
 &=& \dydx{k_{f, i}}{T} \frac{1}{k_{f, i}} R_{f, i} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right) \; \text{and} \label{E:dRfdT-orig} \\
@@ -729,7 +729,7 @@ where
 \end{equation}
 Now, the partial derivative of $R_i$ with respect to temperature is
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{R_i}{T} 
+\dydx{R_i}{T}
 %&=& \frac{R_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{\numsp} \nu_{ji}^{\prime} \right) \nonumber \\
 %&& -\: k_{r,i} \left( \frac{1}{T} \left( \beta_i + \frac{T_{a,i}}{T} \right) - \sum_{j=1}^{\numsp} \nu_{ji} \dydx{B_j}{T} \right) \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime\prime}} + \frac{R_{r,i}}{T} \sum_{j=1}^{\numsp} \nu_{ji}^{\prime\prime} \nonumber \\
 &=& \frac{R_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{\numsp} \nu_{ji}^{\prime} \right) \nonumber \\
@@ -745,7 +745,7 @@ For all reversible reactions,
 \end{IEEEeqnarray}}%
 
 The partial derivatives of $c_i$ depend on the type of reaction.
-For elementary reactions, 
+For elementary reactions,
 \begin{align}
 \dydx{c_i}{T} &= 0 \text{ and}\\
 \dydx{c_i}{Y_j} &= 0 \;.
@@ -763,14 +763,14 @@ Note that in the case that all species contribute equally (i.e., $\alpha_{ij} = 
 \end{IEEEeqnarray}}%
 because $\dydx{p}{Y_j} = 0$ (shown in \ref{A:pres_deriv}).
 
-In the case of unimolecular\slash recombination fall-off reactions, 
+In the case of unimolecular\slash recombination fall-off reactions,
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{c_i}{T} 
+\dydx{c_i}{T}
 %&=& \ddx{T} \left( \frac{P_{r,i}}{1+P_{r,i}} \right) F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{T} \nonumber \\
 %&=& \frac{1}{(1+P_{r,i})^2} \dydx{P_{r,i}}{T} F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{T} \\
 &=& c_i \left( \frac{1}{P_{r,i} (1+P_{r,i})} \dydx{P_{r,i}}{T} + \frac{1}{F_i} \dydx{F_i}{T} \right) \\
 %
-\dydx{c_i}{Y_j} 
+\dydx{c_i}{Y_j}
 %&=& \ddx{Y_j} \left( \frac{P_{r,i}}{1+P_{r,i}} \right) F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{Y_j} \nonumber \\
 %&=& \frac{1}{(1+P_{r,i})^2} \dydx{P_{r,i}}{Y_j} F_i + \frac{P_{r,i}}{1+P_{r,i}} \dydx{F_i}{Y_j} \nonumber \\
 &=& c_i \left( \frac{1}{P_{r,i} (1 + P_{r,i})} \dydx{P_{r,i}}{Y_j} + \frac{1}{F_i} \dydx{F_i}{Y_j} \right) \;. \label{dCidY_falloff}
@@ -801,7 +801,7 @@ The partial derivatives for $P_{r,i}$ are
 %\end{dcases} \IEEEeqnarraynumspace
 %\end{IEEEeqnarray}}%
 
-Similarly, for chemically-activated bimolecular reactions 
+Similarly, for chemically-activated bimolecular reactions
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{c_i}{T} &=& c_i \left( \frac{-1}{1+P_{r,i}} \dydx{P_{r,i}}{T} + \frac{1}{F_i} \dydx{F_i}{T} \right) \\
 %&=& c_i \left[ -\frac{P_{r,i}}{T} \left( \beta_{0,i} - \beta_{\infty,i} + \frac{T_{a0,i} - T_{a \infty,i}}{T} - 1 \right) + \frac{1}{F_i} \dydx{F_i}{T} \right] \IEEEeqnarraynumspace \\
@@ -813,7 +813,7 @@ Similarly, for chemically-activated bimolecular reactions
 \end{IEEEeqnarray}}%
 
 The partial derivatives of $F_i$ depend on the representation of pressure dependence.
-For Lindemann reactions, 
+For Lindemann reactions,
 \begin{align}
   \dydx{F_i}{T} &= 0 \text{ and}\\
   \dydx{F_i}{Y_j} &= 0 \;.
@@ -827,7 +827,7 @@ where
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
   \dydx{F_i}{F_{\text{cent}}} &=& F_i \left( \frac{1}{F_{\text{cent}} \left( 1 + (A/B)^2 \right)} - \ln F_{\text{cent}} \frac{2 A}{B^3} \frac{ \dydx{A}{F_{\text{cent}}} B - A \dydx{B}{F_{\text{cent}}} }{ \left( 1 + (A/B)^2 \right)^2} \right), \\
   \dydx{F_{\text{cent}}}{T} &=& -\frac{1-a}{T^{***}} \exp \left( \frac{-T}{T^{***}} \right) - \frac{a}{T^*} \exp \left( \frac{-T}{T^*} \right) + \frac{T^{**}}{T^2} \exp \left( \frac{-T^{**}}{T} \right),  \IEEEeqnarraynumspace \\
-  \dydx{F_i}{P_{r,i}} &=& -F_i \ln F_{\text{cent}} \frac{2A}{B^3} \frac{ \dydx{A}{P_{r,i}} B - A \dydx{B}{P_{r,i}} }{ \left( 1 + (A/B)^2 \right)^2 }, 
+  \dydx{F_i}{P_{r,i}} &=& -F_i \ln F_{\text{cent}} \frac{2A}{B^3} \frac{ \dydx{A}{P_{r,i}} B - A \dydx{B}{P_{r,i}} }{ \left( 1 + (A/B)^2 \right)^2 },
 \end{IEEEeqnarray}}%
 $\dydx{P_{r,i}}{T}$ is given by Eq.~\eqref{E:dPridT}, $\dydx{P_{r,i}}{Y_j}$ is given by Eq.~\eqref{E:dPridY}, and
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rClrCl}
@@ -881,7 +881,7 @@ Then, the final simplified expression can be constructed, appropriate for use wh
 
 Finally, the partial derivatives of the rate coefficient for the $i$th reaction with a Chebyshev rate expression can be evaluated; again, we omit the subscript $i$ for clarity:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{k_f}{T} 
+\dydx{k_f}{T}
 %&=& \log(10) \cdot k_f \ddx{T} \left( \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \, T_{i-1} (\tilde{T}) \, T_{j-1} \left(\tilde{p} \right) \right) \nonumber \\
   &=& \log(10) \cdot k_f \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \, \ddx{T} \left( T_{i-1} (\tilde{T}) \, T_{j-1} \left(\tilde{p} \right) \right) \;, \nonumber
 \end{IEEEeqnarray}}%
@@ -938,7 +938,7 @@ The remaining columns are given by
 && -\: \nu_{li}^{\prime\prime} \biggl( -R_{r,i} W \Bigl(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \Bigr) \nonumber \\
 && +\: \left. \left. \left( \delta_{l j} - \delta_{l \numsp} \right) k_{r,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime\prime} - 1} \prod_{\substack{n=1 \\ n \ne l}}^{\numsp} [X_n]^{\nu_{ni}^{\prime\prime}} \biggr) \Biggr) \right) \right) \;. \IEEEeqnarraynumspace
 %
-%&& +\: \left. \left. c_i \left( \sum_{l=1}^{\numsp} \nu_{li}^{\prime} \left( -\frac{W}{W_j} R_{f,i} + \delta_{lj} k_{f,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp} [X_n]^{\nu_{ni}^{\prime}} \right) \right. \right. \right. \nonumber \\ 
+%&& +\: \left. \left. c_i \left( \sum_{l=1}^{\numsp} \nu_{li}^{\prime} \left( -\frac{W}{W_j} R_{f,i} + \delta_{lj} k_{f,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp} [X_n]^{\nu_{ni}^{\prime}} \right) \right. \right. \right. \nonumber \\
 %&& -\: \left. \left. \left. \sum_{l=1}^{\numsp} \nu_{li}^{\prime\prime} \left( -\frac{W}{W_j} R_{r,i} + \delta_{lj} k_{r,i} \frac{\rho}{W_l} [X_l]^{\nu_{li}^{\prime\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp} [X_n]^{\nu_{ni}^{\prime\prime}} \right) \right) \right) \right) \;. \IEEEeqnarraynumspace
 \label{e:jac_dydy}
 \end{IEEEeqnarray}}%
@@ -1060,13 +1060,13 @@ For all reactions $i$, the following temporary product can be defined:
 \end{equation}
 The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a pressure-independent reaction $i$ can then be updated as:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\mathcal{J}_{k+1,j+1} &\pluseq& \nu_{ki}\frac{W_k}{W_j} 
-\Biggl[ 
+\mathcal{J}_{k+1,j+1} &\pluseq& \nu_{ki}\frac{W_k}{W_j}
+\Biggl[
 	T_{\partial Y,i,\text{ind}} \left(1 - \frac{W_j}{W_{\numsp}}\right) +
-	c_i \left ( 
+	c_i \left (
 		\left( k_{f,i} S_j^{\prime} - k_{r,i} S_j^{\prime\prime} \right) \right. \nonumber \\
 && -\: \left.
-  		\frac{W_j}{W_{\numsp}} 
+  		\frac{W_j}{W_{\numsp}}
   			\left( k_{f,i} S_{\numsp}^{\prime} - k_{r,i} S_{\numsp}^{\prime\prime} \right) \right)
 \Biggr] \quad
   k, j = 1, \ldots, \numsp
@@ -1085,12 +1085,12 @@ First, for any third-body enhanced or falloff reaction where all third-body effi
 
 For third body-enhanced reactions, we define:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-  T_{\partial Y, i, \text{third-body}} &=& 
+  T_{\partial Y, i, \text{third-body}} &=&
   	T_{\partial Y,i,\text{ind}} + \frac{-Wc_i}{\rho}R_i \nonumber \\
-  	&=& 
-  		-\frac{Wc_i}{\rho} 
-  		\left( 
-  			R_{f,i}\left(1 + \sum_{l=1}^{N_{sp}}\nu_{li}^{\prime} \right) - 
+  	&=&
+  		-\frac{Wc_i}{\rho}
+  		\left(
+  			R_{f,i}\left(1 + \sum_{l=1}^{N_{sp}}\nu_{li}^{\prime} \right) -
   			R_{r,i}\left(1 + \sum_{l=1}^{N_{sp}}\nu_{li}^{\prime\prime}\right)
   		\right)
 \end{IEEEeqnarray}}%
@@ -1101,11 +1101,11 @@ The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body reaction without f
 \mathcal{J}_{k+1,j+1} &\pluseq&
   \nu_{ki}\frac{W_k}{W_j}
   \Biggl[
-    T_{\partial Y, i,\text{third-body}}\left(1 - \frac{W_j}{W_{\numsp}}\right) + 
+    T_{\partial Y, i,\text{third-body}}\left(1 - \frac{W_j}{W_{\numsp}}\right) +
     \left(\alpha_{ij} - \alpha_{i \numsp}\frac{W_j}{W_{\numsp}}\right)R_i
     \nonumber \\
-&& +\:  c_i \left( 
-				\left( k_{f,i} S_j^{\prime} - k_{r,i} S_j^{\prime\prime} \right) - 
+&& +\:  c_i \left(
+				\left( k_{f,i} S_j^{\prime} - k_{r,i} S_j^{\prime\prime} \right) -
 				\frac{W_j}{W_{\numsp}}
 			  			\left( k_{f,i} S_{\numsp}^{\prime} - k_{r,i} S_{\numsp}^{\prime\prime} \right)
 		  	\right)
@@ -1119,11 +1119,11 @@ For reactions with falloff dependence, we define a temporary term corresponding 
   \hfil 0 \; & \text{if Lindemann falloff,} \\
   \frac{1.0}{1.0 + P_r} \; & \text{if falloff reaction (Troe\slash SRI), or} \\
   \frac{-P_r}{1.0 + P_r} \; & \text{if chemically activated reaction (Troe\slash SRI).}
-\end{dcases} 
+\end{dcases}
 \end{equation}
 Following this, we must define a temporary term relating to the falloff function derivative $\dydx{F_i}{Y_j}$:
 \begin{equation}
-T_{F_i} = 
+T_{F_i} =
 \begin{dcases}
   \hfil 0 \; &\text{if Lindemann, } \\
   \hfil \ln F_\text{cent} \frac{2A}{B^3}\frac{0.14A + B}{\ln 10(1 + (A/B)^2)^2} \; &\text{if Troe, or} \\
@@ -1132,13 +1132,13 @@ T_{F_i} =
 \end{equation}
 Using the above components, we then define the temporary products for falloff reactions:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-T_{\partial Y, i,\text{falloff}} &=& 
-	T_{\partial Y, i,\text{ind}} + 
+T_{\partial Y, i,\text{falloff}} &=&
+	T_{\partial Y, i,\text{ind}} +
 	c_i\left(T_{P_{r,i}} + T_{F_i}\right)\left(\frac{-W}{\rho}\right)R_i \nonumber \\
 &=&
-	\frac{-Wc_i}{\rho} 
-	\left( 
-		R_{f,i}\left(\sum_{l}^{N_{sp}}\nu_{li}^{\prime} \right) - 
+	\frac{-Wc_i}{\rho}
+	\left(
+		R_{f,i}\left(\sum_{l}^{N_{sp}}\nu_{li}^{\prime} \right) -
 		R_{r,i}\left(\sum_{l}^{N_{sp}}\nu_{li}^{\prime\prime}\right) +
 		R_i \left(T_{P_{r,i}} + T_{F_{i}} \right)
 	\right)
@@ -1146,17 +1146,17 @@ T_{\partial Y, i,\text{falloff}} &=&
 
 The Jacobian entries $\mathcal{J}_{k+1, j+1}$ for a falloff dependent reaction $i$ can then be updated as
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\mathcal{J}_{k+1,j+1} &\pluseq& \nu_{ki}\frac{W_k}{W_j} 
+\mathcal{J}_{k+1,j+1} &\pluseq& \nu_{ki}\frac{W_k}{W_j}
 \Biggr[
     T_{\partial Y, i, \text{falloff}}\left(1 - \frac{W_j}{W_{\numsp}}\right) \nonumber \\
 && +\:  \frac{\frac{k_0}{k_{\infty}}F_i}{1 + Pr_i}\left(T_{P_{r,i}} + T_{F_i}\right)
 		\left(
 			\delta_{M}\left(\alpha_{ij} - \alpha_{i \numsp}\frac{W_j}{W_{\numsp}}\right) \right. \nonumber \\
-&& +\:			
+&& +\:
 			\left. \left(1 - \delta_{\text{M}}\right)\left(\delta_{mj} - \delta_{m \numsp}\frac{W_j}{W_{\numsp}}\right)
 		\right)R_i \nonumber \\
-&& +\:  c_i \left( 
-				\left( k_{f,i} S_j^{\prime} - k_{r,i} S_j^{\prime\prime} \right) - 
+&& +\:  c_i \left(
+				\left( k_{f,i} S_j^{\prime} - k_{r,i} S_j^{\prime\prime} \right) -
 				\frac{W_j}{W_{\numsp}}
 			  			\left( k_{f,i} S_{\numsp}^{\prime} - k_{r,i} S_{\numsp}^{\prime\prime} \right)
 		  	\right)
@@ -1195,7 +1195,7 @@ The bulk of the computation is performed once per reaction, and only minor sub-p
 % where $\{ S_j \}$ is the set of participating species in reaction $j$.
 % The next reaction is determined using Eq.~\eqref{e:rxn_cache} with the previously selected reaction in place of the seed reaction; the process is applied repeatedly until all reactions have been reordered.
 % In the case of a tie, the reaction that's species participate in the most distinct unassigned reactions is chosen.
-% 
+%
 % The seed species is selected as the one that participates in the most reactions.
 % The next species is determined to maximize:
 % \begin{equation}
@@ -1341,7 +1341,7 @@ Table~\ref{t:cpu_comp} summarizes the performance ratio between Jacobian matrice
 \begin{figure}[tbp]
     \centering
     \includegraphics[width=0.75\textwidth]{cpu_norm.pdf}
-    \caption{Comparison of Jacobian matrix evaluation times based on finite difference, \texttt{pyJac}, and \texttt{TChem} for the four kinetic models. 
+    \caption{Comparison of Jacobian matrix evaluation times based on finite difference, \texttt{pyJac}, and \texttt{TChem} for the four kinetic models.
     The symbols indicate performance data, while the solid lines represent least-squares best fits based on the number of reactions $N_R$ in the models.}
     \label{F:cpu_perf}
 \end{figure}
@@ -1358,13 +1358,13 @@ USC-Mech II &  3.93 & 4.28 \\
 \ce{iC5H11OH} & $-$ & 2.89 \\
 \bottomrule
 \end{tabular}
-\caption{Ratio between CPU-based Jacobian matrix evaluation times of \texttt{TChem} and finite differences (FD), and \texttt{pyJac}. 
+\caption{Ratio between CPU-based Jacobian matrix evaluation times of \texttt{TChem} and finite differences (FD), and \texttt{pyJac}.
 $\bar{R}$ indicates the mean evaluation time.}
 \label{t:cpu_comp}
 \end{table}
 
 Figure~\ref{F:cpu_perf} also shows best-fit lines based on least-squares regressions for the available data (the corresponding $R^2$ values were 0.86, 0.72, and 0.99 for the finite difference, \texttt{pyJac} and \texttt{TChem} results, respectively).
-These fits suggest that \texttt{pyJac} and the finite difference method scale superlinearly---nearly quadratically---with number of reactions, while \texttt{TChem} is nearly linear in the number of reactions. 
+These fits suggest that \texttt{pyJac} and the finite difference method scale superlinearly---nearly quadratically---with number of reactions, while \texttt{TChem} is nearly linear in the number of reactions.
 This is expected for the finite difference approach, but warrants explanation for the analytical Jacobian methods.
 Lu and Law argued~\cite{Lu:2009gh} that the cost of analytical Jacobian evaluation should scale linearly with the number of reactions in a model.
 However, this argument is predicated on the assumption of a sparse Jacobian resulting from a molar-concentration-based system; namely, that only changes in species concentrations that participate in a reaction affect the resulting reaction rate.
@@ -1423,7 +1423,7 @@ USC-Mech II &  1.56 \\
 \ce{iC5H11OH} & 2.73 \\
 \bottomrule
 \end{tabular}
-\caption{Ratio between finite difference (FD) and \texttt{pyJac} Jacobian matrix evaluation times on the GPU. 
+\caption{Ratio between finite difference (FD) and \texttt{pyJac} Jacobian matrix evaluation times on the GPU.
 $\bar{R}$ indicates the mean evaluation time.}
 \label{t:gpu_comp}
 \end{table}
@@ -1497,7 +1497,7 @@ At discrete time steps of size $\Delta t$, events including inflow, outflow, and
 
 Inflow and outflow events at the discrete time steps comprise the inflow stream compositions replacing the compositions of $N_{\text{p}} \Delta t / \tau_{\text{res}}$ randomly selected particles, where $\tau_{\text{res}}$ is the residence time.
 For premixed combustion cases, the inflow streams consist of a fresh fuel\slash air mixture stream at a specified temperature and equivalence ratio and a pilot stream consisting of the adiabatic equilibrium products of the fresh mixture stream, with the mass flow rates of these two streams in a ratio of $0.95 \mathbin{:} 0.05$.
-Non-premixed cases consist of three inflow streams: air, fuel, and a pilot consisting of the adiabatic equilibrium products of a stoichiometric fuel\slash air mixture at the same unburned temperature as the first two streams; the mass flow rates of these streams occur in a ratio of $0.85 \mathbin{:} 0.05 \mathbin{:} 0.1$. 
+Non-premixed cases consist of three inflow streams: air, fuel, and a pilot consisting of the adiabatic equilibrium products of a stoichiometric fuel\slash air mixture at the same unburned temperature as the first two streams; the mass flow rates of these streams occur in a ratio of $0.85 \mathbin{:} 0.05 \mathbin{:} 0.1$.
 Then, $\frac{1}{2} N_{\text{p}} \Delta t / \tau_{\text{pair}}$ pairs of particles not including the inflowing particles, where $\tau_{\text{pair}}$ is the pairing timescale, are randomly selected for pairing and then randomly shuffled with the inflowing particles to exchange partners.
 
 Although multiple mixing models exist~\cite{Ren:2004fz}, the current mixing fractional step consists of a pair of two particles $p$ and $q$ exchanging compositional information and evolving by
