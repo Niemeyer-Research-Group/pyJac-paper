@@ -15,7 +15,7 @@ before_install:
      texlive-xetex
      texlive-publishers
      texlive-science
-- sudo tlmgr update --self
-- sudo tlmgr update --all
-- sudo tlmgr install
-     subcaption
+#- sudo tlmgr update --self
+#- sudo tlmgr update --all
+#- sudo tlmgr install
+#     subcaption
