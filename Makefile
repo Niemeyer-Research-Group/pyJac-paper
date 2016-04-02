@@ -15,12 +15,6 @@ DOC_OUT = ${NAME}.${SUFF}
 
 default: ${DOC_OUT}
 
-%.pdf: %.tex
-	${LATEX} $<
-	( ${CHECK_RERUN} && ${LATEX} $< ) || echo "Done."
-	${LATEX} $<
-	( ${CHECK_RERUN} && ${LATEX} $< ) || echo "Done."
-
 %.pdf: %.tex %.bib
 	${LATEX} $<
 	( ${CHECK_RERUN} && ${LATEX} $< ) || echo "Done."
