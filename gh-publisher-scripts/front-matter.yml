@@ -7,7 +7,7 @@
 # Remove the # from the front of each line, and then edit appropriately.
 #
 
-title: pyJac: analytical Jacobian generator for chemical kinetics
+title: "pyJac: analytical Jacobian generator for chemical kinetics"
 abstract: "This site displays an automated build of the LaTeX source of the paper, which is hosted on GitHub."
 
 # This controls which file is shown on the right-hand side of the published
@@ -23,5 +23,6 @@ authors:
 - name: Kyle E. Niemeyer
   address: School of Mechanical, Industrial, and Manufacturing Engineering, Oregon State University
 - name: Nicholas J. Curtis
+  address: Department of Mechanical Engineering, University of Connecticut
 - name: Chih-Jen Sung
   address: Department of Mechanical Engineering, University of Connecticut
