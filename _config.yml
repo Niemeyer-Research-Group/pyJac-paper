@@ -7,7 +7,7 @@
 # Remove the # from the front of each line, and then edit appropriately.
 #
 
-title: pyJac: analytical Jacobian generator for chemical kinetics
+title: "pyJac: analytical Jacobian generator for chemical kinetics"
 abstract: "This site displays an automated build of the LaTeX source of the paper, which is hosted on GitHub."
 
 # This controls which file is shown on the right-hand side of the published
