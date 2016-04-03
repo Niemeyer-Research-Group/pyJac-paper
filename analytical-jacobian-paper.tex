@@ -693,7 +693,6 @@ For irreversible reactions,
 &=& \dydx{k_{f, i}}{T} \frac{1}{k_{f, i}} R_{f, i} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right) \; \text{and} \label{E:dRfdT-orig} \\
 \dydx{R_{f, i}}{Y_j} &=& k_{f, i} \ddx{Y_j} \left( \prod_{k=1}^{\numsp} [X_k]^{\nu_{ki}^{\prime}} \right) \;. \label{E:dRfdY-orig}
 \end{IEEEeqnarray}}%
-Theoretically, $ \dydx{R_{f, i}}{[X_j]} $ could be further simplified to $ \frac{\nu_{ji}^{\prime}}{ [X_j] } R_{f, i} $, but practically this should be avoided since $ [X_j] $ could be zero.
 The partial derivatives of the molar concentration product terms above are
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \ddx{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right) 
@@ -936,7 +935,7 @@ The partial derivative of the reverse rate coefficient $k_{r, i}$ with respect t
 The partial derivative of $k_{r,i}$ with respect to species mass fractions is zero, for the same reason as the forward rate coefficient.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Efficient evaluation of Jacobian matrix}
+\subsection{Evaluation of Jacobian matrix}
 \label{section:eval}
 
 The Jacobian matrix can be efficiently filled by arranging the evaluation of elements in an appropriate order.
@@ -1000,6 +999,7 @@ Unfortunately, simulations of low-speed open combustion systems typically rely o
 
 Alternatively, the governing equations can be formulated in terms of species molar concentrations rather than mass fractions~\cite{Lu:2009gh,Bisetti:2012jw}.
 This would eliminate the presence of $\rho$ in the cross-species Jacobian matrix elements and thus significantly increase matrix sparsity for constant-pressure combustion.
+This is a planned future improvement for \texttt{pyJac}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1019,21 +1019,21 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
 \begin{algorithm}
 \caption{A pseudo-code for simple/naive generation of the chemical Jacobian.}\label{p:naive_psuedo}
 \begin{algorithmic}[0]
-  \For {$sp_i$\text{ in } $\numsp - 1$}
-    \For {$rxn_k$\text{ in $\numreac$}}
+  \For {$i$ \text{ in } $1$\dots$\numsp - 1$}
+    \For {$k$ \text{ in } $1$\dots$\numreac$}
       \If {$\nu_{i,k} \neq 0$}
         \State \text{Generate code for }$rxn_k$\text{'s contribution to }$\dydx{\dot{Y_i}}{T}$
       \EndIf
     \EndFor
-    \For {$sp_j$\text{ in } $\numsp - 1$}
-      \For {$rxn_k$\text{ in } $\numreac$}
+    \For {$j$ \text{ in } $1$\dots$\numsp - 1$}
+      \For {$k$ \text{ in } $1$\dots$\numreac$}
         \If {$\nu_{j,k} \neq 0$}
           \State \text{Generate code for }$rxn_k$\text{'s contribution to }$\dydx{\dot{Y_k}}{Y_j}$
         \EndIf
       \EndFor
     \EndFor
   \EndFor
-  \For {$sp_i$\text{ in } $\numsp -1$}
+  \For {$i$ \text{ in } $1$\dots$\numsp - 1$}
     \State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
   \EndFor
   \State \text{Generate code for $\dydx{\dot{T}}{T}$}
@@ -1043,7 +1043,7 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
 \begin{algorithm}
 \caption{A restructured pseudo-code to enable efficient chemical Jacobian evaluation.}\label{p:updated_pseudo}
 \begin{algorithmic}[0]
-  \For {$rxn_k$\text{ in } $\numreac$}
+  \For {$k$ \text{ in } $1$\dots$\numreac$}
     \State Define reusable products for temperature derivatives\label{op:dt_reusable}
     \For {$sp_i$ in $rxn_k$}
       \If {$\nu_{i,k} \neq 0$}
@@ -1051,7 +1051,7 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
       \EndIf
     \EndFor
     \State Define reusable products for species derivatives\label{op:dy_reusable}
-    \For {$sp_j$ \text{ in } $\numsp -1$}
+    \For {$j$ \text{ in } $1$\dots$\numsp - 1$}
       \For {$sp_i$ in $rxn_k$}
         \If {$\nu_{i,k} \neq 0$}
           \State Generate code for $\dydx{\dot{Y_i}}{Y_j}$
@@ -1059,7 +1059,7 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
       \EndFor
     \EndFor
   \EndFor
-  \For {$sp_i$\text{ in } $\numsp -1$}
+  \For {$i$ \text{ in } $1$\dots$\numsp - 1$}
     \State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
   \EndFor
   \State \text{Generate code for $\dydx{\dot{T}}{T}$}
@@ -1443,7 +1443,7 @@ Figure~\ref{F:gpu_norm} shows the longest \texttt{pyJac} and forward finite-diff
 As with the CPU matrix evaluations shown in Fig.~\ref{F:cpu_perf}, we observed a superlinear (but subquadratic) scaling of the performance with number of reactions.
 The least-squares best-fit lines for the \texttt{pyJac} and finite-difference results---with $R^2$ values of 0.98 and 0.82, respectively---exhibit similar polynomial orders to the CPU-based Jacobian evaluation, suggesting dependence on the methods rather than hardware.
 
-Table~\ref{t:gpu_comp} shows the ratios of average evaluation times between finite difference and \texttt{pyJac} on the GPU.
+Table~\ref{t:gpu_comp} shows the ratios of average evaluation times between finite difference and \texttt{pyJac} on the GPU for the longest runtimes (i.e. the full number of conditions for each model).
 Interestingly, \texttt{pyJac} performs noticeably better than the finite-difference technique with the isopentanol model ($\sim$\SI{3}{$\times$}) than the three smaller models (\SIrange{1}{2}{$\times$}).
 This likely occurs due to the small cache size of the GPU; in this case, the larger model size (360 species compared to, e.g., 111 species for USC-Mech II) makes it difficult to store a majority of species concentrations in the cache, forcing more loads from global memory.
 Thus, for larger models, a relatively larger performance benefit (compared to smaller models) is realized by use of an analytical Jacobian formulation versus a finite difference method.
