@@ -340,7 +340,7 @@ Unlike the current work, the approach of Dijkmans et al.~\cite{Dijkmans:2014bb} 
 To our knowledge, currently no open-source analytical chemical Jacobian tool exists that is capable of generating code specifically optimized for SIMD processors.
 To this end, \texttt{pyJac} is capable of generating subroutines for species and reaction rates, derivative source terms, and analytical chemical Jacobian matrices both for CPU operation via C\slash \CC{} and GPU operation via CUDA~\cite{Nickolls:2008aa}, a widely used programming language for NVIDIA GPUs.
 %In addition, since the programming paradigm to achieve efficient code evaluation for SIMD processors differs from that of normal CPUs, we will describe and test optimization strategies specifically targeted at accelerating Jacobian evaluation on GPUs.
-Furthermore, to the our knowledge, unlike \texttt{pyJac} none of the previously discussed analytical Jacobian generation implementations support the newer pressure-dependent reaction formulations (i.e., based on logarithmic or Chebyshev polynomial interpolation).
+Furthermore, \texttt{pyJac} supports newer pressure-dependent reaction formulations (i.e., based on logarithmic or Chebyshev polynomial interpolation).
 
 The rest of the paper is structured as follows.
 First, in Section~\ref{S:theory} we introduce the governing equations for chemical kinetics and then provide the analytical Jacobian matrix formulation.
