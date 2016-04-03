@@ -203,7 +203,7 @@
 % Two or three sentences to provide a broader perspective
 Accurate simulations of combustion phenomena require the use of detailed chemical kinetics in order to capture limit phenomena such as ignition and extinction as well as predict pollutant formation.
 However, the chemical kinetic models for hydrocarbon fuels of practical interest typically have large numbers of species and reactions and exhibit high levels of mathematical stiffness in the governing differential equations, particularly for larger molecules.
-In order to integrate the stiff equations governing chemical kinetics, generally reactive-flow simulations rely on implicit algorithms that require frequent Jacobian matrix evaluations; in addition, various computational combustion diagnostics methods require accurate Jacobian matrices.
+In order to integrate the stiff equations governing chemical kinetics, generally reactive-flow simulations rely on implicit algorithms that require frequent Jacobian matrix evaluations; in addition, computational combustion diagnostics methods such as CSP and CEMA require accurate Jacobian matrices.
 Typically, finite differences numerically approximate these, but for larger chemical kinetic models this poses significant computational demands since the number of chemical source term evaluations scales with the square of species count.
 Furthermore, existing analytical Jacobian tools do not optimize evaluations or support emerging SIMD processors such as GPUs.
 Here we introduce \texttt{pyJac}, a Python-based open-source program that generates analytical Jacobian matrices for use in chemical kinetics modeling and analysis.
@@ -998,8 +998,8 @@ In that case, off-diagonal elements of the Jacobian matrix arise due to direct s
 Unfortunately, simulations of low-speed open combustion systems typically rely on the constant-pressure assumption~\cite{Law:2006tu}, with the constant volume assumption applicable to enclosed systems (e.g., internal combustion engine cylinder).
 
 Alternatively, the governing equations can be formulated in terms of species molar concentrations rather than mass fractions~\cite{Lu:2009gh,Bisetti:2012jw}.
-This would eliminate the presence of $\rho$ in the cross-species Jacobian matrix elements and thus significantly increase matrix sparsity for constant-pressure combustion.
-This is a planned future improvement for \texttt{pyJac}.
+This eliminates the presence of $\rho$ in the cross-species Jacobian matrix elements and thus significantly increases matrix sparsity for constant-pressure combustion.
+We plan to explore this approach for future versions of \texttt{pyJac}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1109,7 +1109,7 @@ S_l^{\prime} &=& \nu_{li}^{\prime} [X_l]^{\nu_{li}^{\prime} - 1} \prod_{\substac
 S_l^{\prime\prime} &=& \nu_{li}^{\prime\prime} [X_l]^{\nu_{li - 1}^{\prime\prime}} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp}[X_n]^{\nu_{ni}^{\prime\prime}} \;.
 \end{IEEEeqnarray}}%
 Note that either one or both of $\nu_{ji}^{\prime}$ and $\nu_{ji}^{\prime\prime}$ can be zero, while $\nu_{{\numsp}i}^{\prime}$ and $\nu_{{\numsp}i}^{\prime\prime}$ are typically both zero if the last species is an inert abundant gas, e.g., \ce{N2} for air-fed combustion.
-This means that the added $S_l^{\prime}$ and $S_l^{\prime\prime}$ terms are often zero, and may be omitted in many cases.
+This means that the added $S_l^{\prime}$ and $S_l^{\prime\prime}$ terms are often zero, and may be omitted in such cases.
 
 For third-body enhanced or falloff reactions, the $\dydx{c_i}{Y_j}$ term in Eq.~\eqref{e:jac_dydy} is inherently dependent on the $j$th species; however, certain simplifications can still be made.
 First, for any third-body enhanced or falloff reaction where all third-body efficiencies $\alpha_{i,j}$ are unity, the derivative $\dydx{c_i}{Y_j}$ is identically zero as seen in Eq.~\eqref{e:dcdyequalzero}, and the updating scheme defined in Eq.~\eqref{e:pindep_jac_species} can be used.  Otherwise, the appropriate update schemes described below must be employed.
@@ -1370,7 +1370,7 @@ For the CPU and GPU finite-difference-based Jacobian calculations, we used a sim
 %Again, we performed ten runs for each number of conditions, and report the mean and standard deviation of the timing.
 
 Figure~\ref{F:cpu_perf} shows the performance of the CPU-based \texttt{pyJac} Jacobian matrix evaluations for the four kinetic models, compared with the performance of finite difference calculations and the \texttt{TChem} package~\cite{Safta:2011vn}.
-(\texttt{TChem} does not support pressure-log or Chebyshev pressure-dependent reaction expressions, so its performance with the isopentanol model could not be evaluated.)
+(\texttt{TChem} does not support pressure-log or Chebyshev pressure-dependent reaction expressions, so we could not evaluate its performance with the isopentanol model.)
 Table~\ref{t:cpu_comp} summarizes the performance ratio between Jacobian matrices calculated using \texttt{pyJac} and finite differences\slash \texttt{TChem}; \texttt{pyJac}-based routines perform approximately \SIrange{4}{41}{$\times$} faster than \texttt{TChem}, depending on the size of the model.
 \texttt{pyJac} also performs \SIrange{3}{6}{$\times$} faster than the first-order finite difference technique.
 
@@ -1406,9 +1406,9 @@ This is expected for the finite difference approach, but warrants explanation fo
 Lu and Law argued~\cite{Lu:2009gh} that the cost of analytical Jacobian evaluation should scale linearly with the number of reactions in a model.
 However, this argument is predicated on the assumption of a sparse Jacobian resulting from a molar-concentration-based system; namely, that only changes in species concentrations that participate in a reaction affect the resulting reaction rate.
 As discussed in Section~\ref{S:sparsity}, the constant-pressure\slash mass-fraction-based system used in \texttt{pyJac}---along with the majority of reactive-flow modeling descriptions---results in a dense Jacobian and thus execution times that exhibit a higher-order dependence on the number of species\slash reactions.
-It is unclear whether the nearly linear scaling of \texttt{TChem} is an artifact, e.g., due to only having three data-points for fit generation, or the large apparent overhead of \texttt{TChem} masking the runtime growth for the smaller mechanisms (\texttt{TChem} is outperformed by the finite-difference method for the two smallest mechanisms), or some other cause.
+It is unclear whether the nearly linear scaling of \texttt{TChem} results from the best-fit based on only three data points, the large apparent overhead of \texttt{TChem} masking the runtime growth for the smaller mechanisms (\texttt{TChem} is outperformed by the finite-difference method for the two smallest mechanisms), or some other cause.
 The current performance, while faster than either a typical finite difference approach or \texttt{TChem}, provides significant incentive for the development of a sparse concentration-based, constant-pressure Jacobian system in future versions of \texttt{pyJac}.
-Using the developed best-fit lines, we can also obtain a rough order-of-magnitude estimate for the crossover points between the three CPU-based approaches: \texttt{pyJac} is expected to outperform \texttt{TChem} and finite differences for models with up to $\sim$2500 reactions and \num{8e7} reactions, respectively.
+Using the developed best-fit lines, we can also obtain a rough order-of-magnitude estimate for the crossover points between the three CPU-based approaches: we expect \texttt{pyJac} to outperform \texttt{TChem} and finite differences for models with up to $\sim$2500 reactions and \num{8e7} reactions, respectively.
 
 \begin{figure}[tbp]
     \centering
@@ -1435,10 +1435,10 @@ Figure~\ref{F:gpu_perf} demonstrates the performance of the GPU Jacobian matrix 
 Figure~\ref{F:gpu_mean} shows the mean runtime of the GPU Jacobian matrix evaluations against the number of conditions---i.e., the number of thermochemical composition states, with one Jacobian matrix evaluated per state.
 As the number of conditions increases, the GPU becomes fully utilized and the growth rate of the evaluation time begins increasing linearly (here displayed on a log-log plot).
 This thread saturation point occurs at nearly the same number of conditions for each model.
-A ``per-thread'' GPU parallelization model was adopted in this work, in which a single GPU thread evaluates a single Jacobian matrix, rather than a ``per-block'' model where GPU threads in a block cooperate to evaluate a Jacobian.
+We adopted a ``per-thread'' GPU parallelization model in this work, where a single GPU thread evaluates a single Jacobian matrix, rather than a ``per-block'' model where GPU threads in a block cooperate to evaluate a Jacobian.
 The per-thread approach simplifies generation of highly optimized code for SIMD processors and provides a higher theoretical bound on the number of Jacobian matrices that can be evaluated in parallel.
 However, the choice of GPU parallelization merits further investigation because memory bandwidth limits the current per-thread implementation due to small cache sizes available on GPU streaming multiprocessors.
-A per-block implementation might utilize this small cache more effectively, but it remains to be seen if this would translate into an overall increase in performance.
+A per-block implementation might utilize this small cache more effectively, but it is unclear if this would increase overall performance.
 Figure~\ref{F:gpu_norm} shows the longest \texttt{pyJac} and forward finite-difference evaluation times---normalized by the number of conditions---for each kinetic model plotted against the number of reactions in the model.
 As with the CPU matrix evaluations shown in Fig.~\ref{F:cpu_perf}, we observed a superlinear (but subquadratic) scaling of the performance with number of reactions.
 The least-squares best-fit lines for the \texttt{pyJac} and finite-difference results---with $R^2$ values of 0.98 and 0.82, respectively---exhibit similar polynomial orders to the CPU-based Jacobian evaluation, suggesting dependence on the methods rather than hardware.
@@ -1446,7 +1446,7 @@ The least-squares best-fit lines for the \texttt{pyJac} and finite-difference re
 Table~\ref{t:gpu_comp} shows the ratios of average evaluation times between finite difference and \texttt{pyJac} on the GPU for the longest runtimes (i.e., the full number of conditions for each model).
 Interestingly, \texttt{pyJac} performs noticeably better than the finite-difference technique with the isopentanol model ($\sim$\SI{3}{$\times$}) than the three smaller models (\SIrange{1}{2}{$\times$}).
 This likely occurs due to the small cache size of the GPU; in this case, the larger model size (360 species compared to, e.g., 111 species for USC-Mech II) makes it difficult to store a majority of species concentrations in the cache, forcing more loads from global memory.
-Thus, for larger models, a relatively larger performance benefit (compared to smaller models) is realized by use of an analytical Jacobian formulation versus a finite difference method.
+Thus, using an analytical Jacobian formulation increases performance for larger models by a factor of \numrange{1.6}{2.0} over finite difference methods.
 A sparse Jacobian formulation would similarly greatly benefit GPU evaluation due to the greatly reduced memory traffic requirements (i.e., reduced number of global reads and writes).
 
 \begin{table}[tbp]
@@ -1467,7 +1467,7 @@ $\bar{R}$ indicates the mean evaluation time.}
 \end{table}
 
 The results presented above raise a number of issues that warrant further study.
-The superlinear scaling of \texttt{pyJac} matrix evaluation time with number of reactions in the kinetic models is expected due to the density of the Jacobian matrix, but points to the large potential benefits of a sparse molar-concentration-based Jacobian formulation.
+The superlinear scaling of \texttt{pyJac} matrix evaluation time with number of reactions in the kinetic models results from the density of the Jacobian matrix, and suggests the potential benefits of a sparse molar-concentration-based Jacobian formulation.
 However, while \texttt{pyJac} outperforms \texttt{TChem} in all cases, the performance ratio between them reduces with increasing model size, suggesting a reduced performance benefit from a hard-coded Jacobian matrix evaluation subroutine.
 Although it appears from these results that the performance of a hard-coded Jacobian subroutine can surpass that of an interface-based Jacobian evaluation, the hard-coded method has additional difficulties due to the size and number of files created.
 For example, the CPU Jacobian evaluation subroutine for USC-Mech II comprises over \num{360000} total lines spread across 22 files (not including the supporting files for, e.g., species and reaction rate evaluations)---attempting to incorporate the entire matrix evaluation in a single file crashed the \texttt{gcc} 4.4.7 compiler.
@@ -1478,16 +1478,16 @@ While we expect a sparse Jacobian formulation would significantly alleviate thes
 \section{Conclusions}
 \label{S:conclusions}
 
-This work developed the theory behind an analytic Jacobian matrix evaluation approach for constant-pressure chemical kinetics, including new derivations of partial derivatives with respect to modern reaction pressure-dependence formulations.
-In addition, strategies for efficient evaluation were detailed, including reordering matrix element evaluations in order to enable the reuse of temporary products.
-The presented methodology was implemented in the open-source software package \texttt{pyJac}~\cite{Niemeyer:2015im}, which generates custom source code files for evaluating chemical kinetics Jacobian matrices on both CPU and GPU systems.
-The correctness of the resulting Jacobian matrices was established through comparison with matrices obtained by automatic differentiation.
-The results agreed within \SI{1e-3}{\percent} for kinetic models describing the oxidation of hydrogen, methane, ethylene, and isopentanol, with 13 to 360 species (and 27 to 2172 reactions).
-Finally, the performance of the CPU and GPU matrix evaluation subroutines was investigated by evaluating the matrix calculation time for the same kinetic models.
-The \texttt{pyJac} CPU-based Jacobian evaluation performed \numrange{2.9}{5.3} times faster than a forward finite difference approach and \numrange{3.9}{41} times faster than the existing \texttt{TChem} software.
+This work developed the theory behind an analytical Jacobian matrix evaluation approach for constant-pressure chemical kinetics, including new derivations of partial derivatives with respect to modern reaction pressure-dependence formulations.
+In addition, we detailed strategies for efficient evaluation of the Jacobian matrix, including reordering matrix element evaluations in order to enable the reuse of temporary products.
+We implemented the presented methodology in the open-source software package \texttt{pyJac}~\cite{Niemeyer:2015im}, which generates custom source code files for evaluating chemical kinetics Jacobian matrices on both CPU and GPU systems.
+We established the correctness of the resulting Jacobian matrices through comparison with matrices obtained by automatic differentiation.
+The results agree within \SI{1e-3}{\percent} for kinetic models describing the oxidation of hydrogen, methane, ethylene, and isopentanol, with 13 to 360 species (and 27 to 2172 reactions).
+Finally, we investigated the performance of the CPU and GPU matrix evaluation subroutines by evaluating the matrix calculation time for the same kinetic models.
+The \texttt{pyJac} CPU-based Jacobian evaluation performs \numrange{2.9}{5.3} times faster than a forward-finite-difference approach and \numrange{3.9}{41} times faster than the existing \texttt{TChem} software.
 
-Planned work includes further development of \texttt{pyJac} to handle the assumption of constant volume, and support for generating Fortran and Matlab source code.
-Further study will be performed into the benefits of the current hard-coded, compiled Jacobian evaluation subroutine approach versus a loop\slash branch-based approach, in order to determine how to obtain the best performance scaling with kinetic model size.
+Planned development work for \texttt{pyJac} will include support for constant-volume assumption, and the capability to generate Fortran and Matlab source code.
+Further study will be performed into the benefits of the current custom source-code, compiled Jacobian evaluation subroutine approach versus a loop\slash branch-based approach, in order to determine how to obtain the best performance scaling with kinetic model size.
 Finally, we will investigate the performance benefits of converting from a differential system based on species mass fractions to molar concentrations, which offers a marked improvement in matrix sparsity.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
