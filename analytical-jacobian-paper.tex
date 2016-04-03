@@ -236,54 +236,54 @@ Chemical kinetics \sep Jacobian \sep SIMD \sep GPU
 \noindent
 {\em Manuscript Title:} \texttt{pyJac}: analytical Jacobian generator for chemical kinetics \\
 {\em Authors:} Kyle E.\ Niemeyer, Nicholas J.\ Curtis, Chih-Jen Sung \\
-{\em Program Title:} pyJac                                    \\
+{\em Program Title:} pyJac \\
 {\em Journal Reference:}                                      \\
   %Leave blank, supplied by Elsevier.
 {\em Catalogue identifier:}                                   \\
   %Leave blank, supplied by Elsevier.
-{\em Licensing provisions:}                                   \\
+{\em Licensing provisions:} MIT License \\
   %enter "none" if CPC non-profit use license is sufficient.
-{\em Programming language:} Python                            \\
-{\em Computer:} Any                                              \\
+{\em Programming language:} Python \\
+{\em Computer:} Windows, Ubuntu, and Mac OS computers \\
   %Computer(s) for which program has been designed.
-{\em Operating system:} Any (Linux, OS X, Windows)            \\
+{\em Operating system:} Any (Linux, Mac OS X, Windows) \\
   %Operating system(s) for which program has been designed.
-{\em RAM:} bytes                                              \\
+{\em RAM:} Problem dependent; typically less than 1 GB \\
   %RAM in bytes required to execute program with typical data.
-%{\em Number of processors used:}                              \\
+{\em Number of processors used:} one or more if present \\
 %  %If more than one processor.
 %{\em Supplementary material:}                                 \\
 %  % Fill in if necessary, otherwise leave out.
-{\em Keywords:} Chemical kinetics, Jacobian  \\
-  % Please give some freely chosen keywords that we can use in a
-  % cumulative keyword index.
 {\em Classification:} 16.12, 4.3                                \\
   %Classify using CPC Program Library Subject Index, see (
   % http://cpc.cs.qub.ac.uk/subjectIndex/SUBJECT_index.html)
   %e.g. 4.4 Feynman diagrams, 5 Computer Algebra.
-{\em External routines/libraries:}                            \\
+{\em External routines/libraries:} required: \texttt{NumPy}; optional: \texttt{Cython}, Cantera, \texttt{PyYAML}, \texttt{Adept} \\
   % Fill in if necessary, otherwise leave out.
 %{\em Subprograms used:}                                       \\
 %  %Fill in if necessary, otherwise leave out.
-{\em Nature of problem:}\\
+{\em Nature of problem:} Automatic generation of source code to evaluate Jacobian matrices for chemical kinetics models \\
   %Describe the nature of the problem here.
-   \\
-{\em Solution method:}\\
+ %  \\
+{\em Solution method:} Chemical kinetics model interpreted from input files, and partial derivatives and necessary supporting functions are written to file based on a theoretical derivation.\\
   %Describe the method solution here.
-   \\
+%   \\
 %{\em Restrictions:}\\
 %  %Describe any restrictions on the complexity of the problem here.
 %   \\
 %{\em Unusual features:}\\
 %  %Describe any unusual features of the program/problem here.
 %   \\
-{\em Additional comments:}\\
+{\em Additional comments:} Current version and support available at \url{https://github.com/kyleniemeyer/pyjac/}\\
   %Provide any additional comments here.
    \\
-{\em Running time:}\\
+{\em Running time:} Problem dependent; from a few seconds to an hour depending on the model size.\\
   %Give an indication of the typical running time here.
-   \\
-
+ \\ 
+{\em Keywords:} Chemical kinetics, Jacobian, GPU 
+  % Please give some freely chosen keywords that we can use in a
+  % cumulative keyword index.
+  
 %\begin{thebibliography}{0}
 %\bibitem{1}Reference 1         % This list should only contain those items referenced in the
 %\bibitem{2}Reference 2         % Program Summary section.
