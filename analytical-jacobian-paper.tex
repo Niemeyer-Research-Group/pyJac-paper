@@ -1443,7 +1443,7 @@ Figure~\ref{F:gpu_norm} shows the longest \texttt{pyJac} and forward finite-diff
 As with the CPU matrix evaluations shown in Fig.~\ref{F:cpu_perf}, we observed a superlinear (but subquadratic) scaling of the performance with number of reactions.
 The least-squares best-fit lines for the \texttt{pyJac} and finite-difference results---with $R^2$ values of 0.98 and 0.82, respectively---exhibit similar polynomial orders to the CPU-based Jacobian evaluation, suggesting dependence on the methods rather than hardware.
 
-Table~\ref{t:gpu_comp} shows the ratios of average evaluation times between finite difference and \texttt{pyJac} on the GPU for the longest runtimes (i.e. the full number of conditions for each model).
+Table~\ref{t:gpu_comp} shows the ratios of average evaluation times between finite difference and \texttt{pyJac} on the GPU for the longest runtimes (i.e., the full number of conditions for each model).
 Interestingly, \texttt{pyJac} performs noticeably better than the finite-difference technique with the isopentanol model ($\sim$\SI{3}{$\times$}) than the three smaller models (\SIrange{1}{2}{$\times$}).
 This likely occurs due to the small cache size of the GPU; in this case, the larger model size (360 species compared to, e.g., 111 species for USC-Mech II) makes it difficult to store a majority of species concentrations in the cache, forcing more loads from global memory.
 Thus, for larger models, a relatively larger performance benefit (compared to smaller models) is realized by use of an analytical Jacobian formulation versus a finite difference method.
