@@ -304,7 +304,7 @@ Chemical kinetics \sep Jacobian \sep SIMD \sep GPU
 \section{Introduction}
 \label{sec:intro}
 
-As the need for detailed and accurate chemical kinetics models~\footnote{Note that the term ``reaction mechanism'' is also used commonly in the literature; we adopted our preferred terminology ``chemical kinetic model'' here.} in predictive reactive-flow simulations has become recognized in recent years, simultaneously such models describing the oxidation of hydrocarbon fuels grew orders of magnitude in size and complexity.
+As the need for detailed and accurate chemical kinetics models~\footnote{Note that the term ``reaction mechanism'' is also used commonly in the literature; we adopted our preferred terminology ``chemical kinetic model'' here.} in predictive reactive-flow simulations has become recognized in recent years, such models describing the oxidation of hydrocarbon fuels simultaneously grew orders of magnitude in size and complexity.
 For example, a recently developed detailed kinetic model for 2-methylalkanes, relevant for jet and diesel fuel surrogates, consists of over 7000 species and 30000 reactions~\cite{Sarathy:2011kx}; similarly large surrogate models exist for gasoline~\cite{Mehl:2011cn,Mehl:2011jn} and biodiesel~\cite{Herbinet:2010gu}.
 Since in general the computational cost of solving the associated generally stiff systems of equations scales quadratically with the number of species at best---and at worst, cubically---models of this size pose challenges even for lower-dimensional analyses, and cannot practically be used directly in multidimensional reactive-flow simulations.
 
@@ -313,16 +313,17 @@ Major classes of such approaches include skeletal reduction methods that remove 
 Strategies for achieving significant reduction combine such methods a priori in multiple stages~\cite{Lu:2008bi,Niemeyer:2014,Niemeyer:2015wq}, or apply them dynamically during a simulation to achieve greater local savings~\cite{Banerjee:2006,Liang:2009,Shi:2010,Gou:2013eu,Yang:2013ip,Curtis:2015aa}.
 Techniques such as interpolation\slash tabulation of expensive terms~\cite{Pope:1997wu} can also reduce computational costs.
 
-In addition to the aforementioned cost reduction methods that modify the chemical kinetic models, focusing on improvements to the integration algorithms that actually solve the governing differential equations can also offer significant gains in computational performance.
-Due to the chemical stiffness exhibited by most kinetic models, typically solvers rely on robust, high-order implicit integration algorithms based on backward differentiation formulae~\cite{Curtiss:1952,Byrne:1987wp,Brown:1989vl,Hindmarsh:2005hg}.
+In addition to the aforementioned cost reduction methods that modify the chemical kinetic models, improvements to the integration algorithms that actually solve the governing differential equations can also offer significant gains in computational performance.
+Due to the chemical stiffness exhibited by most kinetic models, solvers typically rely on robust, high-order implicit integration algorithms based on backward differentiation formulae~\cite{Curtiss:1952,Byrne:1987wp,Brown:1989vl,Hindmarsh:2005hg}.
 In order to solve the nonlinear algebraic equations that arise in these methods, the Jacobian matrix must be evaluated and factorized, operations that result in the quadratic and cubic costs mentioned previously.
-However, by using an analytical formulation for the Jacobian matrix rather than a typical finite difference approximation, the cost of the numerous evaluations drops from growing with the square of the number of species to a linear dependence~\cite{Lu:2009gh}.
+However, by using an analytical formulation for the Jacobian matrix rather than a typical finite difference approximation, the cost of the numerous evaluations can drop from growing with the square of the number of species to a linear dependence~\cite{Lu:2009gh}.
 
-In parallel to the potential improvements in stiff implicit integrators used for chemical kinetics, developing algorithms tailored for high-performance hardware accelerators offers another route to reducing computational costs.
+In parallel with the potential improvements in stiff implicit integrators used for chemical kinetics, algorithms tailored for high-performance hardware accelerators offer another route to reducing computational costs.
 In the past, central processing unit (CPU) clock speeds increased regularly---i.e., Moore's Law---but power consumption and heat dissipation issues disrupted this trend recently, slowing the pace of increases in CPU clock rates.
-While multi-core parallelism brought about some CPU performance gains, single-instruction multiple data processors (SIMD), e.g., graphics processing units (GPUs), recently emerged as a low-cost, low-power, and massively parallel high-performance computing alternative.
+While multi-core parallelism continues to raise CPU performance, single-instruction multiple data processors (SIMD), e.g., graphics processing units (GPUs), recently emerged as a low-cost, low-power, and massively parallel high-performance computing alternative.
 GPUs---originally developed for graphics\slash video processing and display purposes---consist of hundreds to thousands of cores, compared to the tens of cores found on a typical CPU.
 Recognizing that the SIMD parallelism model fits well with the operator-split chemistry integration that forms the basis of many reactive-flow codes~\cite{Oran:2001aa}, a number of studies in recent years~\cite{Spafford:2010aa,Shi:2011aa,Niemeyer:2011aa,Shi:2012aa,Stone:2013aa,Niemeyer:2014aa} explored the use of SIMD processors to accelerate the integration of chemical kinetics in reactive-flow codes.
+Niemeyer and Sung~\cite{Niemeyer:2014ab} reviewed such efforts in greater detail.
 While explicit methods offer significant improvements in performance for nonstiff and moderately stiff chemical kinetics~\cite{Niemeyer:2014aa}, experiences thus far suggest that stiff chemistry continues to require the use of implicit or similar algorithms.
 This provides significant motivation to provide the capability of evaluating analytical Jacobian matrices on GPUs as well as CPUs.
 
@@ -1312,7 +1313,7 @@ The sample size for each case depended on the number of particles and relevant t
 
 We also made comparisons with the \texttt{TChem} package~\cite{Safta:2011vn} for validation purposes.
 However, while many quantities calculated via \texttt{TChem} agreed closely with those from both Cantera and \texttt{pyJac}, we observed discrepancies in the \texttt{TChem} species net production rates that correlated with errors in the derivative source term and Jacobian matrix.
-These discrepancies occurred mainly for low species production rates, where the (larger) rates for other species agreed closely, and in general for near-equilibrium states.\todo{was the error low near equilibrium?  I thought it was in these states where it popped up but I could be wrong}
+These discrepancies occurred mainly for low species production rates, where the (larger) rates for other species agreed closely, and in general for near-equilibrium states.
 As a result, we do not present detailed Jacobian matrix comparisons between \texttt{TChem} and \texttt{pyJac} here.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
@@ -1553,7 +1554,7 @@ Although a large number of particles reside near the equilibrium temperature of 
 % shouldn't need to do this...
 %\section*{\refname}
 
-\bibliography{refs}
+\bibliography{analytical-jacobian-paper}
 \bibliographystyle{elsarticle-num}
 %\bibliographystyle{elsarticle-num-CNF}
 
