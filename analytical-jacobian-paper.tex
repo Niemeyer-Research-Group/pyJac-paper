@@ -398,7 +398,7 @@ where
 \ddt{T} &= \frac{-1}{\rho c_p} \sum_{k=1}^{\numsp} h_k W_k \dot{\omega}_k \;, \\
 \ddt{Y_k} &= \frac{W_k}{\rho} \dot{\omega}_k \quad k = 1, \dotsc, \numsp - 1 \;, \label{e:dTdt}
 \end{align}
-$\rho$ is the density, $c_p$ is the mass-averaged constant-pressure specific heat, $h_k$ is the enthalpy of the $k$th species in mass units, $W_k$ is the molecular weight of the $k$th species, and $\dot{\omega}_k$ is the $k$th species overall production rate.
+where $\rho$ is the density, $c_p$ is the mass-averaged constant-pressure specific heat, $h_k$ is the enthalpy of the $k$th species in mass units, $W_k$ is the molecular weight of the $k$th species, and $\dot{\omega}_k$ is the $k$th species overall production rate.
 
 \subsection{Thermodynamic properties}
 
@@ -468,7 +468,7 @@ As given by Lu and Law~\cite{Lu:2009gh}, depending on the value of the Arrhenius
   \exp \left( \log A + \beta \log T \right)   & \text{if } \beta \neq 0 \text{ and } T_a = 0 \;, \\
   \exp \left( \log A + \beta \log T - T_a / T \right) & \text{if } \beta \neq 0 \text{ and } T_a \neq 0 \;, \\
   \exp \left( \log A - T_a / T \right)  & \text{if } \beta = 0 \text{ and } T_a \neq 0 \;, \text{ and} \\
-  A \prod^b T & \text{if } T_a = 0 \text{ and } b \in \mathbb{Z} \text{ (integers).}
+  A \prod^\beta T & \text{if } T_a = 0 \text{ and } \beta \in \mathbb{Z} \text{ (integers).}
   \end{dcases}
 \end{equation}
 
