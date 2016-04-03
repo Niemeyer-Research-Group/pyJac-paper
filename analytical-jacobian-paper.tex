@@ -378,7 +378,7 @@ Completely defining the thermodynamic state also requires either pressure ($p$) 
 p = \rho \frac{\mathcal{R}}{W} T = \mathcal{R} T \sum_{k=1}^{\numsp} [X_k] \;,
 \end{equation}
 where $\mathcal{R}$ is the universal gas constant, $W$ is the average molecular weight of the mixture, and $[X_k]$ is the molar concentration of the $k$th species.
-In the current implementation of \texttt{pyJac}, we assume a constant-pressure system; thus, we use Eq.~\eqref{e:state} to determine density rather than including it in the differential system~\eqref{e:vars}.
+In the current implementation of \texttt{pyJac}, we assume a constant-pressure system~\footnote{Note: in this context constant-pressure is used to signify a that the pressure is constant during the reaction sub-step of the operator-splitting scheme only (and is thus an input variable to the problem), not that the pressure is fixed throughout a reacting flow simulation.  This assumption is commonly used in multi-dimensional reacting flow simulations and is equivalent to that used in standard chemical-kinetic evaluation routines such as \texttt{CKYWP} in \texttt{CHEMKIN}~\cite{chemkin:2012}}\todo{why is there a space between the word and the footnote number?}; thus, we use Eq.~\eqref{e:state} to determine density rather than including it in the differential system~\eqref{e:vars}.
 The average molecular weight is defined by
 \begin{equation}
 W = \frac{1}{\sum_{k=1}^{\numsp} Y_k / W_k} = \frac{\rho \mathcal{R} T}{p}
