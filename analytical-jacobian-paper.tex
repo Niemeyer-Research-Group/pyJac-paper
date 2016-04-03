@@ -402,13 +402,13 @@ $\rho$ is the density, $c_p$ is the mass-averaged constant-pressure specific hea
 
 \subsection{Thermodynamic properties}
 
-The standard-state thermodynamic properties (in molar units) for a gaseous species $k$ is defined using the seven-coefficient polynomial standard of Gordon and McBride~\cite{Gordon:1976wp}:
+The standard-state thermodynamic properties (in molar units) for a gaseous species $k$ is defined using the standard seven-coefficient polynomial of Gordon and McBride~\cite{Gordon:1976wp}:
 \begin{align}
 \frac{C_{p,k}^{\circ}}{\mathcal{R}} &= a_{0,k} + T \left( a_{1,k} + T \left( a_{2,k} + T \left( a_{3,k} + a_{4,k} T \right) \right) \right) \label{e:cpk} \\
 \frac{H_k^{\circ}}{\mathcal{R}} &= T \left( a_{0,k} + T \left( \frac{a_{1,k}}{2} + T \left( \frac{a_{2,k}}{3} + T \left( \frac{a_{3,k}}{4} + \frac{a_{4,k}}{5} T \right) \right) \right) \right) + a_{5,k} \label{e:hk} \\
 \frac{S_k^{\circ}}{\mathcal{R}} &= a_{0,k} \ln T + T \left( a_{1,k} + T \left( \frac{a_{2,k}}{2} + T \left( \frac{a_{3,k}}{3} + T \left( \frac{a_{3,k}}{3} + \frac{a_{4,k}}{4} T \right) \right) \right) \right) + a_{6,k} \label{e:sk}
 \end{align}
-where $C_{p,l}$ is the constant-pressure specific heat in molar units, $H_k$ is the enthalpy in molar units, $S_k$ is the entropy in molar units, and the ${}^{\circ}$ indicates standard-state one atmosphere.
+where $C_{p,k}$ is the constant-pressure specific heat in molar units, $H_k$ is the enthalpy in molar units, $S_k$ is the entropy in molar units, and the ${}^{\circ}$ indicates standard-state one atmosphere.
 For a calorically perfect gas, the standard-state specific heats, enthalpies, and internal energies are also the actual values.
 
 The mass-based specific heat and enthalpy are then defined as
@@ -424,7 +424,7 @@ c_p = \sum_{k=1}^{\numsp} Y_k c_{p,k} \;.
 \subsection{Reaction rate expressions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Next, define the species rates of production and related kinetic terms as
+Next, we define the species rates of production and related kinetic terms as
 \begin{equation}
 \dot{\omega}_k = \sum_{i=1}^{N_{\text{reac}}} \nu_{k i} q_i \;,
 \end{equation}
@@ -447,12 +447,12 @@ c_i = \begin{dcases}
   1 &\text{for elementary reactions,} \\
   [X]_i &\text{for \nth{3}-body enhanced reactions,} \\
   \frac{P_{r i}}{1 + P_{r i}} F_i &\text{for unimolecular/recombination falloff reactions, and} \\
-  \frac{1}{1 + P_{r i}} F_i &\text{chemically-activated bimolecular reactions.}
+  \frac{1}{1 + P_{r i}} F_i &\text{for chemically-activated bimolecular reactions.}
   \end{dcases}
 \label{e:rxn_pressure}
 \end{equation}
 
-The forward reaction rate coefficient $k_{f, i}$ is given by the Arrhenius expression:
+The forward reaction rate coefficient $k_{f, i}$ is given by the three-parameter Arrhenius expression:
 \begin{equation}
 \label{e:arrhenius}
   k_{f, i} = A_i T^{\beta_i} \exp \left( - \frac{T_{a, i}}{T} \right) \;,
@@ -465,7 +465,7 @@ As given by Lu and Law~\cite{Lu:2009gh}, depending on the value of the Arrhenius
   k_f =
   \begin{dcases}
   A & \text{if } \beta = 0 \text{ and } T_a = 0 \;, \\
-  \exp \left( \log A + \beta \log T \right)   & \text{if } \beta \neq 0 \text{ and } \text{if } T_a = 0 \;, \\
+  \exp \left( \log A + \beta \log T \right)   & \text{if } \beta \neq 0 \text{ and } T_a = 0 \;, \\
   \exp \left( \log A + \beta \log T - T_a / T \right) & \text{if } \beta \neq 0 \text{ and } T_a \neq 0 \;, \\
   \exp \left( \log A - T_a / T \right)  & \text{if } \beta = 0 \text{ and } T_a \neq 0 \;, \text{ and} \\
   A \prod^b T & \text{if } T_a = 0 \text{ and } b \in \mathbb{Z} \text{ (integers).}
@@ -480,22 +480,24 @@ As given by Lu and Law~\cite{Lu:2009gh}, depending on the value of the Arrhenius
 By definition, irreversible reactions have a zero reverse rate coefficient $k_{r, i}$, while reversible reactions have nonzero $k_{r, i}$.
 For reversible reactions, the reverse rate coefficient is determined in one of two ways: (1) via explicit reverse Arrhenius parameters as with the forward rate coefficient---thus following the same expression as Eq.~\eqref{e:arrhenius}---or (2) via the ratio of the forward rate coefficient and the equilibrium constant,
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-k_{r, i} &=& \frac{k_{f, i}}{K_{c, i}} \label{e:kri} \\
-K_{c, i} &=& K_{p, i} \left( \frac{p_{\text{atm}}}{\mathcal{R} T} \right)^{\sum_{k=1}^{\numsp} \nu_{k i}} \\
+k_{r, i} &=& \frac{k_{f, i}}{K_{c, i}} \;, \label{e:kri} \\
+K_{c, i} &=& K_{p, i} \left( \frac{p_{\text{atm}}}{\mathcal{R} T} \right)^{\sum_{k=1}^{\numsp} \nu_{k i}} \;, \text{ and} \\
 K_{p, i} &=& \exp \left( \frac{\Delta S_i^{\circ}}{\mathcal{R}} - \frac{\Delta H_i^{\circ}}{\mathcal{R} T} \right) = \exp \left( \sum_{k=1}^{\numsp} \nu_{k i} \left( \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T} \right) \right) \;,
 \end{IEEEeqnarray}}%
 where $p_{\text{atm}}$ is the pressure of one standard atmosphere in the appropriate units.
 
 By combining the expressions for $K_{c, i}$ and $K_{p, i}$, we obtain
 \begin{align}
-K_{c, i} &= \left( \frac{p_{\text{atm}}}{\mathcal{R} T} \right)^{\sum_{k=1}^{\numsp} \nu_{k i}} \exp \left( \sum_{k=1}^{\numsp} \nu_{k i} \left( \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T} \right) \right)  \nonumber \\
+K_{c, i} 
+%&= \left( \frac{p_{\text{atm}}}{\mathcal{R} T} \right)^{\sum_{k=1}^{\numsp} \nu_{k i}} \exp \left( \sum_{k=1}^{\numsp} \nu_{k i} \left( \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T} \right) \right)  \nonumber \\
 %  &= \left( \frac{p_{\text{atm}}}{\mathcal{R}} \right)^{\sum_{k=1}^{\numsp} \nu_{k i}} \left( \frac{1}{T} \right)^{\sum_{k=1}^{\numsp} \nu_{k i}} \exp \left( \sum_{k=1}^{\numsp} \nu_{k i} \left( \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T} \right) \right)    \nonumber  \\
 %  &= \left( \frac{p_{\text{atm}}}{\mathcal{R}} \right)^{\sum_{k=1}^{\numsp} \nu_{k i}} \exp \left( \sum_{k=1}^{\numsp} \nu_{k i} \left( -\ln T + \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T} \right) \right)   \nonumber   \\
  &= \left( \frac{p_{\text{atm}}}{\mathcal{R}} \right)^{\sum_{k=1}^{\numsp} \nu_{k i}} \exp \left( \sum_{k=1}^{\numsp} \nu_{k i} B_k \right) \;,
 \end{align}
 where, expanding the polynomial expressions for $S_k^{\circ}$ and $H_k^{\circ}$ from Eqs.~\eqref{e:sk} and \eqref{e:hk}, respectively,
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-B_k & = & -\ln T + \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T}  \nonumber  \\
+B_k 
+%& = & -\ln T + \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T}  \nonumber  \\
   & = & a_{6,k} - a_{0,k} + \left( a_{0,k} - 1 \right) \ln T \nonumber \\
   & & +\: T \left( \frac{a_{1,k}}{2} + T \left( \frac{a_{2,k}}{6} + T \left( \frac{a_{3,k}}{12} + \frac{a_{4,k}}{20} T \right) \right) \right) - \frac{a_{5,k}}{T} \;. \IEEEeqnarraynumspace
 \end{IEEEeqnarray}}%
@@ -503,13 +505,12 @@ B_k & = & -\ln T + \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Third-body effects}
 
-A three-body reaction contains ``$+ \text{M}$'' in the reaction line description.
-In this case,
+For a reaction enhanced (or diminished) by the presence of a third body, the reaction rate is modified by
 \begin{equation}
 c_i = [X]_i = \sum_{j=1}^{\numsp} \alpha_{i j} [X_j] \;,
 \end{equation}
 where $\alpha_{i j}$ is the third-body efficiency of species $j$ in the $i$th reaction.
-If all species in the mixture contribute equally as third bodies, the default, then $\alpha_{i j} = 1$ for all species.
+If all species in the mixture contribute equally as third bodies (the default) then $\alpha_{i j} = 1$ for all species.
 In this case,
 \begin{equation}
 [X]_i = [M] = \sum_{j=1}^{\numsp} [X_j] = \frac{p}{\mathcal{R} T} = \frac{\rho}{W} \;.
@@ -519,12 +520,12 @@ In this case,
 \subsubsection{Falloff reactions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Unlike elementary and third-body reactions, falloff reactions exhibit a pressure dependence described as a blending of rates as low- and high-pressure limits; thus, the rate coefficients depend on a mixture of low-pressure- ($k_{0, i}$) and high-pressure-limit ($k_{\infty,i}$) coefficients, each with corresponding Arrhenius parameters and expressed using Eq.~\eqref{e:arrhenius}.
+Unlike elementary and third-body reactions, falloff reactions exhibit a pressure dependence described as a blending of rates at low- and high-pressure limits; thus, the rate coefficients depend on a mixture of low-pressure- ($k_{0, i}$) and high-pressure-limit ($k_{\infty,i}$) coefficients, each with corresponding Arrhenius parameters and expressed using Eq.~\eqref{e:arrhenius}.
 The ratio of the coefficients $k_{0, i}$ and $k_{\infty, i}$, combined with the third-body concentration (based on either the mixture as a whole including any efficiencies $\alpha_{i,j}$, or a specific species), define a reduced pressure $P_{r,i}$ given by
 \begin{equation}
 P_{r,i} = \begin{dcases}
-\frac{k_{0,i}}{k_{\infty,i}} [X]_i &\text{if ``(+M)'', or} \\
-\frac{k_{0,i}}{k_{\infty,i}} [X_m] &\text{if ``} (+\text{Y}_m\text{)''.}
+\frac{k_{0,i}}{k_{\infty,i}} [X]_i &\text{for the mixture as the third body, or} \\
+\frac{k_{0,i}}{k_{\infty,i}} [X_m] &\text{for a specific species } m \text{ as third body.}
 \end{dcases}
 \label{e:pr_i}
 \end{equation}
