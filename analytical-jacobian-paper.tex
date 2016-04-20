@@ -372,17 +372,18 @@ Completely defining the thermodynamic state also requires either pressure ($p$) 
 p = \rho \frac{\mathcal{R}}{W} T = \mathcal{R} T \sum_{k=1}^{\numsp} [X_k] \;,
 \end{equation}
 where $\mathcal{R}$ is the universal gas constant, $W$ is the average molecular weight of the mixture, and $[X_k]$ is the molar concentration of the $k$th species.
-In the current implementation of \texttt{pyJac}, we assume a constant-pressure system\footnote{In the context of multidimensional reactive flows, the constant-pressure assumption signifies that pressure remains constant during the reaction substep of an operator-splitting scheme (and is thus an input variable to the kinetics problem), not that the pressure is fixed throughout the entire simulation. This assumption is commonly used in low-speed combustion simulations and equivalent to that used in standard chemical-kinetics species production rate evaluation routines such as \texttt{CKWYP} in Chemkin~\cite{chemkin:2012}.}; thus, we use Eq.~\eqref{e:state} to determine density rather than including it in the differential system given by Eq.~\eqref{e:vars}.
+In the current implementation of \texttt{pyJac}, we assume a constant-pressure system\footnote{In the context of multidimensional reactive flows, the constant-pressure assumption signifies that pressure remains constant during the reaction substep of an operator-split scheme (and is thus an input variable to the kinetics problem), not that the pressure is fixed throughout the entire simulation. This assumption is commonly used in low-speed combustion simulations.}; thus, we use Eq.~\eqref{e:state} to determine density rather than including it in the differential system given by Eq.~\eqref{e:vars}.
 The average molecular weight is defined by
 \begin{equation}
 W = \frac{1}{\sum_{k=1}^{\numsp} Y_k / W_k} = \frac{\rho \mathcal{R} T}{p}
 \end{equation}
 and the molar concentrations by
 \begin{equation}
-[X_k] = \rho \frac{Y_k}{W_k} \;.
+[X_k] = \rho \frac{Y_k}{W_k} \;,
 \end{equation}
+where $W_k$ is the molecular weight of the $k$th species.
 
-The system of ODEs governing the change in thermochemical composition corresponding to Eq.~\eqref{e:vars} is then $ f = \partial \Phi/ \partial t$:
+The system of ODEs governing the time change in thermochemical composition corresponding to Eq.~\eqref{e:vars} is then $ f = \partial \Phi/ \partial t$:
 \begin{equation}
 f = \ddt{\Phi} = \left \lbrace \ddt{T}, \ddt{Y_1}, \ddt{Y_2}, \dotsc, \ddt{Y_{\numsp - 1}} \right\rbrace^{\intercal} \;,
 \label{e:ode}
@@ -392,7 +393,7 @@ where
 \ddt{T} &= \frac{-1}{\rho c_p} \sum_{k=1}^{\numsp} h_k W_k \dot{\omega}_k \;, \\
 \ddt{Y_k} &= \frac{W_k}{\rho} \dot{\omega}_k \quad k = 1, \dotsc, \numsp - 1 \;, \label{e:dTdt}
 \end{align}
-where $\rho$ is the density, $c_p$ is the mass-averaged constant-pressure specific heat, $h_k$ is the enthalpy of the $k$th species in mass units, $W_k$ is the molecular weight of the $k$th species, and $\dot{\omega}_k$ is the $k$th species overall production rate.
+where $c_p$ is the mass-averaged constant-pressure specific heat, $h_k$ is the enthalpy of the $k$th species in mass units, and $\dot{\omega}_k$ is the $k$th species overall production rate.
 
 \subsection{Thermodynamic properties}
 
@@ -402,8 +403,7 @@ The standard-state thermodynamic properties (in molar units) for a gaseous speci
 \frac{H_k^{\circ}}{\mathcal{R}} &= T \left( a_{0,k} + T \left( \frac{a_{1,k}}{2} + T \left( \frac{a_{2,k}}{3} + T \left( \frac{a_{3,k}}{4} + \frac{a_{4,k}}{5} T \right) \right) \right) \right) + a_{5,k} \label{e:hk} \\
 \frac{S_k^{\circ}}{\mathcal{R}} &= a_{0,k} \ln T + T \left( a_{1,k} + T \left( \frac{a_{2,k}}{2} + T \left( \frac{a_{3,k}}{3} + T \left( \frac{a_{3,k}}{3} + \frac{a_{4,k}}{4} T \right) \right) \right) \right) + a_{6,k} \label{e:sk}
 \end{align}
-where $C_{p,k}$ is the constant-pressure specific heat in molar units, $H_k$ is the enthalpy in molar units, $S_k$ is the entropy in molar units, and the ${}^{\circ}$ indicates standard-state one atmosphere.
-For a calorically perfect gas, the standard-state specific heats, enthalpies, and internal energies are also the actual values.
+where $C_{p,k}$ is the constant-pressure specific heat in molar units, $H_k$ is the enthalpy in molar units, $S_k$ is the entropy in molar units, and the ${}^{\circ}$ indicates a standard-state property at one atmosphere (equivalent to the property at any pressure for calorically perfect gases).
 
 The mass-based specific heat and enthalpy are then defined as
 \begin{equation}
@@ -429,22 +429,24 @@ These are defined by
 q_i &= c_i R_i \;,
 \end{align}
 where $\nu_{k i}^{\prime \prime}$ and $\nu_{k i}^{\prime}$ are the product and reactant stoichiometric coefficients (respectively) of species $k$ in reaction $i$.
-The base rate-of-progress for a reversible reaction is
+The base rate-of-progress for the $i$th reversible reaction $R_i$ is given by
 \begin{align}
 R_i &= R_{f, i} - R_{r, i} \;, \\
-R_{f, i} &= k_{f, i} \prod_{j = 1}^{\numsp} [X_j]^{\nu_{j i}^{\prime}} \;, \\
+R_{f, i} &= k_{f, i} \prod_{j = 1}^{\numsp} [X_j]^{\nu_{j i}^{\prime}} \;, \text{ and} \\
 R_{r, i} &= k_{r, i} \prod_{j = 1}^{\numsp} [X_j]^{\nu_{j i}^{\prime \prime}} \;,
 \end{align}
-and the third-body\slash pressure modification $c_i$ is given by
+where $k_{f,i}$ and $k_{r,i}$ are the forward and reverse reaction rate coefficients for the $i$th reaction, respectively, and the third-body\slash pressure modification $c_i$ is given by
 \begin{equation}
 c_i = \begin{dcases}
   1 &\text{for elementary reactions,} \\
-  [X]_i &\text{for \nth{3}-body enhanced reactions,} \\
-  \frac{P_{r i}}{1 + P_{r i}} F_i &\text{for unimolecular/recombination falloff reactions, and} \\
-  \frac{1}{1 + P_{r i}} F_i &\text{for chemically-activated bimolecular reactions.}
+  [X]_i &\text{for third-body enhanced reactions,} \\
+  \frac{P_{r,i}}{1 + P_{r,i}} F_i &\text{for unimolecular/recombination falloff reactions, and} \\
+  \frac{1}{1 + P_{r,i}} F_i &\text{for chemically-activated bimolecular reactions,}
   \end{dcases}
 \label{e:rxn_pressure}
 \end{equation}
+where for the $i$th reaction $[X]_i$ is the third-body concentration, $P_{r,i}$ is the reduced pressure, and $F_i$ is the falloff blending factor.
+These terms are defined in the following sections.
 
 The forward reaction rate coefficient $k_{f, i}$ is given by the three-parameter Arrhenius expression:
 \begin{equation}
@@ -453,19 +455,19 @@ The forward reaction rate coefficient $k_{f, i}$ is given by the three-parameter
 \end{equation}
 where $A_i$ is the pre-exponential factor, $\beta_i$ is the temperature exponent, and $T_{a, i}$ is the activation temperature given by $T_{a, i} = E_{a, i} / \mathcal{R}$.
 
-As given by Lu and Law~\cite{Lu:2009gh}, depending on the value of the Arrhenius parameters, $k_f$ can be calculated in different ways to minimize the computational cost:
+As given by Lu and Law~\cite{Lu:2009gh}, depending on the value of the Arrhenius parameters, $k_{f,i}$ can be calculated in different ways to minimize the computational cost:
 \begin{equation}
 \label{e:kf_cost}
-  k_f =
+  k_{f,i} =
   \begin{dcases}
-  A & \text{if } \beta = 0 \text{ and } T_a = 0 \;, \\
-  \exp \left( \log A + \beta \log T \right)   & \text{if } \beta \neq 0 \text{ and } T_a = 0 \;, \\
-  \exp \left( \log A + \beta \log T - T_a / T \right) & \text{if } \beta \neq 0 \text{ and } T_a \neq 0 \;, \\
-  \exp \left( \log A - T_a / T \right)  & \text{if } \beta = 0 \text{ and } T_a \neq 0 \;, \text{ and} \\
-  A \prod^\beta T & \text{if } T_a = 0 \text{ and } \beta \in \mathbb{Z} \text{ (integers).}
+  A_i & \text{if } \beta = 0 \text{ and } T_{a,i} = 0 \;, \\
+  \exp \left( \log A_i + \beta_i \log T \right)   & \text{if } \beta_i \neq 0 \text{ and } T_{a, i} = 0 \;, \\
+  \exp \left( \log A_i + \beta_i \log T - T_{a, i} / T \right) & \text{if } \beta_i \neq 0 \text{ and } T_{a, i} \neq 0 \;, \\
+  \exp \left( \log A_i - T_{a, i} / T \right)  & \text{if } \beta_i = 0 \text{ and } T_{a, i} \neq 0 \;, \text{ and} \\
+  A_i \prod^\beta_i T & \text{if } T_{a, i} = 0 \text{ and } \beta_i \in \mathbb{Z} \;,
   \end{dcases}
 \end{equation}
-
+where $\mathbb{Z}$ represents the set of integers.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Reverse rate coefficient}
@@ -499,9 +501,9 @@ B_k
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Third-body effects}
 
-For a reaction enhanced (or diminished) by the presence of a third body, the reaction rate is modified by
+For a reaction enhanced (or diminished) by the presence of a third body, the reaction rate is modified by the third-body concentration $[X]_i$ given by
 \begin{equation}
-c_i = [X]_i = \sum_{j=1}^{\numsp} \alpha_{i j} [X_j] \;,
+[X]_i = \sum_{j=1}^{\numsp} \alpha_{i j} [X_j] \;,
 \end{equation}
 where $\alpha_{i j}$ is the third-body efficiency of species $j$ in the $i$th reaction.
 If all species in the mixture contribute equally as third bodies (the default) then $\alpha_{i j} = 1$ for all species.
@@ -509,6 +511,11 @@ In this case,
 \begin{equation}
 [X]_i = [M] = \sum_{j=1}^{\numsp} [X_j] = \frac{p}{\mathcal{R} T} = \frac{\rho}{W} \;.
 \end{equation}
+In addition, a single species may act as the third body, in which case 
+\begin{equation}
+[X]_i = [X_m] \;,
+\end{equation}
+where the $m$th species is the third body.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Falloff reactions}
@@ -528,7 +535,7 @@ The falloff blending factor $F_i$ used in Eq.~\eqref{e:rxn_pressure} is determin
 \begin{equation}
 F_i = \begin{dcases}
 1 &\text{for Lindemann,} \\
-F_{\text{cent}}^{ \left( 1 + ( A / B )^2 \right)^{-1} } &\text{for Troe, or} \\
+F_{\text{cent}}^{ \left( 1 + ( A_{\text{Troe}} / B_{\text{Troe}} )^2 \right)^{-1} } &\text{for Troe, or} \\
 d T^e \left( a \cdot \exp \left( -\frac{b}{T} \right) + \exp \left( -\frac{T}{c} \right) \right)^X &\text{for SRI.}
 \end{dcases}
 \end{equation}
@@ -536,12 +543,12 @@ d T^e \left( a \cdot \exp \left( -\frac{b}{T} \right) + \exp \left( -\frac{T}{c}
 The variables for the Troe representation are given by
 \begin{align}
 F_{\text{cent}} &= (1 - a) \exp \left( -\frac{T}{T^{***}} \right) + a\cdot \exp \left( -\frac{T}{T^*} \right) + \exp \left( -\frac{T^{**}}{T} \right) \;, \\
-A &= \log_{10} P_{r,i} - 0.67 \log_{10} F_{\text{cent}} - 0.4 \;, \text{and} \\
-B &= 0.806 - 1.1762 \log_{10} F_{\text{cent}} - 0.14 \log_{10} P_{r,i} \;,
+A_{\text{Troe}} &= \log_{10} P_{r,i} - 0.67 \log_{10} F_{\text{cent}} - 0.4 \;, \text{and} \\
+B_{\text{Troe}} &= 0.806 - 1.1762 \log_{10} F_{\text{cent}} - 0.14 \log_{10} P_{r,i} \;,
 \end{align}
 where $a$, $T^{***}$, $T^*$, and $T^{**}$ are specified parameters.
 The final parameter $T^{**}$ is optional, and, if it is not used, the final term of $F_{\text{cent}}$ is omitted.
-The expression used in the SRI representation is given by
+The exponent used in the SRI representation is given by
 \begin{equation}
 X = \left( 1 + \left( \log_{10} P_{r,i} \right)^2 \right)^{-1}
 \end{equation}
@@ -561,16 +568,16 @@ k_2 (T) &= A_2 T^{\beta_2} \exp \left( -\frac{T_{a, 2}}{T} \right) \text{ at } p
 where the Arrhenius coefficients are given for each pressure $p_1$ and $p_2$.
 Then, the reaction rate coefficient at a particular pressure $p$ between $p_1$ and $p_2$ can be determined through logarithmic interpolation:
 \begin{equation}
-\log k_{f,i}(T, p) = \log k_1 (T) + \left( \log k_2 (T) - \log k_1 (T) \right) \frac{\log p - \log p_1}{\log p_2 - \log p_1} \;. \label{e:plog}
+\log k_f (T, p) = \log k_1 (T) + \left( \log k_2 (T) - \log k_1 (T) \right) \frac{\log p - \log p_1}{\log p_2 - \log p_1} \;. \label{e:plog}
 \end{equation}
 
 In addition, the pressure dependence of a reaction can be expressed through a bivariate Chebyshev polynomial fit~\cite{Venkatesh:1997hv,Venkatesh:1997ik,Venkatesh:2000gj,chemkin:2012,Goodwin:2015aa}:
 \begin{equation}
-\log_{10} k_{f}(T, p) = \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \phi_i (\tilde{T}) \phi_j \left(\tilde{p}\right) \label{e:cheb} \;,
+\log_{10} k_f (T, p) = \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \phi_i (\tilde{T}) \phi_j \left(\tilde{p}\right) \label{e:cheb} \;,
 \end{equation}
 where $\alpha_{ij}$ is the coefficient corresponding to the grid points $i$ and $j$, $N_T$ and $N_p$ are the numbers of grid points for temperature and pressure, respectively, and $\phi_n$ is the Chebyshev polynomial of the first kind of degree $n - 1$ typically expressed as
 \begin{equation}
-\phi_n (x) = T_{n-1} (x) = \cos \left( (n - 1) \arccos (x) \right) \quad \text{for } |x| \leq 1 \;.
+\phi_n (x) = \mathcal{T}_{n-1} (x) = \cos \left( (n - 1) \arccos (x) \right) \quad \text{for } |x| \leq 1 \;.
 \end{equation}
 The reduced temperature $\tilde{T}$ and pressure $\tilde{p}$ are given by
 \begin{align}
