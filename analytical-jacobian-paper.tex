@@ -634,7 +634,7 @@ The remaining lines of $\mathcal{J}$ are filled with the partial derivatives of 
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \mathcal{J}_{k+1, 1} & = & \dydx{f_{k+1}}{T} 
 %= \ddx{T} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \nonumber \\
- =  \frac{W_k}{\rho} \left(\dydx{\dot{\omega}_k}{T} - \frac{\dot{\omega}_k}{\rho} \dydx{\rho}{T} \right) , \IEEEeqnarraynumspace \\
+ =  \frac{W_k}{\rho} \left(\dydx{\dot{\omega}_k}{T} - \frac{\dot{\omega}_k}{\rho} \dydx{\rho}{T} \right) \text{ and} \IEEEeqnarraynumspace \\
 \mathcal{J}_{k+1, j+1} & = & \dydx{f_{k+1}}{Y_j} 
 %= \ddx{Y_j} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \nonumber \\
 = \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{Y_j} - \frac{\dot{\omega}_k}{\rho} \dydx{\rho}{Y_j} \right) , \IEEEeqnarraynumspace
@@ -647,35 +647,40 @@ for $k = 1, \dotsc, \numsp - 1$ and $j = 1, \dotsc, \numsp - 1$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The partial derivatives of $\rho$, $c_p$, $h_k$, and $\dot{\omega}_k$ with respect to temperature and mass fraction need to be evaluated.
-The partial derivatives of density are:
+The partial derivatives of density are
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{\rho}{T} & = & \ddx{T} \left( \frac{p W}{\mathcal{R} T} \right) 
+\dydx{\rho}{T} & = & \ddx{T} \left( \frac{p W}{\mathcal{R} T} \right) \text{ and}
 %= \frac{p W}{\mathcal{R}} \frac{-1}{T^2} \nonumber \\
  =  -\frac{\rho}{T} \\
 \dydx{\rho}{Y_j} & = & \ddx{Y_j} \left( \frac{p W}{\mathcal{R} T} \right) 
 %= \frac{-p W^2}{\mathcal{R} T} \left( \frac{1}{W_j} - \frac{1}{W_{\numsp}} \right) \nonumber \\
-= -\rho W \left( \frac{1}{W_j} - \frac{1}{W_{\numsp}} \right)
+= -\rho W \left( \frac{1}{W_j} - \frac{1}{W_{\numsp}} \right) \;.
 \end{IEEEeqnarray}}%
-
 The partial derivative of species specific enthalpy with respect to temperature is simply constant-pressure specific heat, and the partial derivative with respect to species mass fraction is zero:
 \begin{align}
 \dydx{h_k}{T} &= c_{p,k} \\
-\dydx{h_k}{Y_j} &= 0
+\dydx{h_k}{Y_j} &= 0 \;.
 \end{align}
-
-Next, the derivatives of specific heat:
+The derivatives of specific heat are expressed by 
 \begin{align}
-\dydx{c_p}{T} &= \sum_{k=1}^{\numsp} Y_k \dydx{c_{p,k}}{T} \label{E:dcpdT} \\
-\dydx{c_{p,k}}{T} &= \frac{\mathcal{R}}{W_k} \left( a_{1,k} + T \left( 2 a_{2,k} + T \left( 3 a_{3,k} + 4 a_{4,k} T \right) \right) \right) \\
-\dydx{c_p}{Y_j} &= \ddx{Y_j} \sum_{k=1}^{\numsp} Y_k c_{p,k} = c_{p,j} - c_{p, \numsp}
+\dydx{c_p}{T} &= \sum_{k=1}^{\numsp} Y_k \dydx{c_{p,k}}{T} \;, \label{E:dcpdT} \\
+\dydx{c_{p,k}}{T} &= \frac{\mathcal{R}}{W_k} \left( a_{1,k} + T \left( 2 a_{2,k} + T \left( 3 a_{3,k} + 4 a_{4,k} T \right) \right) \right) \;, \text{ and} \\
+\dydx{c_p}{Y_j} &= \ddx{Y_j} \sum_{k=1}^{\numsp} Y_k c_{p,k} = c_{p,j} - c_{p, \numsp} \;.
 \end{align}
 
-Next, the derivatives of species rate-of-production $\dot{\omega}_k$ are determined.
+Next, the derivatives of species rate-of-production $\dot{\omega}_k$ are given by
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{\dot{\omega}_k}{T} & = & \sum_{i=1}^{N_{\text{reac}}} \nu_{k i} \dydx{q_i}{T} = \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} \left( \dydx{c_i}{T} R_i + c_i \dydx{R_i}{T} \right) \\
-\dydx{\dot{\omega}_k}{Y_j} &=& \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} \dydx{q_i}{Y_j} = \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} \left( \dydx{c_i}{Y_j} R_i + c_i \dydx{R_i}{Y_j} \right)
+\dydx{\dot{\omega}_k}{T} & = & \sum_{i=1}^{N_{\text{reac}}} \nu_{k i} \dydx{q_i}{T} = \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} \left( \dydx{c_i}{T} R_i + c_i \dydx{R_i}{T} \right) \text{ and} \\
+\dydx{\dot{\omega}_k}{Y_j} &=& \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} \dydx{q_i}{Y_j} = \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} \left( \dydx{c_i}{Y_j} R_i + c_i \dydx{R_i}{Y_j} \right) \;.
 \end{IEEEeqnarray}}%
-
+The partial derivatives of $R_i$ vary depending on whether the reaction is reversible.
+For irreversible reactions,
+{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
+\dydx{R_{f, i}}{T} 
+%&=& \dydx{k_{f, i}}{T} \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right) \nonumber \\
+&=& \dydx{k_{f, i}}{T} \frac{1}{k_{f, i}} R_{f, i} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right) \; \text{and} \label{E:dRfdT-orig} \\
+\dydx{R_{f, i}}{Y_j} &=& k_{f, i} \ddx{Y_j} \left( \prod_{k=1}^{\numsp} [X_k]^{\nu_{ki}^{\prime}} \right) \;. \label{E:dRfdY-orig}
+\end{IEEEeqnarray}}%
 The partial derivatives of species concentration are
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{[X_i]}{T} &=& \frac{Y_i}{W_i} \dydx{\rho}{T} 
@@ -686,16 +691,7 @@ The partial derivatives of species concentration are
 = -[X_i] W \left(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \right) + \left( \delta_{i j} - \delta_{i \numsp} \right) \frac{\rho}{W_i} \;,
 \end{IEEEeqnarray}}%
 where $i = 1, \ldots, \numsp$, $j = 1, \ldots, \numsp - 1$, and $\delta_{ij}$ is the Kronecker delta.
-
-The partial derivatives of $R_i$ vary depending on whether the reaction is reversible.
-For irreversible reactions,
-{\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{R_{f, i}}{T} 
-%&=& \dydx{k_{f, i}}{T} \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right) \nonumber \\
-&=& \dydx{k_{f, i}}{T} \frac{1}{k_{f, i}} R_{f, i} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right) \; \text{and} \label{E:dRfdT-orig} \\
-\dydx{R_{f, i}}{Y_j} &=& k_{f, i} \ddx{Y_j} \left( \prod_{k=1}^{\numsp} [X_k]^{\nu_{ki}^{\prime}} \right) \;. \label{E:dRfdY-orig}
-\end{IEEEeqnarray}}%
-The partial derivatives of the molar concentration product terms above are
+The partial derivatives of the molar concentration product terms are then
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \ddx{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right) 
 %&=& \sum_{j=1}^{\numsp} \nu_{ji}^{\prime} [X_j]^{\nu_{ji}^{\prime} - 1} \left( \frac{-[X_j]}{T} \right) \prod_{\substack{k=1 \\ k \ne j}}^{\numsp} [X_k]^{\nu_{ki}^{\prime}} \nonumber \\
@@ -706,7 +702,7 @@ The partial derivatives of the molar concentration product terms above are
 % &=& \sum_{k=1}^{\numsp} \nu_{ki}^{\prime} [X_k]^{\nu_{ki}^{\prime} - 1} \left( \dydx{[X_k]}{Y_j} \right) \prod_{\substack{l=1 \\ l \ne k}}^{\numsp} [X_l]^{\nu_{li}^{\prime}} \nonumber \\
 %&=& \sum_{k=1}^{\numsp} \nu_{ki}^{\prime} [X_k]^{\nu_{ki}^{\prime} - 1} \left( -[X_k] W \left(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \right) + \left( \delta_{k j} - \delta_{k \numsp} \right) \frac{\rho}{W_k} \right) \prod_{\substack{l=1 \\ l \ne k}}^{\numsp} [X_l]^{\nu_{li}^{\prime}} \nonumber \\
 &=& \sum_{k=1}^{\numsp} \nu_{ki}^{\prime} \Biggl( -[X_k]^{\nu_{ki}^{\prime}} W \left(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \right) \nonumber \\
-&& +\: \left( \delta_{k j} - \delta_{k \numsp} \right) \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime} - 1} \Biggr) \prod_{\substack{l=1 \\ l \ne k}}^{\numsp} [X_l]^{\nu_{li}^{\prime}} \;, \IEEEeqnarraynumspace
+&& +\: \left( \delta_{k j} - \delta_{k \numsp} \right) \frac{\rho}{W_k} [X_k]^{\nu_{ki}^{\prime} - 1} \Biggr) \prod_{\substack{l=1 \\ l \ne k}}^{\numsp} [X_l]^{\nu_{li}^{\prime}} \;,
 \end{IEEEeqnarray}}%
 and the partial derivative of forward reaction rate coefficient is
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
@@ -853,27 +849,28 @@ For reactions using the Troe falloff formulation,
 \end{align}
 where
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-  \dydx{F_i}{F_{\text{cent}}} &=& F_i \left( \frac{1}{F_{\text{cent}} \left( 1 + (A/B)^2 \right)} - \ln F_{\text{cent}} \frac{2 A}{B^3} \frac{ \dydx{A}{F_{\text{cent}}} B - A \dydx{B}{F_{\text{cent}}} }{ \left( 1 + (A/B)^2 \right)^2} \right), \\
+  \dydx{F_i}{F_{\text{cent}}} &=& F_i \left( \frac{1}{F_{\text{cent}} \left( 1 + (A_{\text{Troe}} / B_{\text{Troe}})^2 \right)} \right. \nonumber \\
+  && \left. -\: \ln F_{\text{cent}} \frac{2 A_{\text{Troe}}}{B_{\text{Troe}}^3} \frac{ \dydx{A_{\text{Troe}}}{F_{\text{cent}}} B_{\text{Troe}} - A_{\text{Troe}} \dydx{B_{\text{Troe}}}{F_{\text{cent}}} }{ \left( 1 + (A_{\text{Troe}} / B_{\text{Troe}})^2 \right)^2} \right), \\
   \dydx{F_{\text{cent}}}{T} &=& -\frac{1-a}{T^{***}} \exp \left( \frac{-T}{T^{***}} \right) - \frac{a}{T^*} \exp \left( \frac{-T}{T^*} \right) + \frac{T^{**}}{T^2} \exp \left( \frac{-T^{**}}{T} \right),  \IEEEeqnarraynumspace \\
-  \dydx{F_i}{P_{r,i}} &=& -F_i \ln F_{\text{cent}} \frac{2A}{B^3} \frac{ \dydx{A}{P_{r,i}} B - A \dydx{B}{P_{r,i}} }{ \left( 1 + (A/B)^2 \right)^2 },
+  \dydx{F_i}{P_{r,i}} &=& -F_i \ln F_{\text{cent}} \frac{2A_{\text{Troe}}}{B_{\text{Troe}}^3} \frac{ \dydx{A_{\text{Troe}}}{P_{r,i}} B_{\text{Troe}} - A_{\text{Troe}} \dydx{B_{\text{Troe}}}{P_{r,i}} }{ \left( 1 + (A_{\text{Troe}} / B_{\text{Troe}})^2 \right)^2 },
 \end{IEEEeqnarray}}%
 $\dydx{P_{r,i}}{T}$ is given by Eq.~\eqref{E:dPridT}, $\dydx{P_{r,i}}{Y_j}$ is given by Eq.~\eqref{E:dPridY}, and
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rClrCl}
-\dydx{A}{F_{\text{cent}}} &=& \frac{-0.67}{F_{\text{cent}} \ln 10} \quad\quad
-\dydx{B}{F_{\text{cent}}} &=& \frac{-1.1762}{F_{\text{cent}} \ln 10} \\
-\dydx{A}{P_{r,i}} &=& \frac{1}{P_{r,i} \ln 10} \quad\quad
-\dydx{B}{P_{r,i}} &=& \frac{-0.14}{P_{r,i} \ln 10} \;.
+\dydx{A_{\text{Troe}}}{F_{\text{cent}}} &=& \frac{-0.67}{F_{\text{cent}} \log 10} \quad\quad
+\dydx{B_{\text{Troe}}}{F_{\text{cent}}} &=& \frac{-1.1762}{F_{\text{cent}} \log 10} \\
+\dydx{A_{\text{Troe}}}{P_{r,i}} &=& \frac{1}{P_{r,i} \log 10} \quad\quad
+\dydx{B_{\text{Troe}}}{P_{r,i}} &=& \frac{-0.14}{P_{r,i} \log 10} \;.
 \end{IEEEeqnarray}}%
 %
 Finally, for falloff reactions described with the SRI formulation,
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
   \dydx{F_i}{T} & = & F_i \left( \frac{e}{T} + X \frac{ \frac{a b}{T^2} \exp \left( \frac{-b}{T} \right) - \frac{1}{c} \exp \left( \frac{-T}{c} \right) }{ a \cdot \exp \left( \frac{-b}{T} \right) + \exp \left( \frac{-T}{c} \right) } \right. \nonumber \\
-  & & \left. +\: \dydx{X}{P_{r,i}} \dydx{P_{r,i}}{T} \ln \left( a \cdot \exp \left( \frac{-b}{T} \right) + \exp \left( \frac{-T}{c} \right) \right) \right) \\
-  \dydx{F_i}{Y_j} & = & F_i \dydx{X}{Y_j} \ln \left( a \cdot \exp \left( \frac{-b}{T} \right) + \exp \left( \frac{-T}{c} \right) \right)
+  & & \left. +\: \dydx{X}{P_{r,i}} \dydx{P_{r,i}}{T} \log \left( a \cdot \exp \left( \frac{-b}{T} \right) + \exp \left( \frac{-T}{c} \right) \right) \right) \\
+  \dydx{F_i}{Y_j} & = & F_i \dydx{X}{Y_j} \log \left( a \cdot \exp \left( \frac{-b}{T} \right) + \exp \left( \frac{-T}{c} \right) \right)
 \end{IEEEeqnarray}}%
 where
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{X}{P_{r,i}} &=& -X^2 \frac{ 2 \log_{10} P_{r,i} }{ P_{r, i} \ln 10 } \;, \\
+\dydx{X}{P_{r,i}} &=& -X^2 \frac{ 2 \log_{10} P_{r,i} }{ P_{r, i} \log 10 } \;, \\
 \dydx{X}{Y_j} &=& \dydx{X}{P_{r,i}} \dydx{P_{r,i}}{Y_j} \;,
 \end{IEEEeqnarray}}%
 $\dydx{P_{r,i}}{T}$ is given by Eq.~\eqref{E:dPridT}, and $\dydx{P_{r,i}}{Y_j}$ is given by Eq.~\eqref{E:dPridY}.
@@ -913,12 +910,12 @@ Finally, the partial derivatives of the rate coefficient for the $i$th reaction 
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{k_f}{T}
 %&=& \log(10) \cdot k_f \ddx{T} \left( \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \, T_{i-1} (\tilde{T}) \, T_{j-1} \left(\tilde{p} \right) \right) \nonumber \\
-  &=& \log(10) \cdot k_f \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \, \ddx{T} \left( T_{i-1} (\tilde{T}) \, T_{j-1} \left(\tilde{p} \right) \right) \;, \nonumber
+  &=& \log(10) \cdot k_f \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \, \ddx{T} \left( \mathcal{T}_{i-1} (\tilde{T}) \, \mathcal{T}_{j-1} \left(\tilde{p} \right) \right) \;, \nonumber
 \end{IEEEeqnarray}}%
 where
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\ddx{T} \left( T_{i-1} (\tilde{T}) \, T_{j-1} \left(\tilde{p} \right) \right) &=& (i-1) U_{i-2} (\tilde{T}) \, T_{j-1} (\tilde{p}) \, \dydx{\tilde{T}}{T} \nonumber \\
-  & & +\: (j-1) T_{i-1} (\tilde{T}) \, U_{j-2} (\tilde{p}) \, \dydx{\tilde{p}}{T} \;, \\
+\ddx{T} \left( \mathcal{T}_{i-1} (\tilde{T}) \, \mathcal{T}_{j-1} \left(\tilde{p} \right) \right) &=& (i-1) U_{i-2} (\tilde{T}) \, \mathcal{T}_{j-1} (\tilde{p}) \, \dydx{\tilde{T}}{T} \nonumber \\
+  & & +\: (j-1) \mathcal{T}_{i-1} (\tilde{T}) \, U_{j-2} (\tilde{p}) \, \dydx{\tilde{p}}{T} \;, \\
 \dydx{\tilde{T}}{T} &=& \frac{ -2 T^{-2} }{ T_{\max}^{-1} - T_{\min}^{-1} } \;, \\
 \dydx{\tilde{p}}{T} &=& \frac{ \frac{2}{p \log(10)} \dydx{p}{T} }{\log_{10} p_{\max} - \log_{10} p_{\min}} = 0 \;,
 %\frac{ \frac{2}{T \log(10)} }{\log_{10} p_{\max} - \log_{10} p_{\min}} \;,
@@ -929,7 +926,7 @@ U_n (x) = \frac{ \sin \left((n+1) \arccos x\right) }{ \sin ( \arccos x ) } \;.
 \end{equation}
 Thus, the partial derivative of the forward rate coefficient can be expressed as
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{k_f}{T} &=& \frac{k_f}{T} \log(10) \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \left( (i-1) U_{i-2} (\tilde{T}) \, T_{j-1} (\tilde{p}) \frac{-2 T^{-1}}{T_{\max}^{-1} - T_{\min}^{-1}} \right) \;.
+\dydx{k_f}{T} &=& \frac{k_f}{T} \log(10) \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \left( (i-1) U_{i-2} (\tilde{T}) \, \mathcal{T}_{j-1} (\tilde{p}) \frac{-2 T^{-1}}{T_{\max}^{-1} - T_{\min}^{-1}} \right) \;.
 %  & & \left. +\: (j-1) T_{i-1} (\tilde{T}) \, U_{j-2} (\tilde{p}) \frac{ \frac{2}{\log(10)}}{\log_{10} p_{\max} - \log_{10} p_{\min}} \right) \;.
 \end{IEEEeqnarray}}%
 
@@ -997,7 +994,7 @@ This results from the partial derivative of density with respect to species mass
 As a consequence, the partial derivatives of all species rate-of-change $\dot{Y}_k$ with respect to the $j$th species' mass fraction $Y_j$, or $\mathcal{J}_{k+1, j+1}$, are potentially nonzero.
 However, if the constant-volume assumption instead holds true, then $\partial \rho / \partial Y_j = 0$ and Jacobian matrices exhibit the sparsity shown by Perini et al.~\cite{Perini:2012gy}.
 In that case, off-diagonal elements of the Jacobian matrix arise due to direct species interactions and falloff\slash pressure-dependent reactions.
-Unfortunately, simulations of low-speed open combustion systems typically rely on the constant-pressure assumption~\cite{Law:2006tu}, with the constant volume assumption applicable to enclosed systems (e.g., internal combustion engine cylinder).
+Unfortunately, simulations of low-speed combustion systems typically rely on the constant-pressure assumption~\cite{Law:2006tu}.
 
 Alternatively, the governing equations can be formulated in terms of species molar concentrations rather than mass fractions~\cite{Lu:2009gh,Bisetti:2012jw}.
 This eliminates the presence of $\rho$ in the cross-species Jacobian matrix elements and thus significantly increases matrix sparsity for constant-pressure combustion.
