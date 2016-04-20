@@ -194,21 +194,15 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-% One or two sentence brief introduction to field
-% Two or three sentences of detailed background
-% One sentence clearly stating general problem
-% One sentence summarizing main result ("here we show")
-% Two or three sentences explaining what the main result reveals in direct comparison to what was thought to be the case previously, or how the main result adds to previous knowledge
-% One or two sentences to put the results into a more general context
-% Two or three sentences to provide a broader perspective
 Accurate simulations of combustion phenomena require the use of detailed chemical kinetics in order to capture limit phenomena such as ignition and extinction as well as predict pollutant formation.
-However, the chemical kinetic models for hydrocarbon fuels of practical interest typically have large numbers of species and reactions and exhibit high levels of mathematical stiffness in the governing differential equations, particularly for larger molecules.
-In order to integrate the stiff equations governing chemical kinetics, generally reactive-flow simulations rely on implicit algorithms that require frequent Jacobian matrix evaluations; in addition, computational combustion diagnostics methods such as CSP and CEMA require accurate Jacobian matrices.
+However, the chemical kinetic models for hydrocarbon fuels of practical interest typically have large numbers of species and reactions and exhibit high levels of mathematical stiffness in the governing differential equations, particularly for larger fuel molecules.
+In order to integrate the stiff equations governing chemical kinetics, generally reactive-flow simulations rely on implicit algorithms that require frequent Jacobian matrix evaluations.
+Some in situ and a posteriori computational diagnostics methods also require accurate Jacobian matrices, including computational singular perturbation and chemical explosive mode analysis.
 Typically, finite differences numerically approximate these, but for larger chemical kinetic models this poses significant computational demands since the number of chemical source term evaluations scales with the square of species count.
 Furthermore, existing analytical Jacobian tools do not optimize evaluations or support emerging SIMD processors such as GPUs.
 Here we introduce \texttt{pyJac}, a Python-based open-source program that generates analytical Jacobian matrices for use in chemical kinetics modeling and analysis.
 In addition to producing the necessary customized source code for evaluating reaction rates (including all modern reaction rate formulations), the chemical source terms, and the Jacobian matrix, \texttt{pyJac} uses an optimized evaluation order to minimize computational and memory operations.
-First, we establish the correctness of the Jacobian matrices for kinetic models of hydrogen, methane, ethylene, and isopentanol oxidation (number of species ranging \numrange{13}{360}) by showing agreement within \SI{1e-3}{\percent} of matrices obtained via automatic differentiation.
+As a demonstration, we first establish the correctness of the Jacobian matrices for kinetic models of hydrogen, methane, ethylene, and isopentanol oxidation (number of species ranging \numrange{13}{360}) by showing agreement within \SI{0.001}{\percent} of matrices obtained via automatic differentiation.
 We then demonstrate the performance achievable on CPUs and GPUs using \texttt{pyJac} via matrix evaluation timing comparisons; the routines produced by \texttt{pyJac} outperformed first-order finite differences by \numrange{2.9}{5.3} times and the existing analytical Jacobian software \texttt{TChem} by \numrange{3.9}{41} times.
 The Jacobian matrix generator we describe here will be useful for reducing the cost of integrating chemical source terms with implicit algorithms in particular and algorithms that require an accurate Jacobian matrix in general.
 Furthermore, the open-source release of the program and Python-based implementation will enable wide adoption.
@@ -262,10 +256,10 @@ Chemical kinetics \sep Jacobian \sep SIMD \sep GPU
   % Fill in if necessary, otherwise leave out.
 %{\em Subprograms used:}                                       \\
 %  %Fill in if necessary, otherwise leave out.
-{\em Nature of problem:} Automatic generation of source code to evaluate Jacobian matrices for chemical kinetics models \\
+{\em Nature of problem:} Automatic generation of source code to evaluate Jacobian matrices for chemical kinetic models \\
   %Describe the nature of the problem here.
  %  \\
-{\em Solution method:} Chemical kinetics model interpreted from input files, and partial derivatives and necessary supporting functions are written to file based on a theoretical derivation.\\
+{\em Solution method:} Chemical kinetic model interpreted from input file(s), and partial derivatives and necessary supporting functions are written to file based on a theoretical derivation.\\
   %Describe the method solution here.
 %   \\
 %{\em Restrictions:}\\
@@ -280,7 +274,7 @@ Chemical kinetics \sep Jacobian \sep SIMD \sep GPU
 {\em Running time:} Problem dependent; from seconds to tens of minutes depending on the model size. \\
   %Give an indication of the typical running time here.
  \\ 
-{\em Keywords:} Chemical kinetics, Jacobian, GPU 
+{\em Keywords:} Chemical kinetics, Jacobian, SIMD, GPU 
   % Please give some freely chosen keywords that we can use in a
   % cumulative keyword index.
   
