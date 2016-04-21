@@ -976,15 +976,17 @@ Next, the Jacobian entries for partial derivatives of the energy equation ($\mat
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \mathcal{J}_{1,1} 
 %&=& - \sum_{k=1}^{\numsp} \left[ \left( \frac{1}{c_p} \dydx{h_k}{T} - \frac{h_k}{c_p^2} \dydx{c_p}{T} \right) \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{T} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] \nonumber \\
-&=& \frac{-1}{c_p} \sum_{k=1}^{\numsp} \left[ \left( c_{p,k} - \frac{h_k}{c_p} \dydx{c_p}{T} \right) \frac{W_k \dot{\omega}_k}{\rho} + h_k \mathcal{J}_{k+1,1} \right] \\
+&=& \frac{-1}{c_p} \left\lbrace \sum_{k=1}^{\numsp - 1} \left[ \left( c_{p,k} - \frac{h_k}{c_p} \dydx{c_p}{T} \right) \frac{W_k \dot{\omega}_k}{\rho} + h_k \mathcal{J}_{k+1,1} \right] \right. \nonumber \\
+ && \left. +\: \left( c_{p,\numsp} - \frac{h_{\numsp}}{c_p} \dydx{c_p}{T} \right) \frac{W_{\numsp} \dot{\omega}_{\numsp}}{\rho} + h_{\numsp} \hat{\mathcal{J}}_{\numsp+1,1} \right\rbrace \\
+%
 \mathcal{J}_{1,j+1}
   % &=& -\sum_{k=1}^{\numsp} \left[ \frac{-h_k}{c_p^2} \dydx{c_p}{Y_j} \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{Y_j} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] \nonumber \\
 %  &=& \frac{-1}{c_p} \sum_{k=1}^{\numsp} h_k \left( \frac{-c_{p,j}}{c_p} \frac{W_k \dot{\omega}_k}{\rho} + \mathcal{J}_{k+1,j+1} \right) , \\
-  &=& \frac{-1}{c_p} \left( -\frac{c_{p,j} - c_{p, \numsp}}{\rho c_p} \sum_{k=1}^{\numsp} h_k W_k \dot{\omega}_k + \sum_{k=1}^{\numsp} h_k \mathcal{J}_{k+1,j+1} \right) ,
+  &=& \frac{-1}{c_p} \left( -\frac{c_{p,j} - c_{p, \numsp}}{\rho c_p} \sum_{k=1}^{\numsp} h_k W_k \dot{\omega}_k \right. \nonumber \\
+  && \left. +\: \sum_{k=1}^{\numsp - 1} h_k \mathcal{J}_{k+1,j+1} + h_{\numsp} \hat{\mathcal{J}}_{\numsp+1,j+1} \right) ,
 \label{e:jac_dt}
 \end{IEEEeqnarray}}%
-where $\dydx{c_p}{T}$ is given by Eq.~\eqref{E:dcpdT}.
-%The following terms should be evaluated and reused: $R_{f,i}$, $R_{r,i}$, $c_i$, $\dot{\omega}_k$, $h_k$, and $c_p$.
+where $\dydx{c_p}{T}$ is given by Eq.~\eqref{E:dcpdT}; $\hat{\mathcal{J}}_{\numsp+1,1}$ and $\hat{\mathcal{J}}_{\numsp+1,j+1}$ are placeholder variables for the last species $\numsp$ calculated in a similar manner as Eqs.~\eqref{e:jac_dydt} and \eqref{e:jac_dydy}.
 
 \subsection{Jacobian matrix sparsity}
 \label{S:sparsity}
