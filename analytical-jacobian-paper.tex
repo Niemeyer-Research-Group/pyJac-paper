@@ -1247,7 +1247,7 @@ The Python~\cite{Python:2015} package \texttt{pyJac} implements the methodology 
 \todo{Get DOI for v1 release}
 \texttt{pyJac} requires the Python module \texttt{NumPy}~\cite{Walt:2011aa}.
 The modules used to test the correctness and performance of \texttt{pyJac} are included in this release, and additionally require \texttt{Cython}~\cite{Behnel:2011aa}, Cantera~\cite{Goodwin:2015aa}, \texttt{PyYAML}~\cite{Simonov:2014aa}, and \texttt{Adept}~\cite{adept-v11}; however, these are not required for Jacobian\slash rate subroutine generation.
-In addition, interpreting Cantera-format models~\cite{Goodwin:2015aa} requires that module, although interpretation of Chemkin-format models does not require any additional components.
+In addition, interpreting Cantera-format models~\cite{Goodwin:2015aa} requires installing the Cantera module for any purpose, while \texttt{pyJac} includes native support for interpreting Chemkin-format models~\cite{chemkin:2012}.
 
 In order to demonstrate the correctness and computational performance of the generated analytical Jacobian matrices, we chose four chemical kinetic models as test cases, selected to represent a wide spectrum of sizes, classes of fuel species, and types of reaction rate pressure dependence formulations (e.g., Lindemann\slash Troe\slash SRI falloff formulations, Chebyshev, pressure-log).
 Table~\ref{T:models} summarizes the chemical kinetics models used as benchmarks in this work, including the \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh}, GRI-Mech 3.0~\cite{smith_gri-mech_30}, USC-Mech version II~\cite{Wang:2007}, and the isopentanol model of Sarathy et al.~\cite{Sarathy:2013jr}.
@@ -1267,15 +1267,15 @@ USC-Mech II & 111 & 784 & $\times$ & $\times$ & & & & \cite{Wang:2007}\\
 \bottomrule
 \end{tabular}
 \caption{
-Summary of chemical kinetic models used as benchmark test cases. All models contain third-body reactions with enhanced third bodies. The ``Lind.'', ``Troe'', ``SRI'', ``P-log'', and ``Cheb.'' columns indicate the presence of Lindemann, Troe, and SRI falloff; logarithmic pressure interpolation; and Chebyshev pressure-dependent reactions, respectively. Two reactions with photons were removed from the Sarathy et al.~\cite{Sarathy:2013jr} model since neither Cantera nor \texttt{pyJac} support these.
+Summary of chemical kinetic models used as benchmark test cases. All models contain third-body reactions with enhanced third bodies. The ``Lind.'', ``Troe'', ``SRI'', ``P-log'', and ``Cheb.'' columns indicate the presence of Lindemann, Troe, and SRI falloff; logarithmic pressure interpolation; and Chebyshev pressure-dependent reactions, respectively. Two reactions with photons were removed from the Sarathy et al.~\cite{Sarathy:2013jr} model since neither Cantera nor \texttt{pyJac} supports such reactions.
 }
 \label{T:models}
 \end{table}
 
 For both the correctness and performance tests, stochastic partially stirred reactor (PaSR) simulations generated thermochemical composition data covering a wide range of temperatures and species mass fractions.
 \ref{A:pasr} contains a detailed description of the PaSR methodology and implementation; in addition, the \texttt{pyJac} package contains the PaSR code used in the present study.
-We performed nine premixed PaSR simulations for each fuel\slash model, with the parameters given in Table~\ref{T:pasr_parameters}.
-Each simulation ran for 10 residence times ($\tau_{\text{res}}$) to ensure reaching statistical steady state.
+We performed nine premixed PaSR simulations for each fuel, with the parameters given in Table~\ref{T:pasr_parameters}.
+Each simulation ran for five (isopentanol) or ten (hydrogen, methane, and ethylene) residence times ($\tau_{\text{res}}$) to ensure reaching statistical steady state.
 
 \begin{table}[tbp]
 \centering
@@ -1286,7 +1286,7 @@ Parameter & \ce{H2} & \ce{CH4} & \ce{C2H4} & \ce{iC5H11OH} \\
 $\phi$ & \multicolumn{4}{c}{1} \\
 $T_{\text{in}}$ & \multicolumn{4}{c}{\SIlist{400;600;800}{\kelvin}} \\
 $p$ & \multicolumn{4}{c}{\SIlist{1;10;25}{\atm}} \\
-$N_{\text{p}}$ & \multicolumn{4}{c}{100} \\
+$N_{\text{part}}$ & \multicolumn{4}{c}{100} \\
 $\tau_{\text{res}}$ & \SI{10}{\milli\second} & \SI{5}{\milli\second} & \SI{100}{\micro\second} & \SI{100}{\micro\second} \\
 $\tau_{\text{mix}}$ & \SI{1}{\milli\second} & \SI{1}{\milli\second} & \SI{10}{\micro\second} & \SI{10}{\micro\second} \\
 $\tau_{\text{pair}}$ & \SI{1}{\milli\second} & \SI{1}{\milli\second} & \SI{10}{\micro\second} & \SI{10}{\micro\second} \\
@@ -1294,7 +1294,7 @@ $N_{\text{res}}$ & 10 & 10 & 10 & 5 \\
 \bottomrule
 \end{tabular}
 \caption{
-PaSR parameters used for hydrogen\slash air, methane\slash air, ethylene\slash air, and isopentanol\slash air premixed combustion cases, where $\phi$ indicates equivalence ratio, $T_{\text{in}}$ is the temperature of the inflowing particles, $p$ is the pressure, $N_{\text{p}}$ is the number of particles, $\tau_{\text{res}}$ is the residence time, $\tau_{\text{mix}}$ is the mixing time, $\tau_{\text{pair}}$ is the pairing time, and $N_{\text{res}}$ is the number of residence times simulated.
+PaSR parameters used for hydrogen\slash air, methane\slash air, ethylene\slash air, and isopentanol\slash air premixed combustion cases, where $\phi$ indicates equivalence ratio, $T_{\text{in}}$ is the temperature of the inflowing particles, $p$ is the pressure, $N_{\text{part}}$ is the number of particles, $\tau_{\text{res}}$ is the residence time, $\tau_{\text{mix}}$ is the mixing time, $\tau_{\text{pair}}$ is the pairing time, and $N_{\text{res}}$ is the number of residence times simulated.
 }
 \label{T:pasr_parameters}
 \end{table}
@@ -1315,15 +1315,15 @@ In our experience, numerical Jacobians obtained using multiple-term Richardson e
 We did not explore other options for obtaining highly accurate numerical Jacobian approximations using, e.g., complex-step derivatives~\cite{Martins:2003fv,Shampine:2007gw,Ridout:2009fn}.
 For all test cases, the correctness of the species and reaction rate subroutines were established through comparison with Cantera~\cite{Goodwin:2015aa}.
 
-In reporting the discrepancy between the analytical and automatically differentiated Jacobian matrices, denoted by $\mathcal{J}$ and $\hat{\mathcal{J}}$ respectively, we used the norm of the relative errors of matrix elements 
+In reporting the discrepancy between the analytical and automatically differentiated Jacobian matrices, denoted by $\mathcal{J}$ and $\hat{\mathcal{J}}$ respectively, we used the Frobenius norm of the relative errors of matrix elements 
 \begin{equation}
-E_\text{rel} = \norm{ \frac{ \hat{\mathcal{J}}_{ij} - \mathcal{J}_{ij} }{ \hat{\mathcal{J}}_{ij} } }_p \;,
+E_\text{rel} = \norm{ \frac{ \hat{\mathcal{J}} - \mathcal{J} }{ \hat{\mathcal{J}} } }_F \;,
 \label{e:error_norm}
 \end{equation}
-where $p = 2$ (the Frobenius norm), to quantify error.
-This differs somewhat from the error metric suggested by Anderson et al.~\cite{Anderson:1999aa} for use quantifying the error of matrices in LAPACK: the relative error $p$-norm 
+to quantify error.
+This differs somewhat from the error metric suggested by Anderson et al.~\cite{Anderson:1999aa} for use quantifying the error of matrices in LAPACK: the relative error Frobenius norm 
 \begin{equation}
-E_\text{norm} = \frac{ \norm{ \hat{\mathcal{J}} - \mathcal{J} }_p }{ \norm{\hat{\mathcal{J}}}_p } \;.
+E_\text{norm} = \frac{ \norm{ \hat{\mathcal{J}} - \mathcal{J} }_F }{ \norm{\hat{\mathcal{J}}}_F } \;.
 \end{equation}
 $E_\text{norm}$ indicates overall error in the matrix but can be dominated by large elements, so we believe the error measure $E_\text{rel}$ given by Eq.~\eqref{e:error_norm} to be more useful in identifying discrepancies in both larger and smaller matrix elements.
 
@@ -1335,12 +1335,12 @@ For all benchmark cases, the analytical Jacobian matrices match closely with tho
 \centering
 \begin{tabular}{@{}l l l l@{}}
 \toprule
-Model & Sample size & Mean & Maximum \\
+Model                 & Sample size   & Mean (\percent) & Maximum (\percent) \\
 \midrule
-\ce{H2}\slash \ce{CO} & \num{900900}	& \SI{3.170e-8}{\percent} & \SI{9.828e-4}{\percent} \\
-GRI-Mech 3.0		& \num{450900}	& \SI{2.946e-8}{\percent} & \SI{1.240e-4}{\percent} \\
-USC-Mech II		& \num{91800}	& \SI{9.046e-9}{\percent} & \SI{2.356e-4}{\percent} \\
-\ce{iC5H11OH}		& \num{450900}	& \SI{8.686e-10}{\percent}	& \SI{1.680e-5}{\percent} \\
+\ce{H2}\slash \ce{CO} & \num{900900}  & \num{3.170e-8}  & \num{9.828e-4} \\
+GRI-Mech 3.0          & \num{450900}  & \num{2.946e-8}  & \num{1.240e-4} \\
+USC-Mech II           & \num{91800}	  & \num{9.046e-9}  & \num{2.356e-4} \\
+\ce{iC5H11OH}         & \num{450900}  & \num{8.686e-10} & \num{1.680e-5} \\
 \bottomrule
 \end{tabular}
 \caption{Summary of Jacobian matrix correctness study results.
@@ -1350,7 +1350,7 @@ The sample size for each case depended on the number of particles and relevant t
 \label{T:error}
 \end{table}
 
-We also made comparisons with the \texttt{TChem} package~\cite{Safta:2011vn} for validation purposes.
+We also initially made comparisons with the \texttt{TChem} package~\cite{Safta:2011vn} for validation purposes, using the \ce{H2}\slash \ce{CO} model.
 However, while many quantities calculated via \texttt{TChem} agreed closely with those from both Cantera and \texttt{pyJac}, we observed discrepancies in the \texttt{TChem} species net production rates that correlated with significant errors in the derivative source term and Jacobian matrix.
 These discrepancies occurred mainly for low species production rates, where the (larger) rates for other species agreed closely, and in general for near-equilibrium states.
 As a result, we do not present detailed Jacobian matrix comparisons between \texttt{TChem} and \texttt{pyJac} here.
@@ -1360,7 +1360,7 @@ As a result, we do not present detailed Jacobian matrix comparisons between \tex
 \label{s:performance}
 
 The performance of \texttt{pyJac}-generated subroutines for CPU and GPU execution was tested by evaluating Jacobian matrices for the four kinetic models using the previously discussed PaSR thermochemical composition data.
-In both cases, the performance of \texttt{pyJac} was compared with that of a finite-difference-based Jacobian; in addition, the CPU routines were compared with \texttt{TChem} where possible.
+In both cases, the performance of \texttt{pyJac} was compared with that of a finite-difference-based Jacobian; in addition, the CPU routines were compared with \texttt{TChem} for the \ce{H2}\slash \ce{CO}, GRI-Mech 3.0, and USC-Mech II models.
 The CPU Jacobian subroutines were compiled using \texttt{gcc} 4.4.7~\cite{gcc-4.4.7}, and run on two six-core Xeon X5650 processors.
 Although not strictly necessary, we accelerated the performance testing by evaluating Jacobian matrices in parallel via OpenMP~\cite{Dagum:1998}, where each OpenMP thread calculated a single Jacobian matrix.
 Reported mean evaluation times were computed from the wall-clock run times of ten individual calculations; the results were not normalized by number of OpenMP threads (all cases used twelve threads).
@@ -1379,7 +1379,8 @@ Table~\ref{t:cpu_comp} summarizes the performance ratio between Jacobian matrice
 \begin{figure}[tbp]
     \centering
     \includegraphics[width=0.75\textwidth]{cpu_norm.pdf}
-    \caption{Comparison of Jacobian matrix evaluation times using finite differences, \texttt{pyJac}, and \texttt{TChem} for the four kinetic models.
+    \caption{CPU-based Jacobian matrix evaluation times using finite differences, \texttt{pyJac}, and \texttt{TChem} for the four kinetic models.
+    No performance data were available for the isopentanol model using \texttt{TChem} due to the presence of unsupported reaction types.
     The symbols indicate performance data, while the solid lines represent least-squares best fits based on the number of reactions $N_R$ in the models.
     Error bars are present, but too small to detect.}
     \label{F:cpu_perf}
@@ -1470,7 +1471,7 @@ $\bar{R}$ indicates the mean evaluation time.}
 
 The results presented above raise a number of issues that warrant further study.
 The superlinear scaling of \texttt{pyJac} matrix evaluation time with number of reactions in the kinetic models results from the density of the Jacobian matrix, and suggests the potential benefits of a sparse molar-concentration-based Jacobian formulation.
-However, while \texttt{pyJac} outperforms \texttt{TChem} in all cases, the performance ratio between them reduces with increasing model size, suggesting a reduced performance benefit from a hard-coded Jacobian matrix evaluation subroutine.
+However, while \texttt{pyJac} outperforms \texttt{TChem} in all cases, the performance ratio between them reduces with increasing number of reactions, suggesting that the performance benefit of a hard-coded subroutine may decrease with increasing model size.
 Although it appears from these results that the performance of a hard-coded Jacobian subroutine can surpass that of an interface-based Jacobian evaluation, the hard-coded method has additional difficulties due to the size and number of files created.
 For example, the CPU Jacobian evaluation subroutine for USC-Mech II comprises over \num{360000} total lines spread across 22 files (not including the supporting files for, e.g., species and reaction rate evaluations)---attempting to incorporate the entire matrix evaluation in a single file crashed the \texttt{gcc} 4.4.7 compiler.
 This not only causes longer source code compilation times (on the order of ten minutes to an hour when using 24 parallel compiler instances), but could cause compiler crashes and inexplicable behavior, particularly for the less mature \texttt{nvcc} compiler.
