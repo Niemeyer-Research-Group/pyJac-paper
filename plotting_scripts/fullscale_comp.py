@@ -1,19 +1,25 @@
 #! /usr/bin/env python2.7
+from __future__ import print_function
 
+# Standard library
 import sys
-from performance_extractor import get_data
-from general_plotting import legend_key
-from general_plotting import plot
+import os
+
 import numpy as np
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
-import os
 from scipy import optimize
+
+# Local imports
+from performance_extractor import get_data
+from general_plotting import legend_key, plot
+
 
 FD_marker = '>'
 pj_marker = 'o'
 tc_marker = 's'
+
 def nice_names(x):
     if x.finite_difference:
         name = 'Finite Difference'
@@ -28,14 +34,16 @@ def nice_names(x):
         name += ' (GPU)'
     return name, marker
 
+
 def get_fullscale(data):
     mechanisms = set([x.mechanism for x in data])
     #need to filter out runs on subsets
     for mech in mechanisms:
         max_x = max(x.x for x in [y for y in data if y.mechanism == mech])
-        data = [x for x in data if x.mechanism != mech or 
+        data = [x for x in data if x.mechanism != mech or
                     (x.x == max_x)]
     return data
+
 
 def fit_order(plotdata, y, std, order, color='k', text_loc=None, fontsize=10):
     x = sorted([x.num_reacs for x in plotdata])
@@ -92,12 +100,14 @@ def fit_order(plotdata, y, std, order, color='k', text_loc=None, fontsize=10):
 
     return name, Rsq, c, order
 
+
 def fullscale_comp(lang, plot_std=True, homedir=None,
-                        cache_opt_default=False,
-                        smem_default=False,
-                        loc_override=None,
-                        text_loc=None, fontsize=10,
-                        color_list=['b', 'g', 'r', 'k']):
+                   cache_opt_default=False,
+                   smem_default=False,
+                   loc_override=None,
+                   text_loc=None, fontsize=10,
+                   color_list=['b', 'g', 'r', 'k']
+                   ):
     if lang == 'c':
         langs = ['c', 'tchem']
         desc = 'cpu'
@@ -110,14 +120,14 @@ def fullscale_comp(lang, plot_std=True, homedir=None,
 
     def thefilter(x):
         return x.cache_opt==cache_opt_default and x.smem == smem_default
-    
+
     fit_vals = []
     data = get_data(homedir)
     data = [x for x in data if x.lang in langs]
     data = filter(thefilter, data)
     data = get_fullscale(data)
     if not len(data):
-        print 'no data found... exiting'
+        print('no data found... exiting')
         sys.exit(-1)
 
     fig, ax = plt.subplots()
