@@ -1415,9 +1415,7 @@ This is expected for the finite difference approach, but warrants explanation fo
 Lu and Law argued~\cite{Lu:2009gh} that the cost of analytical Jacobian evaluation should scale linearly with the number of reactions in a model.
 However, this argument is predicated on the assumption of a sparse Jacobian resulting from a molar-concentration-based system; namely, that only changes in species concentrations that participate in a reaction affect the resulting reaction rate.
 As discussed in Section~\ref{S:sparsity}, the constant-pressure\slash mass-fraction-based system used in \texttt{pyJac}---along with the majority of reactive-flow modeling descriptions---results in a dense Jacobian and thus execution times that exhibit a higher-order dependence on the number of species\slash reactions.
-It is unclear whether the nearly linear scaling of \texttt{TChem} results from the best-fit based on only three data points, the large apparent overhead of \texttt{TChem} masking the runtime growth for the smaller mechanisms (\texttt{TChem} is outperformed by the finite-difference method for the two smallest mechanisms), or some other cause.
-The current performance, while faster than either a typical finite difference approach or \texttt{TChem}, provides significant incentive for the development of a sparse concentration-based, constant-pressure Jacobian system in future versions of \texttt{pyJac}.
-Using the developed best-fit lines, we can also obtain a rough order-of-magnitude estimate for the crossover points between the three CPU-based approaches: we expect \texttt{pyJac} to outperform \texttt{TChem} and finite differences for models with up to $\sim$2500 reactions and \num{8e7} reactions, respectively.
+The current performance, while faster than either a typical finite difference approach or \texttt{TChem}, motivates developing a sparse-concentration-based constant-pressure Jacobian system in future versions of \texttt{pyJac}.
 
 \begin{figure}[tbp]
     \centering
