@@ -1104,9 +1104,9 @@ The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a pressure-independent reaction
   k, j = 1, \ldots, \numsp - 1 \;,
 \label{e:pindep_jac_species}
 \end{IEEEeqnarray}}%
-where $S_l^{\prime}$ and $S_l^{\prime\prime}$ are defined as
+where $S_l^{\prime}$ and $S_l^{\prime\prime}$ are defined (for $l = \{ j, N_{sp} \}$) as
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-S_l^{\prime} &=& \nu_{li}^{\prime} [X_l]^{\nu_{li}^{\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp}[X_n]^{\nu_{ni}^{\prime}} \text{ and } \nonumber \\
+S_l^{\prime} &=& \nu_{li}^{\prime} [X_l]^{\nu_{li}^{\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp}[X_n]^{\nu_{ni}^{\prime}} \text{ and } \\
 S_l^{\prime\prime} &=& \nu_{li}^{\prime\prime} [X_l]^{\nu_{li - 1}^{\prime\prime}} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp}[X_n]^{\nu_{ni}^{\prime\prime}} \;.
 \end{IEEEeqnarray}}%
 Note that either one or both of $\nu_{ji}^{\prime}$ and $\nu_{ji}^{\prime\prime}$ can be zero, while $\nu_{{\numsp}i}^{\prime}$ and $\nu_{{\numsp}i}^{\prime\prime}$ are typically both zero if the last species is an inert abundant gas, e.g., \ce{N2} for air-fed combustion.
