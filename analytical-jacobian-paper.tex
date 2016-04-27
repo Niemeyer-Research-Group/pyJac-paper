@@ -1083,7 +1083,9 @@ Next, instead of summing over all reactions for a single species, we transform A
   \mathcal{J}_{k+1, 1} \pluseq \nu_{ki} W_k \Theta_{\partial T, i} \quad k = 1, \ldots, \numsp - 1 \;.
 \label{e:jac_temperature_update}
 \end{IEEEeqnarray}%
+and---as introduced in Sec.~\eqref{section:eval}---the placeholder variable $\hat{\mathcal{J}}_{\numsp + 1, 1}$ may be updated analogously to Eq.~\eqref{e:jac_temperature_update}.
 In doing so, the temporary product $\Theta_{\partial T,  i}$ must only be evaluated once for each reaction, rather than once for every species in each reaction with a non-zero net production or consumption rate.
+
 
 Similarly, for Eq.~\eqref{e:jac_dydy} we can define similar temporary products, although more care must be taken to ensure the correctness for all of the different reaction types.
 For all reactions $i$, the following temporary product can be defined:
@@ -1109,6 +1111,7 @@ where $S_l^{\prime}$ and $S_l^{\prime\prime}$ are defined (for $l = \{ j, N_{sp}
 S_l^{\prime} &=& \nu_{li}^{\prime} [X_l]^{\nu_{li}^{\prime} - 1} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp}[X_n]^{\nu_{ni}^{\prime}} \text{ and } \\
 S_l^{\prime\prime} &=& \nu_{li}^{\prime\prime} [X_l]^{\nu_{li - 1}^{\prime\prime}} \prod_{\substack{n=1 \\ n \neq l}}^{\numsp}[X_n]^{\nu_{ni}^{\prime\prime}} \;.
 \end{IEEEeqnarray}}%
+and the placeholder variable $\hat{\mathcal{J}}_{\numsp + 1, j+1}$ may be updated as in Eq.~\eqref{e:pindep_jac_species}.
 Note that either one or both of $\nu_{ji}^{\prime}$ and $\nu_{ji}^{\prime\prime}$ can be zero, while $\nu_{{\numsp}i}^{\prime}$ and $\nu_{{\numsp}i}^{\prime\prime}$ are typically both zero if the last species is an inert abundant gas, e.g., \ce{N2} for air-fed combustion.
 This means that the added $S_l^{\prime}$ and $S_l^{\prime\prime}$ terms are often zero, and may be omitted in such cases.
 
@@ -1143,7 +1146,7 @@ The Jacobian entries $\mathcal{J}_{k+1,j+1}$ for a third-body reaction without f
 		  	\right)
   \Biggr] \IEEEeqnarraynumspace
 \end{IEEEeqnarray}
-for $k, j = 1, \ldots, \numsp - 1$.
+for $k, j = 1, \ldots, \numsp - 1$, and the placeholder variable $\hat{\mathcal{J}}_{\numsp + 1, j+1}$ may be updated using Eq.~\eqref{e:thd_jac_species}.
 
 For reactions with falloff dependence, we define a temporary term corresponding to the $P_r$ polynomial in Eqs.~\eqref{dCidY_falloff}~and~\eqref{dCidY_chem}:
 \begin{equation}
@@ -1204,10 +1207,12 @@ for $k, j = 1, \ldots, \numsp - 1$, where $\delta_{\text{M}}$ is defined as:
 0 &\text{if species $m$ acts as third body.}
 \end{dcases}
 \end{equation}
+Again, we note that the placeholder variable $\hat{\mathcal{J}}_{\numsp + 1, j+1}$ may be updated as in Eq.~\eqref{e:pdep_jac_species}
 
-Finally, all Jacobian entries $\mathcal{J}_{k+1,j+1}$ must be finished with the addition of the species rate term:
+Finally, all Jacobian entries $\mathcal{J}_{k+1,j+1}$, $\hat{\mathcal{J}}_{\numsp + 1, j+1}$ must be finished with the addition of the species rate term:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\mathcal{J}_{k+1,j+1} \pluseq \frac{W_k}{W_j} \frac{\dot{\omega}_kW}{\rho}\left(1 - \frac{W_j}{W_{\numsp}}\right) \;.
+\mathcal{J}_{k+1,j+1} &\pluseq& \frac{W_k}{W_j} \frac{\dot{\omega}_kW}{\rho}\left(1 - \frac{W_j}{W_{\numsp}}\right) \; \\
+\hat{\mathcal{J}}_{\numsp + 1, 1} &\pluseq& \frac{W_{\numsp}}{W_j} \frac{\dot{\omega}_{\numsp}W}{\rho}\left(1 - \frac{W_j}{W_{\numsp}}\right) \; \\
 \end{IEEEeqnarray}}
 
 As with the update scheme used in Eq.~\eqref{e:jac_temperature_update}, the strategy presented in Eqs.~\eqref{e:pindep_jac_species}, \eqref{e:thd_jac_species}, and~\eqref{e:pdep_jac_species} reduces the computational overhead of Jacobian evaluation.
