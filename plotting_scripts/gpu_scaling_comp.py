@@ -49,7 +49,8 @@ def plot_scaling(plotdata, markerlist, colorlist, miny, label_locs=None,
             label_loc, label_off = label_locs[i]
             pos_label = next(x[0] for x in enumerate(thex) if x[1] > label_loc)
             label_ypos = 0.5 * (they[pos_label] + they[pos_label - 1])
-            plt.text(label_loc, label_ypos*label_off, name, fontsize=font_size,
+            plt.text(label_loc, label_ypos*label_off, argdict['label'],
+                     fontsize=font_size,
                      horizontalalignment='center', verticalalignment='center'
                      )
 
@@ -95,15 +96,17 @@ plotdata = [x for x in data if x.lang == 'cuda'
             ]
 
 fig, ax = plt.subplots()
-miny = plot_scaling(plotdata, legend_markers, legend_colors, miny, hollow=True)
+miny = plot_scaling(plotdata, legend_markers, legend_colors, miny,
+                    label_locs, hollow=True
+                    )
 
 ax.set_yscale('log')
 ax.set_xscale('log')
 ax.set_ylim(ymin=miny*0.95)
-ax.legend(loc=0, numpoints=1, frameon=False)
+#ax.legend(loc=0, numpoints=1, frameon=False)
 # add some text for labels, title and axes ticks
-ax.set_ylabel('Mean evaluation time')
-ax.set_xlabel('Number of conditions')
+ax.set_ylabel('Mean evaluation time', fontsize=font_size)
+ax.set_xlabel('Number of conditions', fontsize=font_size)
 #ax.legend(loc=0)
 plt.savefig('gpu_scaling_smem.pdf')
 plt.close()
