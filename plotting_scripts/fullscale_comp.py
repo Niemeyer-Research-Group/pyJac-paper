@@ -171,7 +171,7 @@ def fullscale_comp(lang, plot_std=True, homedir=None,
                 text_ind += 1
             fitvals.append(
                 fit_order(plotdata, they, thez, None, color, text_loc=theloc, fontsize=fontsize)
-            )
+                )
             retdata.append(they)
 
     ax.set_yscale('log')
