@@ -12,7 +12,7 @@ font_size = 'large'
 def plot_scaling(plotdata, markerlist, colorlist, miny, label_locs=None,
                  plot_std=True, hollow=False
                  ):
-    """
+    """Plots performance data for multiple mechanisms.
     """
     mset = list(set(x.mechanism for x in plotdata))
     mechs = sorted(mset, key=lambda mech:next(x for x in plotdata
@@ -44,10 +44,12 @@ def plot_scaling(plotdata, markerlist, colorlist, miny, label_locs=None,
         else:
             line = plt.plot(**argdict)
 
+        # Rather than legend, place labels above/below series
         if label_locs is not None:
             # get index of first value after specified location
             label_loc, label_off = label_locs[i]
             pos_label = next(x[0] for x in enumerate(thex) if x[1] > label_loc)
+            # average of points
             label_ypos = 0.5 * (they[pos_label] + they[pos_label - 1])
             plt.text(label_loc, label_ypos*label_off, argdict['label'],
                      fontsize=font_size,
@@ -59,6 +61,7 @@ def plot_scaling(plotdata, markerlist, colorlist, miny, label_locs=None,
 legend_markers = ['o', 'v', 's', '>']
 legend_colors = ['b', 'g', 'r', 'c']
 
+# x position of text label, and multiplier for y position
 label_locs = [(10, 2.0),
               (10, 0.5),
               (10, 2.0),
