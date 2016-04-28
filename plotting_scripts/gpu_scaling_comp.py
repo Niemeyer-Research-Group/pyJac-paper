@@ -1,4 +1,7 @@
 #! /usr/bin/env python
+"""Plots GPU performance data for pyJac Jacobian matrix evaluation.
+"""
+
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
