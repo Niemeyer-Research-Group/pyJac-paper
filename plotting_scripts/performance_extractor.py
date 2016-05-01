@@ -1,4 +1,5 @@
-#! /usr/bin/env python2.7
+"""Module for extracting Jacobian matrix eval performance data.
+"""
 
 # Standard library
 import sys
@@ -76,5 +77,4 @@ def get_data(home_dir=None):
                                    gas.n_species, gas.n_reactions
                                    )
                         )
-
     return data
