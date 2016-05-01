@@ -6,8 +6,8 @@ import sys
 import os
 
 import numpy as np
-import matplotlib
-matplotlib.use('agg')
+#import matplotlib
+#matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from scipy import optimize
 
@@ -15,6 +15,7 @@ from scipy import optimize
 from performance_extractor import get_data
 from general_plotting import legend_key, plot
 
+font_size = 'large'
 
 FD_marker = '>'
 pj_marker = 'o'
@@ -41,11 +42,12 @@ def get_fullscale(data):
     for mech in mechanisms:
         max_x = max(x.x for x in [y for y in data if y.mechanism == mech])
         data = [x for x in data if x.mechanism != mech or
-                    (x.x == max_x)]
+                (x.x == max_x)
+                ]
     return data
 
 
-def fit_order(plotdata, y, std, order, color='k', text_loc=None, fontsize=10):
+def fit_order(plotdata, y, std, order, color='k', text_loc=None):
     x = sorted([x.num_reacs for x in plotdata])
     maxx = int(x[-1])
 
@@ -73,22 +75,20 @@ def fit_order(plotdata, y, std, order, color='k', text_loc=None, fontsize=10):
     fi = c * x ** order
     ss_res = np.sum(np.abs(y - fi)**2)
     ss_tot = np.sum(np.abs(y - np.mean(y))**2)
-    Rsq = 1 - ss_res / ss_tot
+    Rsq = 1.0 - ss_res / ss_tot
 
     name = nice_names(plotdata[0])[0]
 
     if text_loc is not None:
         point, xoffset, yoffset = text_loc
-        xbase = x[point]
-        ybase = y[point]
-        xbase += xoffset
-        ybase += yoffset
+        xbase = x[point] + xoffset
+        ybase = y[point] + yoffset
         if order != 1:
             label = r'{:.1e}$N_R^{{{:.2}}}$'.format(c, order)
         elif order == 1:
             label = r'{:.1e}$N_R$'.format(c, order)
 
-        plt.text(xbase, ybase, label, fontsize=fontsize)
+        plt.text(xbase, ybase, label, fontsize=font_size)
     else:
         if order != 1:
             label = r'{:.1e}$N_R^{{{:.2}}}$'.format(c, order)
@@ -105,13 +105,13 @@ def fullscale_comp(lang, plot_std=True, homedir=None,
                    cache_opt_default=False,
                    smem_default=False,
                    loc_override=None,
-                   text_loc=None, fontsize=10,
+                   text_loc=None,
                    color_list=['b', 'g', 'r', 'k']
                    ):
     if lang == 'c':
         langs = ['c', 'tchem']
         desc = 'cpu'
-        smem_default=False
+        smem_default = False
     elif lang == 'cuda':
         langs = ['cuda']
         desc = 'gpu'
@@ -119,12 +119,15 @@ def fullscale_comp(lang, plot_std=True, homedir=None,
         raise Exception('unknown lang {}'.format(lang))
 
     def thefilter(x):
-        return x.cache_opt==cache_opt_default and x.smem == smem_default
+        return (x.cache_opt==cache_opt_default and
+                x.smem == smem_default and
+                x.lang in langs
+                )
 
     fit_vals = []
     data = get_data(homedir)
-    data = [x for x in data if x.lang in langs]
-    data = filter(thefilter, data)
+    #data = filter(thefilter, data)
+    data = [x for x in data if thefilter(x)]
     data = get_fullscale(data)
     if not len(data):
         print('no data found... exiting')
@@ -153,7 +156,7 @@ def fullscale_comp(lang, plot_std=True, homedir=None,
             theloc = text_loc[text_ind]
             text_ind += 1
         fitvals.append(
-            fit_order(plotdata, they, thez, None, color, text_loc=theloc, fontsize=fontsize)
+            fit_order(plotdata, they, thez, None, color, text_loc=theloc)
             )
         retdata.append(they)
 
@@ -170,17 +173,16 @@ def fullscale_comp(lang, plot_std=True, homedir=None,
                 theloc = text_loc[text_ind]
                 text_ind += 1
             fitvals.append(
-                fit_order(plotdata, they, thez, None, color, text_loc=theloc, fontsize=fontsize)
+                fit_order(plotdata, they, thez, None, color, text_loc=theloc)
                 )
             retdata.append(they)
 
     ax.set_yscale('log')
     ax.set_ylim(ymin=miny*0.95)
     loc = 0 if loc_override is None else loc_override
-    ax.legend(loc=loc, numpoints=1, fontsize=10)
+    ax.legend(loc=loc, numpoints=1, fontsize=font_size)
     # add some text for labels, title and axes ticks
     ax.set_ylabel('Mean evaluation time / condition (ms)')
-    #ax.set_title('GPU Jacobian Evaluation Performance for {} mechanism'.format(thedir))
     ax.set_xlabel('Number of Reactions')
     #ax.legend(loc=0)
     plt.savefig('{}_norm.pdf'.format(desc))

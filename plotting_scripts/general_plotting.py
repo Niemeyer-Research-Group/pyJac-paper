@@ -2,7 +2,7 @@
 """
 import numpy as np
 import matplotlib
-matplotlib.use('agg')
+#matplotlib.use('agg')
 import matplotlib.pyplot as plt
 
 legend_key = {'H2':r'H$_2$/CO',
