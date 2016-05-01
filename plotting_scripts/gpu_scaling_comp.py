@@ -2,17 +2,16 @@
 """Plots GPU performance data for pyJac Jacobian matrix evaluation.
 """
 
-#import matplotlib
-#matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Local imports
 from performance_extractor import get_data
 from general_plotting import legend_key
 
 font_size = 'large'
 
-def plot_scaling(plotdata, markerlist, colorlist, minx, miny,
+def plot_scaling(plotdata, markerlist, colorlist, minx=None, miny=None,
                  label_locs=None, plot_std=True, hollow=False
                  ):
     """Plots performance data for multiple mechanisms.
@@ -29,6 +28,8 @@ def plot_scaling(plotdata, markerlist, colorlist, minx, miny,
         y_vals = [np.mean(x) for x in y_vals]
         err_vals = [np.std(x) for x in y_vals]
 
+        # Find minimum x and y values, or keep manual setting if actually
+        # lower than true minimums
         minx = (x_vals[0] if minx is None
                 else x_vals[0] if x_vals[0] < minx
                 else minx
@@ -47,9 +48,11 @@ def plot_scaling(plotdata, markerlist, colorlist, minx, miny,
                    'color':colorlist[i],
                    'label':name
                    }
+        # use hollow symbols for shared memory results
         if hollow:
             argdict['markerfacecolor'] = 'None'
             argdict['label'] += ' (smem)'
+        # plotting error bars for standard deviation
         if plot_std:
             argdict['yerr'] = err_vals
             line = plt.errorbar(**argdict)
@@ -74,10 +77,10 @@ legend_markers = ['o', 'v', 's', '>']
 legend_colors = ['b', 'g', 'r', 'c']
 
 # x position of text label, and multiplier for y position
-label_locs = [(10, 2.0),
-              (10, 0.5),
-              (10, 2.0),
-              (10, 2.0)
+label_locs = [(10, 1.75),
+              (10, 0.6),
+              (10, 1.75),
+              (10, 1.75)
               ]
 
 # Get CUDA pyJac datapoints, without cache optimization or shared memory
@@ -89,10 +92,7 @@ plotdata = [x for x in data if x.lang == 'cuda'
             ]
 
 fig, ax = plt.subplots()
-minx = None
-miny = None
-
-minx, miny = plot_scaling(plotdata, legend_markers, legend_colors, minx, miny,
+minx, miny = plot_scaling(plotdata, legend_markers, legend_colors,
                           label_locs=label_locs
                           )
 ax.set_yscale('log')
@@ -115,7 +115,7 @@ plotdata = [x for x in data if x.lang == 'cuda'
             ]
 
 fig, ax = plt.subplots()
-minx, miny = plot_scaling(plotdata, legend_markers, legend_colors, minx, miny,
+minx, miny = plot_scaling(plotdata, legend_markers, legend_colors,
                           label_locs=label_locs, hollow=True
                           )
 
@@ -127,6 +127,5 @@ ax.set_xlim(xmin=minx*0.85)
 # add some text for labels, title and axes ticks
 ax.set_ylabel('Mean evaluation time', fontsize=font_size)
 ax.set_xlabel('Number of conditions', fontsize=font_size)
-#ax.legend(loc=0)
 plt.savefig('gpu_scaling_smem.pdf')
 plt.close()
