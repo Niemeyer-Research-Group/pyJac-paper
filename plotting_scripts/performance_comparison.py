@@ -8,6 +8,7 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 from scipy import optimize
 
 # Local imports
@@ -222,7 +223,16 @@ def fullscale_comp(lang, plot_std=True, homedir=None,
     # add some text for labels, title and axes ticks
     ax.set_ylabel('Mean evaluation time / condition (ms)', fontsize=font_size)
     ax.set_xlabel('Number of Reactions', fontsize=font_size)
-    plt.savefig('{}_performance_comparison.pdf'.format(desc))
+
+    if homedir is None:
+        homedir = os.path.join(sys.path[0], '../')
+        homedir = os.path.realpath(homedir)
+    d = os.path.join(homedir, 'figures')
+
+    pp = PdfPages(os.path.join(d, '{}_performance_comparison.pdf'.format(desc)))
+    pp.savefig()
+    pp.close()
+
     plt.close()
 
     return fitvals, retdata

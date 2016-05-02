@@ -1384,7 +1384,7 @@ Table~\ref{t:cpu_comp} summarizes the performance ratio between Jacobian matrice
 
 \begin{figure}[tbp]
     \centering
-    \includegraphics[width=0.75\textwidth]{cpu_norm.pdf}
+    \includegraphics[width=0.75\textwidth]{cpu_performance_comparison.pdf}
     \caption{CPU-based Jacobian matrix evaluation times using finite differences, \texttt{pyJac}, and \texttt{TChem} for the four kinetic models.
     No performance data were available for the isopentanol model using \texttt{TChem} due to the presence of unsupported reaction types.
     The symbols indicate performance data, while the solid lines represent least-squares best fits based on the number of reactions $N_R$ in the models.
@@ -1421,14 +1421,14 @@ The current performance, while faster than either a typical finite difference ap
     \centering
     \begin{subfigure}{0.75\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{gpu.pdf}
+        \includegraphics[width=\textwidth]{gpu_performance_scaling.pdf}
         \caption{Mean GPU runtime versus the number of conditions evaluated.}
         \label{F:gpu_mean}
     \end{subfigure}%
     \\
     \begin{subfigure}{0.75\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{gpu_norm.pdf}
+        \includegraphics[width=\textwidth]{gpu_performance_comparison.pdf}
         \caption{Comparison of normalized GPU \texttt{pyJac} and finite difference Jacobian matrix evaluation times versus the number of reactions in the model. Symbols indicate performance data, while solid lines represent least-squares best fits based on the number of reactions $N_R$ in the models.}
         \label{F:gpu_norm}
     \end{subfigure}

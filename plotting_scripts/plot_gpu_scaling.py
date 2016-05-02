@@ -2,13 +2,18 @@
 """Plots GPU performance scaling data for pyJac Jacobian matrix evaluation.
 """
 
+import sys
+import os.path
+
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np
 
 # Local imports
 from performance_extractor import get_data
 from general_plotting import plot_scaling
 
+home_dir = None
 font_size = 'large'
 
 legend_markers = ['o', 'v', 's', '>']
@@ -20,6 +25,12 @@ label_locs = [(10, 1.75),
               (10, 1.75),
               (10, 1.75)
               ]
+
+
+if home_dir is None:
+    home_dir = os.path.join(sys.path[0], '../')
+    home_dir = os.path.realpath(home_dir)
+d = os.path.join(home_dir, 'figures')
 
 # Get CUDA pyJac datapoints, without cache optimization or shared memory
 data = get_data()
@@ -41,7 +52,11 @@ ax.set_xlim(xmin=minx*0.85)
 # add some text for labels, title and axes ticks
 ax.set_ylabel('Mean evaluation time', fontsize=font_size)
 ax.set_xlabel('Number of conditions', fontsize=font_size)
-plt.savefig('gpu_performance_scaling.pdf')
+
+pp = PdfPages(os.path.join(d, 'gpu_performance_scaling.pdf'))
+pp.savefig()
+pp.close()
+
 plt.close()
 
 
@@ -65,5 +80,9 @@ ax.set_xlim(xmin=minx*0.85)
 # add some text for labels, title and axes ticks
 ax.set_ylabel('Mean evaluation time', fontsize=font_size)
 ax.set_xlabel('Number of conditions', fontsize=font_size)
-plt.savefig('gpu_performance_scaling_shmem.pdf')
+
+pp = PdfPages(os.path.join(d, 'gpu_performance_scaling_shmem.pdf'))
+pp.savefig()
+pp.close()
+
 plt.close()
