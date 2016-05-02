@@ -5,7 +5,7 @@ from __future__ import print_function
 
 import numpy as np
 
-from fullscale_comp import fullscale_comp
+from performance_comparison import fullscale_comp
 
 # Location of label: (data index, x position multiplier, y position multiplier)
 text_loc = [(3, 0.85, 0.8), #fd
