@@ -5,10 +5,9 @@
 import sys
 import os
 import os.path
+import json
 
 import numpy as np
-import cantera as ct
-
 
 def parse_file(directory, mech, filename, num_specs, num_reacs):
     data_arr = []
@@ -26,7 +25,8 @@ def parse_file(directory, mech, filename, num_specs, num_reacs):
             pass
     for x in data:
         data_arr.append(data_point(mech, filename, num_specs,
-                num_reacs, x, data[x]))
+                        num_reacs, x, data[x])
+                        )
     return data_arr
 
 
@@ -66,15 +66,21 @@ def get_data(home_dir=None):
     data = []
     for directory in dirs:
         thedir = os.path.join(d, directory)
-        #get text files
+
+        #get text files with performance data
         files = [o for o in os.listdir(thedir) if
                  os.path.isfile(os.path.join(thedir,o)) and o.endswith('.txt')
                  ]
-        mechanism = next(s for s in os.listdir(thedir) if s.endswith('.cti'))
-        gas = ct.Solution(os.path.join(d, directory, mechanism))
+
+        # read mechanism info
+        mech_meta_file = next(s for s in os.listdir(thedir) if s.endswith('.json'))
+        with open(os.path.join(d, directory, mech_meta_file), 'r') as f:
+            mech_info = json.load(f)
+
         for filename in files:
             data.extend(parse_file(thedir, directory, filename,
-                                   gas.n_species, gas.n_reactions
+                                   mech_info['num_species'],
+                                   mech_info['num_reactions']
                                    )
                         )
     return data
