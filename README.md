@@ -11,13 +11,14 @@ Reproducing the Paper
 ---------------------
 The LaTeX source of the paper is in the top directory.
 
-To reproduce the figures, first install packages from the standard Python scientific stack: [numpy](http://numpy.org), [scipy](http://scipy.org), and [matplotlib](http://matplotlib.org).
-Then, from the top directory, the three figures in the paper can be generated using our data by:
+To reproduce all of the figures in the paper, first install packages from the standard Python scientific stack: [numpy](http://numpy.org), [scipy](http://scipy.org), and [matplotlib](http://matplotlib.org).
+Then, from the top directory, the five figures in the paper can be generated using our data by:
 
 ```
 $ python plotting_scripts/plot_cpu_comparison.py
 $ python plotting_scripts/plot_gpu_scaling.py
 $ python plotting_scripts/plot_gpu_comparison.py
+$ python plotting_scripts/plot_ch4_pasr_data.py
 ```
 
 
