@@ -222,7 +222,7 @@ def fullscale_comp(lang, plot_std=True, homedir=None,
     # add some text for labels, title and axes ticks
     ax.set_ylabel('Mean evaluation time / condition (ms)', fontsize=font_size)
     ax.set_xlabel('Number of Reactions', fontsize=font_size)
-    plt.savefig('{}_norm.pdf'.format(desc))
+    plt.savefig('{}_performance_comparison.pdf'.format(desc))
     plt.close()
 
     return fitvals, retdata

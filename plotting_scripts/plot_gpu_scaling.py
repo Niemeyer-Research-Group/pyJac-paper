@@ -41,7 +41,7 @@ ax.set_xlim(xmin=minx*0.85)
 # add some text for labels, title and axes ticks
 ax.set_ylabel('Mean evaluation time', fontsize=font_size)
 ax.set_xlabel('Number of conditions', fontsize=font_size)
-plt.savefig('gpu_scaling.pdf')
+plt.savefig('gpu_performance_scaling.pdf')
 plt.close()
 
 
@@ -65,5 +65,5 @@ ax.set_xlim(xmin=minx*0.85)
 # add some text for labels, title and axes ticks
 ax.set_ylabel('Mean evaluation time', fontsize=font_size)
 ax.set_xlabel('Number of conditions', fontsize=font_size)
-plt.savefig('gpu_scaling_smem.pdf')
+plt.savefig('gpu_performance_scaling_shmem.pdf')
 plt.close()
