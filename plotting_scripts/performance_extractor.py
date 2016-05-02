@@ -59,7 +59,7 @@ def get_data(home_dir=None):
     if home_dir is None:
         home_dir = os.path.join(sys.path[0], '../')
         home_dir = os.path.realpath(home_dir)
-    d = os.path.join(home_dir, 'performance')
+    d = os.path.join(home_dir, 'data')
     dirs = [o for o in os.listdir(d) if os.path.isdir(os.path.join(d,o))]
 
     #ok, now we have a list of data directories, open each and look for the text files
