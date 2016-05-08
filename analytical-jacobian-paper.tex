@@ -1513,6 +1513,15 @@ In addition, we thank James Sutherland and Mike Hansen of the University of Utah
 % Fix for missing space between "Appendix" and letter
 \renewcommand*{\thesection}{\appendixname~\Alph{section}}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Supplementary material}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The most recent version of \texttt{pyJac} can be found at its GitHub repository \url{https://github.com/kyleniemeyer/pyJac}.
+In addition, the repository contains detailed documentation and an issue-tracking system.
+The full source for this paper is also available at \url{https://github.com/kyleniemeyer/pyJac-paper/}, including the data and scripts needed to reproduce the figures here.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Proof of partial derivative of pressure}
 \label{A:pres_deriv}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1530,6 +1539,7 @@ Note that this holds without any assumption of constant pressure or volume.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Partially stirred reactor implementation}
 \label{A:pasr}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Here, we describe our partially stirred reactor (PaSR) implementation for completeness, based on prior descriptions~\cite{Correa:1993ud,Chen:1997ta,Pope:1997wu,Bhave:2004hc,Ren:2004fz,Ren:2014cd}.
 The reactor model consists of an even number $N_{\text{part}}$ of particles, each with a time-varying composition $\phi (t)$.
