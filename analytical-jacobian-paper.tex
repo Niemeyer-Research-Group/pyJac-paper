@@ -1249,8 +1249,7 @@ The bulk of the computation is performed once per reaction, and only minor sub-p
 \label{S:results}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The Python~\cite{Python:2015} package \texttt{pyJac} implements the methodology for producing analytical Jacobian matrices described in the previous sections, which we released openly online~\cite{Niemeyer:2015im} under a modified BSD license.
-\todo{Get DOI for v1 release}
+The Python~\cite{Python:2015} package \texttt{pyJac} implements the methodology for producing analytical Jacobian matrices described in the previous sections, which we released openly online~\cite{Niemeyer:2016py} under the MIT license.
 \texttt{pyJac} requires the Python module \texttt{NumPy}~\cite{Walt:2011aa}.
 The modules used to test the correctness and performance of \texttt{pyJac} are included in this release, and additionally require \texttt{Cython}~\cite{Behnel:2011aa}, Cantera~\cite{Goodwin:2015aa}, \texttt{PyYAML}~\cite{Simonov:2014aa}, and \texttt{Adept}~\cite{adept-v11}; however, these are not required for Jacobian\slash rate subroutine generation.
 In addition, interpreting Cantera-format models~\cite{Goodwin:2015aa} requires installing the Cantera module for any purpose, while \texttt{pyJac} includes native support for interpreting Chemkin-format models~\cite{chemkin:2012}.
@@ -1487,7 +1486,7 @@ While we expect a sparse Jacobian formulation would significantly alleviate thes
 
 This work developed the theory behind an analytical Jacobian matrix evaluation approach for constant-pressure chemical kinetics, including new derivations of partial derivatives with respect to modern reaction pressure-dependence formulations.
 In addition, we detailed strategies for efficient evaluation of the Jacobian matrix, including reordering matrix element evaluations in order to enable the reuse of temporary products.
-We implemented the presented methodology in the open-source software package \texttt{pyJac}~\cite{Niemeyer:2015im}, which generates custom source code files for evaluating chemical kinetics Jacobian matrices on both CPU and GPU systems.
+We implemented the presented methodology in the open-source software package \texttt{pyJac}~\cite{Niemeyer:2016py}, which generates custom source code files for evaluating chemical kinetics Jacobian matrices on both CPU and GPU systems.
 We established the correctness of the resulting Jacobian matrices through comparison with matrices obtained by automatic differentiation.
 The results agree within \SI{0.001}{\percent} for kinetic models describing the oxidation of hydrogen, methane, ethylene, and isopentanol, with 13 to 360 species (and 27 to 2172 reactions).
 Finally, we investigated the performance of the CPU and GPU matrix evaluation subroutines by evaluating the matrix calculation time for the same kinetic models.
