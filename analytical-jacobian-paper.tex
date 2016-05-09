@@ -1328,7 +1328,7 @@ E_\text{norm} = \frac{ \norm{ \hat{\mathcal{J}} - \mathcal{J} }_F }{ \norm{\hat{
 $E_\text{norm}$ indicates overall error in the matrix but can be dominated by large elements, so we believe the error measure $E_\text{rel}$ given by Eq.~\eqref{e:error_norm} to be more useful in identifying discrepancies in both larger and smaller matrix elements.
 
 Table~\ref{T:error} presents the correctness testing results for each benchmark case.
-For certain conditions, we observed large relative errors in small nonzero elements (e.g., magnitudes of $\sim$\num{e-22}) likely due to roundoff errors; thus, error statistics comprised only matrix elements $\mathcal{J}_{ij}$ where $\abs{\mathcal{J}_{ij}} \geq \norm{\mathcal{J}}_p / \num{e20}$.
+For certain conditions, we observed large relative errors in small nonzero elements (e.g., magnitudes of $\sim$\num{e-22}) likely due to roundoff errors; thus, error statistics comprised only matrix elements $\mathcal{J}_{ij}$ where $\abs{\mathcal{J}_{ij}} \geq \norm{\mathcal{J}}_F / \num{e20}$.
 For all benchmark cases, the analytical Jacobian matrices match closely with those obtained via automatic differentiation, with the largest discrepancy below \SI{1e-3}{\percent}.
 
 \begin{table}[tbp]
