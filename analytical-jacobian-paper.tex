@@ -1041,14 +1041,14 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
 \begin{algorithmic}[0]
   \For {$k$ \text{ in } $1$\dots$\numreac$}
     \State Define reusable products for temperature derivatives\label{op:dt_reusable}
-    \For {$sp_i$ in $rxn_k$}
+    \For {$i$ in $\numsp - 1$}
       \If {$\nu_{i,k} \neq 0$}
         \State Generate code for $rxn_k$'s contribution to $\dydx{\dot{Y_i}}{T}$
       \EndIf
     \EndFor
     \State Define reusable products for species derivatives\label{op:dy_reusable}
     \For {$j$ \text{ in } $1$\dots$\numsp - 1$}
-      \For {$sp_i$ in $rxn_k$}
+      \For {$i$ in $\numsp - 1$}
         \If {$\nu_{i,k} \neq 0$}
           \State Generate code for $\dydx{\dot{Y_i}}{Y_j}$
         \EndIf
