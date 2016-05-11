@@ -1003,7 +1003,6 @@ We plan to explore this approach for future versions of \texttt{pyJac}.
 \label{S:opt}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%A simple implementation of the outlined chemical Jacobian is presented in pseudo-code in Algorithm~\eqref{p:naive_psuedo} based on the equations presented in Section~\ref{section:eval}.
 Algorithm~\eqref{p:naive_psuedo} presents pseudocode for a simple implementation of the outlined Jacobian evaluation approach based on the equations in Section~\ref{section:eval}.
 Although attractive as a straightforward implementation, it neglects potential reuse of computed products and thus unnecessarily recomputes terms.
 Furthermore, this formulation produces source code with substantial numbers of lines even for small kinetic models such as GRI-Mech 3.0~\cite{smith_gri-mech_30} (e.g., $\sim$\num{100000} lines).
