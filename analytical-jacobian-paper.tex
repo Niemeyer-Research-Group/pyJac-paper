@@ -568,9 +568,9 @@ Then, the reaction rate coefficient at a particular pressure $p$ between $p_1$ a
 
 In addition, the pressure dependence of a reaction can be expressed through a bivariate Chebyshev polynomial fit~\cite{Venkatesh:1997hv,Venkatesh:1997ik,Venkatesh:2000gj,chemkin:2012,Goodwin:2015aa}:
 \begin{equation}
-\log_{10} k_f (T, p) = \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \phi_i (\tilde{T}) \phi_j \left(\tilde{p}\right) \label{e:cheb} \;,
+\log_{10} k_f (T, p) = \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \eta_{ij} \phi_i (\tilde{T}) \phi_j \left(\tilde{p}\right) \label{e:cheb} \;,
 \end{equation}
-where $\alpha_{ij}$ is the coefficient corresponding to the grid points $i$ and $j$, $N_T$ and $N_p$ are the numbers of grid points for temperature and pressure, respectively, and $\phi_n$ is the Chebyshev polynomial of the first kind of degree $n - 1$ typically expressed as
+where $\eta_{ij}$ is the coefficient corresponding to the grid points $i$ and $j$, $N_T$ and $N_p$ are the numbers of grid points for temperature and pressure, respectively, and $\phi_n$ is the Chebyshev polynomial of the first kind of degree $n - 1$ typically expressed as
 \begin{equation}
 \phi_n (x) = \mathcal{T}_{n-1} (x) = \cos \left( (n - 1) \arccos (x) \right) \quad \text{for } |x| \leq 1 \;.
 \end{equation}
@@ -905,7 +905,7 @@ Finally, the partial derivatives of the rate coefficient for the $i$th reaction 
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
 \dydx{k_f}{T}
 %&=& \log(10) \cdot k_f \ddx{T} \left( \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \, T_{i-1} (\tilde{T}) \, T_{j-1} \left(\tilde{p} \right) \right) \nonumber \\
-  &=& \log(10) \cdot k_f \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \, \ddx{T} \left( \mathcal{T}_{i-1} (\tilde{T}) \, \mathcal{T}_{j-1} \left(\tilde{p} \right) \right) \;, \nonumber
+  &=& \log(10) \cdot k_f \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \eta_{ij} \, \ddx{T} \left( \mathcal{T}_{i-1} (\tilde{T}) \, \mathcal{T}_{j-1} \left(\tilde{p} \right) \right) \;, \nonumber
 \end{IEEEeqnarray}}%
 where
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
@@ -921,7 +921,7 @@ U_n (x) = \frac{ \sin \left((n+1) \arccos x\right) }{ \sin ( \arccos x ) } \;.
 \end{equation}
 Thus, the partial derivative of the forward rate coefficient can be expressed as
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{k_f}{T} &=& \frac{k_f}{T} \log(10) \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \alpha_{ij} \left( (i-1) U_{i-2} (\tilde{T}) \, \mathcal{T}_{j-1} (\tilde{p}) \frac{-2 T^{-1}}{T_{\max}^{-1} - T_{\min}^{-1}} \right) \;.
+\dydx{k_f}{T} &=& \frac{k_f}{T} \log(10) \sum_{i = 1}^{N_T} \sum_{j = 1}^{N_p} \eta_{ij} \left( (i-1) U_{i-2} (\tilde{T}) \, \mathcal{T}_{j-1} (\tilde{p}) \frac{-2 T^{-1}}{T_{\max}^{-1} - T_{\min}^{-1}} \right) \;.
 %  & & \left. +\: (j-1) T_{i-1} (\tilde{T}) \, U_{j-2} (\tilde{p}) \frac{ \frac{2}{\log(10)}}{\log_{10} p_{\max} - \log_{10} p_{\min}} \right) \;.
 \end{IEEEeqnarray}}%
 
@@ -1003,7 +1003,6 @@ We plan to explore this approach for future versions of \texttt{pyJac}.
 \label{S:opt}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%A simple implementation of the outlined chemical Jacobian is presented in pseudo-code in Algorithm~\eqref{p:naive_psuedo} based on the equations presented in Section~\ref{section:eval}.
 Algorithm~\eqref{p:naive_psuedo} presents pseudocode for a simple implementation of the outlined Jacobian evaluation approach based on the equations in Section~\ref{section:eval}.
 Although attractive as a straightforward implementation, it neglects potential reuse of computed products and thus unnecessarily recomputes terms.
 Furthermore, this formulation produces source code with substantial numbers of lines even for small kinetic models such as GRI-Mech 3.0~\cite{smith_gri-mech_30} (e.g., $\sim$\num{100000} lines).
@@ -1015,21 +1014,21 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
 \begin{algorithm}
 \caption{A pseudo-code for simple/naive generation of the chemical Jacobian.}\label{p:naive_psuedo}
 \begin{algorithmic}[0]
-  \For {$i$ \text{ in } $1$\dots$\numsp - 1$}
-    \For {$k$ \text{ in } $1$\dots$\numreac$}
+  \For {$i$ \text{ in } $1$, \dots, $\numsp - 1$}
+    \For {$k$ \text{ in } $1$, \dots, $\numreac$}
       \If {$\nu_{i,k} \neq 0$}
-        \State \text{Generate code for }$rxn_k$\text{'s contribution to }$\dydx{\dot{Y_i}}{T}$
+        \State Generate code for reaction $k$'s contribution to $\dydx{\dot{Y_i}}{T}$
       \EndIf
     \EndFor
-    \For {$j$ \text{ in } $1$\dots$\numsp - 1$}
-      \For {$k$ \text{ in } $1$\dots$\numreac$}
+    \For {$j$ \text{ in } $1$, \dots, $\numsp - 1$}
+      \For {$k$ \text{ in } $1$, \dots, $\numreac$}
         \If {$\nu_{j,k} \neq 0$}
-          \State \text{Generate code for }$rxn_k$\text{'s contribution to }$\dydx{\dot{Y_k}}{Y_j}$
+          \State Generate code for reaction $k$'s contribution to $\dydx{\dot{Y_k}}{Y_j}$
         \EndIf
       \EndFor
     \EndFor
   \EndFor
-  \For {$i$ \text{ in } $1$\dots$\numsp - 1$}
+  \For {$i$ \text{ in } $1$, \dots, $\numsp - 1$}
     \State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
   \EndFor
   \State \text{Generate code for $\dydx{\dot{T}}{T}$}
@@ -1039,23 +1038,23 @@ As a side-benefit of this technique, compilation times are greatly reduced and c
 \begin{algorithm}
 \caption{A restructured pseudo-code to enable efficient chemical Jacobian evaluation.}\label{p:updated_pseudo}
 \begin{algorithmic}[0]
-  \For {$k$ \text{ in } $1$\dots$\numreac$}
+  \For {$k$ \text{ in } $1$, \dots, $\numreac$}
     \State Define reusable products for temperature derivatives\label{op:dt_reusable}
-    \For {$i$ in $\numsp - 1$}
+    \For {$i$ in $1$, \dots, $\numsp - 1$}
       \If {$\nu_{i,k} \neq 0$}
-        \State Generate code for $rxn_k$'s contribution to $\dydx{\dot{Y_i}}{T}$
+        \State Generate code for reaction $k$'s contribution to $\dydx{\dot{Y_i}}{T}$
       \EndIf
     \EndFor
     \State Define reusable products for species derivatives\label{op:dy_reusable}
-    \For {$j$ \text{ in } $1$\dots$\numsp - 1$}
-      \For {$i$ in $\numsp - 1$}
+    \For {$j$ \text{ in } $1$, \dots, $\numsp - 1$}
+      \For {$i$ in $1$, \dots, $\numsp - 1$}
         \If {$\nu_{i,k} \neq 0$}
           \State Generate code for $\dydx{\dot{Y_i}}{Y_j}$
         \EndIf
       \EndFor
     \EndFor
   \EndFor
-  \For {$i$ \text{ in } $1$\dots$\numsp - 1$}
+  \For {$i$ \text{ in } $1$, \dots, $\numsp - 1$}
     \State \text{Generate code for $\dydx{\dot{T}}{Y_i}$}
   \EndFor
   \State \text{Generate code for $\dydx{\dot{T}}{T}$}
