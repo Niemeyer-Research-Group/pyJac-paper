@@ -81,12 +81,12 @@ def plot_scaling(plotdata, markerlist, colorlist, minx=None, miny=None,
 
         # Find minimum x and y values, or keep manual setting if actually
         # lower than true minimums
-        minx = (x_vals[0] if minx is None
-                else x_vals[0] if x_vals[0] < minx
+        minx = (np.min(x_vals) if minx is None
+                else np.min(x_vals) if np.min(x_vals) < minx
                 else minx
                 )
-        miny = (y_vals[0] if miny is None
-                else y_vals[0] if y_vals[0] < miny
+        miny = (np.min(y_vals) if miny is None
+                else np.min(y_vals) if np.min(y_vals) < miny
                 else miny
                 )
 

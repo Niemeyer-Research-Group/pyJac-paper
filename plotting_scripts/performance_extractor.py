@@ -34,7 +34,13 @@ class data_point(object):
     def __init__(self, mechanism, filename, num_specs, num_reacs, x, y):
         self.mechanism = mechanism
 
-        lang, cache_opt, smem, fd, dummy = filename.split('_')
+        try:
+            lang, cache_opt, smem, fd, dummy = filename.split('_')
+            num_threads = None
+        except:
+            lang, cache_opt, smem, fd, num_threads, dummy = filename.split('_')
+            num_threads = float(num_threads)
+
         self.lang = lang
         self.cache_opt = cache_opt == 'co'
         self.smem = smem == 'smem'
@@ -44,14 +50,16 @@ class data_point(object):
         self.num_reacs = num_reacs
         self.x = x
         self.y = y
+        self.num_threads = num_threads
 
     def __repr__(self):
         return self.__str__()
 
     def __str__(self):
-        return "lang={},\tmech={},\tFD={},\tsmem={}\tco={}\n".format(
+        return ("lang={},\tmech={},\tFD={},\tsmem={}\t"
+                "num_threads={}\tco={}\n").format(
             self.lang, self.mechanism, self.finite_difference,
-            self.smem, self.cache_opt
+            self.smem, self.num_threads, self.cache_opt
             )
 
 
@@ -69,7 +77,7 @@ def get_data(home_dir=None):
 
         #get text files with performance data
         files = [o for o in os.listdir(thedir) if
-                 os.path.isfile(os.path.join(thedir,o)) and o.endswith('.txt')
+                 os.path.isfile(os.path.join(thedir,o)) and o.endswith('_output.txt')
                  ]
 
         # read mechanism info

@@ -50,7 +50,7 @@ ax.set_ylim(ymin=miny*0.85)
 ax.set_xlim(xmin=minx*0.85)
 #ax.legend(loc=0, numpoints=1, frameon=False)
 # add some text for labels, title and axes ticks
-ax.set_ylabel('Mean evaluation time', fontsize=font_size)
+ax.set_ylabel('Mean evaluation time (ms)', fontsize=font_size)
 ax.set_xlabel('Number of conditions', fontsize=font_size)
 
 pp = PdfPages(os.path.join(d, 'gpu_performance_scaling.pdf'))
@@ -78,7 +78,7 @@ ax.set_ylim(ymin=miny*0.85)
 ax.set_xlim(xmin=minx*0.85)
 #ax.legend(loc=0, numpoints=1, frameon=False)
 # add some text for labels, title and axes ticks
-ax.set_ylabel('Mean evaluation time', fontsize=font_size)
+ax.set_ylabel('Mean evaluation time (ms)', fontsize=font_size)
 ax.set_xlabel('Number of conditions', fontsize=font_size)
 
 pp = PdfPages(os.path.join(d, 'gpu_performance_scaling_shmem.pdf'))
