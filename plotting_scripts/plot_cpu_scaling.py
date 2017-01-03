@@ -49,7 +49,7 @@ def __plot(plotdata, outname):
     ax.set_yscale('log')
     ax.set_xscale('log')
     ax.set_ylim(ymin=miny*0.85)
-    ax.set_xlim(xmin=minx*0.85)
+    ax.set_xlim(xmin=minx*0.85, xmax=35)
     #ax.legend(loc=0, numpoints=1, frameon=False)
     # add some text for labels, title and axes ticks
     ax.set_ylabel('Mean evaluation time per condition (ms)', fontsize=font_size)
@@ -77,7 +77,7 @@ def __plot(plotdata, outname):
     minx, miny = plot_scaling(scalings, legend_markers, legend_colors)
     ax.legend(loc=0)
     ax.set_ylim(ymin=miny*0.85, ymax=1.05)
-    ax.set_xlim(xmin=0, xmax=40)
+    ax.set_xlim(xmin=0, xmax=35)
 
     #ax.legend(loc=0, numpoints=1, frameon=False)
     # add some text for labels, title and axes ticks
