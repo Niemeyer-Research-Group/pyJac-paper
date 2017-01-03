@@ -82,7 +82,6 @@ plotdata = [x for x in data if x.lang == 'c'
             ]
 __plot(plotdata, 'cpu_performance_fd_scaling.pdf')
 
-print set([x.lang for x in data])
 plotdata = [x for x in data if x.lang == 'tchem'
             and not x.cache_opt
             and not x.smem
