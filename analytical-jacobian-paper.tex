@@ -1499,7 +1499,13 @@ intercept increasing with model size. Figure~\ref{F:cpu_scaling_perf_par}
 shows the strong scaling efficiency with number of cores. Interestingly,
 the strong scaling efficiency drops most significantly for the smallest and
 largest models (\ce{H2}\slash \ce{CO} and \ce{iC5H11OH}, respectively) with
-increasing number of processors.
+increasing number of processors. We hypothesize that the reasons for lower
+scaling efficiency of these two models actually differ. The cost of evaluation
+\ce{H2}\slash \ce{CO} is low enough, particularly at increasing numbers of CPU
+cores, that the relative overhead for launching OpenMP threads is larger and
+thus the efficiency drops. Conversely, the much larger size of the \ce{iC5H11OH}
+model requires frequent accesses of larger amounts of memory, and thus possibly
+also more frequent cache misses.
 
 The results presented above raise a number of issues that warrant further study.
 The superlinear scaling of \texttt{pyJac} matrix evaluation time with number of reactions in the kinetic models results from the density of the Jacobian matrix, and suggests the potential benefits of a sparse molar-concentration-based Jacobian formulation.
