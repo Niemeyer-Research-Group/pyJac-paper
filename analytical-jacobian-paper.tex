@@ -1360,9 +1360,10 @@ As a result, we do not present detailed Jacobian matrix comparisons between \tex
 
 The performance of \texttt{pyJac}-generated subroutines for CPU and GPU execution was tested by evaluating Jacobian matrices for the four kinetic models using the previously discussed PaSR thermochemical composition data.
 In both cases, the performance of \texttt{pyJac} was compared with that of a finite-difference-based Jacobian; in addition, the CPU routines were compared with \texttt{TChem}~\cite{TChem:v0.2} for the \ce{H2}\slash \ce{CO}, GRI-Mech 3.0, and USC-Mech II models.
-The CPU Jacobian subroutines were compiled using \texttt{gcc} 4.4.7~\cite{gcc-4.4.7}, and run on two six-core Xeon X5650 processors.
-Although not strictly necessary, we accelerated the performance testing by evaluating Jacobian matrices in parallel via OpenMP~\cite{Dagum:1998}, where each OpenMP thread calculated a single Jacobian matrix.
-Reported mean evaluation times were computed from the wall-clock run times of ten individual calculations; the results were not normalized by number of OpenMP threads (all cases used twelve threads).
+The CPU Jacobian subroutines were compiled using \texttt{gcc} 4.8.5~\cite{gcc-4.8.5}, and run on four ten-core Intel Xeon E5-4640 v2 processors with \SI{20}{\mega\byte} of L3 cache memory, installed on an Ace Powerworks PW8027R-TRF+ with a Supermicro X9QR7-TF+/X9QRi-F+ baseboard.
+During testing, it became apparent that \texttt{TChem} is not thread-safe when parallelized with OpenMP, for convenience a self-contained testing package can be found at this paper's \href{https://github.com/Niemeyer-Research-Group/pyJac-paper}{Github repository}.
+Therefore, all CPU performance comparison between \texttt{pyJac}, \texttt{TChem} and the finite-difference method was carried in a single-threaded manner.
+Reported mean evaluation times were computed from the wall-clock run times of ten individual calculations.
 %In order to fairly compare results from the different chemical kinetic models, the mean simulation time over ten runs was normalized by the number of conditions in the generated PaSR data.
 The GPU Jacobian subroutines were compiled using \texttt{nvcc} 7.5.17~\cite{cuda-7.5} and tested on a single NVIDIA Tesla C2075 GPU.
 The mean GPU evaluation times were again computed from ten individual runs.
@@ -1372,8 +1373,9 @@ For the CPU and GPU finite-difference-based Jacobian calculations, we used a sim
 
 Figure~\ref{F:cpu_perf} shows the performance of the CPU-based \texttt{pyJac} Jacobian matrix evaluations for the four kinetic models, compared with the performance of finite difference calculations and the \texttt{TChem} package~\cite{Safta:2011vn}.
 (\texttt{TChem} does not support pressure-log or Chebyshev pressure-dependent reaction expressions, so we could not evaluate its performance with the isopentanol model.)
-Table~\ref{t:cpu_comp} summarizes the performance ratio between Jacobian matrices calculated using \texttt{pyJac} and finite differences\slash \texttt{TChem}; \texttt{pyJac}-based routines perform approximately \SIrange{4}{41}{$\times$} faster than \texttt{TChem}, depending on the size of the model.
-\texttt{pyJac} also performs \SIrange{3}{6}{$\times$} faster than the first-order finite difference technique.
+Table~\ref{t:cpu_comp} summarizes the performance ratio between Jacobian matrices calculated using \texttt{pyJac} and finite differences\slash \texttt{TChem}; \texttt{pyJac}-based routines perform approximately \SIrange{1.1}{2.2}{$\times$} faster than \texttt{TChem}, depending on the size of the model.
+However, we again note that \texttt{TChem}'s lack of thread-safety implies that calculation of Jacobians for many thermo-chemical states is potentially much faster using \texttt{pyJac} as the calculations may be accelerated easily using OpenMP.
+\texttt{pyJac} also performs \SIrange{3}{7.5}{$\times$} faster than the first-order finite difference technique.
 
 \begin{figure}[tbp]
     \centering
@@ -1391,10 +1393,10 @@ Table~\ref{t:cpu_comp} summarizes the performance ratio between Jacobian matrice
 \toprule
 Model & $\bar{R}_{\texttt{TChem}} / \bar{R}_{\texttt{pyJac}}$ & $\bar{R}_{\text{FD}} / \bar{R}_{\texttt{pyJac}}$ \\
 \midrule
-\ce{H2}\slash \ce{CO} & 40.95 & 5.28 \\
-GRI-Mech 3.0 &  11.11 & 6.30 \\
-USC-Mech II &  3.93 & 4.28 \\
-\ce{iC5H11OH} & $-$ & 2.89 \\
+\ce{H2}\slash \ce{CO} & 2.16 & 4.40 \\
+GRI-Mech 3.0 &  1.49 & 6.98 \\
+USC-Mech II &  1.07 & 7.51 \\
+\ce{iC5H11OH} & $-$ & 2.96 \\
 \bottomrule
 \end{tabular}
 \caption{Ratio between CPU-based Jacobian matrix evaluation times of \texttt{TChem} and finite differences (FD), and \texttt{pyJac}.
@@ -1402,7 +1404,7 @@ $\bar{R}$ indicates the mean evaluation time.}
 \label{t:cpu_comp}
 \end{table}
 
-Figure~\ref{F:cpu_perf} also shows best-fit lines based on least-squares regressions for the available data (the corresponding $R^2$ values were 0.86, 0.72, and 0.99 for the finite difference, \texttt{pyJac} and \texttt{TChem} results, respectively).
+Figure~\ref{F:cpu_perf} also shows best-fit lines based on least-squares regressions for the available data (the corresponding $R^2$ values were 0.89, 0.57, and 0.99 for the finite difference, \texttt{pyJac} and \texttt{TChem} results, respectively).
 These fits suggest that \texttt{pyJac} and the finite difference method scale superlinearly---nearly quadratically---with number of reactions, while \texttt{TChem} scales nearly linearly with the number of reactions.
 This is expected for the finite difference approach, but warrants explanation for the analytical Jacobian methods.
 Lu and Law argued~\cite{Lu:2009gh} that the cost of analytical Jacobian evaluation should scale linearly with the number of reactions in a model.
@@ -1552,9 +1554,9 @@ In addition, we thank James Sutherland and Mike Hansen of the University of Utah
 \section{Supplementary material}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The most recent version of \texttt{pyJac} can be found at its GitHub repository \url{https://github.com/kyleniemeyer/pyJac}.
+The most recent version of \texttt{pyJac} can be found at its GitHub repository \url{https://github.com/SLACKHA/pyJac}.
 In addition, the repository contains detailed documentation and an issue-tracking system.
-The full source for this paper is also available at \url{https://github.com/kyleniemeyer/pyJac-paper/}, including the data and scripts needed to reproduce the figures here.
+The full source for this paper is also available at \url{https://github.com/Niemeyer-Research-Group/pyJac-paper}, including the data and scripts needed to reproduce the figures here.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Proof of partial derivative of pressure}

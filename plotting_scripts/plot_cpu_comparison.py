@@ -12,7 +12,6 @@ text_loc = [(3, 0.85, 0.8), #fd
             (3, 1.0, 0.35), #pyjac
             (2, 1.4, 1.1)  #tchem
             ]
-import pdb; pdb.set_trace()
 fit_params, data = fullscale_comp('c', text_loc=text_loc, loc_override=4)
 
 for x in fit_params:
