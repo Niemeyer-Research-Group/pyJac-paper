@@ -24,6 +24,21 @@ $ python plotting_scripts/plot_gpu_comparison.py
 $ python plotting_scripts/plot_ch4_pasr_data.py
 ```
 
+Demonstrating TChem's Lack of Thread-Safety
+-------------------------------------------
+The folder `tchem_multithread_test/` is a self-contained example of how TChem is not self-consistent when parallelized with OpenMP.  The testing program first uses TChem to evaluate the chemical kinetic Jacobian for a number of thermo-chemical states in an entirely single-threaded manner.  Next, the tester turns on OpenMP parallelization and re-computes the Jacobians for the same thermo-chemical states.  Finally the tester compares the results from the single-threaded and multi-threaded evaluations, and determines the error relative to the single-threaded version.  In all cases tested, significant error is found for the multi-threaded version.
+
+To run the TChem multi-threaded tester, a python installation with numpy installed is necessary along with a working version of gcc and OpenMP.  Additionally, an environment variable TCHEM_HOME should be set to the installation directory of TChem (i.e. where `include/` and `lib/` reside).  Alternately, line 4 of the makefile may be altered to direct to the correct installation path.
+
+Finally, to run the tester, simply call:
+```
+$ python run_test.py
+```
+
+OR
+```
+$ ./run_test.py
+```
 
 License
 -------
