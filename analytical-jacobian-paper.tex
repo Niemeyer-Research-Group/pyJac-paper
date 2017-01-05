@@ -203,7 +203,8 @@ Furthermore, existing analytical Jacobian tools do not optimize evaluations or s
 Here we introduce \texttt{pyJac}, a Python-based open-source program that generates analytical Jacobian matrices for use in chemical kinetics modeling and analysis.
 In addition to producing the necessary customized source code for evaluating reaction rates (including all modern reaction rate formulations), the chemical source terms, and the Jacobian matrix, \texttt{pyJac} uses an optimized evaluation order to minimize computational and memory operations.
 As a demonstration, we first establish the correctness of the Jacobian matrices for kinetic models of hydrogen, methane, ethylene, and isopentanol oxidation (number of species ranging \numrange{13}{360}) by showing agreement within \SI{0.001}{\percent} of matrices obtained via automatic differentiation.
-We then demonstrate the performance achievable on CPUs and GPUs using \texttt{pyJac} via matrix evaluation timing comparisons; the routines produced by \texttt{pyJac} outperformed first-order finite differences by \numrange{2.9}{5.3} times and the existing analytical Jacobian software \texttt{TChem} by \numrange{3.9}{41} times.
+We then demonstrate the performance achievable on CPUs and GPUs using \texttt{pyJac} via matrix evaluation timing comparisons; the routines produced by \texttt{pyJac} outperformed first-order finite differences by \numrange{3}{7.5} times and the existing analytical Jacobian software \texttt{TChem} by \numrange{1.1}{2.2} times on a single-threaded basis.
+It is noted that \texttt{TChem} is not thread-safe, while \texttt{pyJac} is easily parallelized, and hence can greatly outperform \texttt{TChem} on multi-core CPUs.
 The Jacobian matrix generator we describe here will be useful for reducing the cost of integrating chemical source terms with implicit algorithms in particular and algorithms that require an accurate Jacobian matrix in general.
 Furthermore, the open-source release of the program and Python-based implementation will enable wide adoption.
 \end{abstract}
@@ -1373,8 +1374,8 @@ For the CPU and GPU finite-difference-based Jacobian calculations, we used a sim
 
 Figure~\ref{F:cpu_perf} shows the performance of the CPU-based \texttt{pyJac} Jacobian matrix evaluations for the four kinetic models, compared with the performance of finite difference calculations and the \texttt{TChem} package~\cite{Safta:2011vn}.
 (\texttt{TChem} does not support pressure-log or Chebyshev pressure-dependent reaction expressions, so we could not evaluate its performance with the isopentanol model.)
-Table~\ref{t:cpu_comp} summarizes the performance ratio between Jacobian matrices calculated using \texttt{pyJac} and finite differences\slash \texttt{TChem}; \texttt{pyJac}-based routines perform approximately \SIrange{1.1}{2.2}{$\times$} faster than \texttt{TChem}, depending on the size of the model.
-However, we again note that \texttt{TChem}'s lack of thread-safety implies that calculation of Jacobians for many different thermo-chemical states may be much faster using \texttt{pyJac} as the calculations may be accelerated easily using OpenMP.
+Table~\ref{t:cpu_comp} summarizes the performance ratio between Jacobian matrices calculated using \texttt{pyJac} and finite differences\slash \texttt{TChem}; \texttt{pyJac}-based routines perform approximately \SIrange{1.1}{2.2}{$\times$} faster than \texttt{TChem} on a single-threaded basis, depending on the size of the model.
+However, we again note that \texttt{TChem}'s lack of thread-safety implies that calculation of Jacobians for many different thermo-chemical states on a multi-core CPU may be much faster using \texttt{pyJac} as the calculations may be accelerated easily using OpenMP.
 \texttt{pyJac} also performs \SIrange{3}{7.5}{$\times$} faster than the first-order finite difference technique.
 
 \begin{figure}[tbp]
@@ -1527,7 +1528,8 @@ We implemented the presented methodology in the open-source software package \te
 We established the correctness of the resulting Jacobian matrices through comparison with matrices obtained by automatic differentiation.
 The results agree within \SI{0.001}{\percent} for kinetic models describing the oxidation of hydrogen, methane, ethylene, and isopentanol, with 13 to 360 species (and 27 to 2172 reactions).
 Finally, we investigated the performance of the CPU and GPU matrix evaluation subroutines by evaluating the matrix calculation time for the same kinetic models.
-The \texttt{pyJac} CPU-based Jacobian evaluation performs \numrange{2.9}{5.3} times faster than a forward-finite-difference approach and \numrange{3.9}{41} times faster than the existing \texttt{TChem} software.
+The \texttt{pyJac} CPU-based Jacobian evaluation performs \numrange{3}{7.5} times faster than a forward-finite-difference approach, while a more modest improvement speedup of \SIrange{1.07}{2.16}{$\times$} was found compared to the existing \texttt{TChem} software on a single-threaded basis.
+Again it is noted that \texttt{TChem} is \textbf{not} thread-safe when parallelized with OpenMP, while \texttt{pyJac} is easily parallelized with the same approach; for multi-core CPUs \texttt{pyJac} is expected to greatly outperform \texttt{TChem}.
 
 Planned development work for \texttt{pyJac} will include support for constant-volume assumption, and the capability to generate Fortran and Matlab source codes.
 Further study will be performed into the benefits of the current custom source-code, compiled Jacobian evaluation subroutine approach versus a loop\slash branch-based approach, in order to determine how to obtain the best performance scaling with kinetic model size.
