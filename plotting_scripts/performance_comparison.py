@@ -159,6 +159,9 @@ def fullscale_comp(lang, plot_std=True, homedir=None,
     data = get_data(homedir)
     data = [x for x in data if thefilter(x)]
     data = get_fullscale(data)
+    if lang == 'c':
+        #ensure we take only numthreads = 1
+        data = [x for x in data if x.num_threads==1]
     if not len(data):
         print('no data found... exiting')
         sys.exit(-1)
