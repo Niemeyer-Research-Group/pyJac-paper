@@ -1349,7 +1349,7 @@ The sample size for each case depended on the number of particles and relevant t
 \label{T:error}
 \end{table}
 
-We also initially made comparisons with the \texttt{TChem} package~\cite{Safta:2011vn} for validation purposes, using the \ce{H2}\slash \ce{CO} model.
+We also initially made comparisons with the \texttt{TChem} package~\cite{Safta:2011vn,TChem:v0.2} for validation purposes, using the \ce{H2}\slash \ce{CO} model.
 However, while many quantities calculated via \texttt{TChem} agreed closely with those from both Cantera and \texttt{pyJac}, we observed discrepancies in the \texttt{TChem} species net production rates that correlated with significant errors in the derivative source term and Jacobian matrix.
 These discrepancies occurred mainly for low species production rates, where the (larger) rates for other species agreed closely, and in general for near-equilibrium states.
 As a result, we do not present detailed Jacobian matrix comparisons between \texttt{TChem} and \texttt{pyJac} here.
@@ -1359,7 +1359,7 @@ As a result, we do not present detailed Jacobian matrix comparisons between \tex
 \label{s:performance}
 
 The performance of \texttt{pyJac}-generated subroutines for CPU and GPU execution was tested by evaluating Jacobian matrices for the four kinetic models using the previously discussed PaSR thermochemical composition data.
-In both cases, the performance of \texttt{pyJac} was compared with that of a finite-difference-based Jacobian; in addition, the CPU routines were compared with \texttt{TChem} for the \ce{H2}\slash \ce{CO}, GRI-Mech 3.0, and USC-Mech II models.
+In both cases, the performance of \texttt{pyJac} was compared with that of a finite-difference-based Jacobian; in addition, the CPU routines were compared with \texttt{TChem}~\cite{TChem:v0.2} for the \ce{H2}\slash \ce{CO}, GRI-Mech 3.0, and USC-Mech II models.
 The CPU Jacobian subroutines were compiled using \texttt{gcc} 4.4.7~\cite{gcc-4.4.7}, and run on two six-core Xeon X5650 processors.
 Although not strictly necessary, we accelerated the performance testing by evaluating Jacobian matrices in parallel via OpenMP~\cite{Dagum:1998}, where each OpenMP thread calculated a single Jacobian matrix.
 Reported mean evaluation times were computed from the wall-clock run times of ten individual calculations; the results were not normalized by number of OpenMP threads (all cases used twelve threads).
