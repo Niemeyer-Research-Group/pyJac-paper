@@ -1374,7 +1374,7 @@ For the CPU and GPU finite-difference-based Jacobian calculations, we used a sim
 Figure~\ref{F:cpu_perf} shows the performance of the CPU-based \texttt{pyJac} Jacobian matrix evaluations for the four kinetic models, compared with the performance of finite difference calculations and the \texttt{TChem} package~\cite{Safta:2011vn}.
 (\texttt{TChem} does not support pressure-log or Chebyshev pressure-dependent reaction expressions, so we could not evaluate its performance with the isopentanol model.)
 Table~\ref{t:cpu_comp} summarizes the performance ratio between Jacobian matrices calculated using \texttt{pyJac} and finite differences\slash \texttt{TChem}; \texttt{pyJac}-based routines perform approximately \SIrange{1.1}{2.2}{$\times$} faster than \texttt{TChem}, depending on the size of the model.
-However, we again note that \texttt{TChem}'s lack of thread-safety implies that calculation of Jacobians for many thermo-chemical states is potentially much faster using \texttt{pyJac} as the calculations may be accelerated easily using OpenMP.
+However, we again note that \texttt{TChem}'s lack of thread-safety implies that calculation of Jacobians for many different thermo-chemical states may be much faster using \texttt{pyJac} as the calculations may be accelerated easily using OpenMP.
 \texttt{pyJac} also performs \SIrange{3}{7.5}{$\times$} faster than the first-order finite difference technique.
 
 \begin{figure}[tbp]
@@ -1513,7 +1513,7 @@ The results presented above raise a number of issues that warrant further study.
 The superlinear scaling of \texttt{pyJac} matrix evaluation time with number of reactions in the kinetic models results from the density of the Jacobian matrix, and suggests the potential benefits of a sparse molar-concentration-based Jacobian formulation.
 However, while \texttt{pyJac} outperforms \texttt{TChem} in all cases, the performance ratio between them reduces with increasing number of reactions, suggesting that the performance benefit of a hard-coded subroutine may decrease with increasing model size.
 Although it appears from these results that the performance of a hard-coded Jacobian subroutine can surpass that of an interface-based Jacobian evaluation, the hard-coded method has additional difficulties due to the size and number of files created.
-For example, the CPU Jacobian evaluation subroutine for USC-Mech II comprises over \num{360000} total lines spread across 22 files (not including the supporting files for, e.g., species and reaction rate evaluations)---attempting to incorporate the entire matrix evaluation in a single file crashed the \texttt{gcc} 4.4.7 compiler.
+For example, the CPU Jacobian evaluation subroutine for USC-Mech II comprises over \num{360000} total lines spread across 22 files (not including the supporting files for, e.g., species and reaction rate evaluations)---attempting to incorporate the entire matrix evaluation in a single file crashed an older version of the \texttt{gcc} compiler (4.4.7).
 This not only causes longer source code compilation times (on the order of ten minutes to an hour when using 24 parallel compiler instances), but could cause compiler crashes and inexplicable behavior, particularly for the less mature \texttt{nvcc} compiler.
 While we expect a sparse Jacobian formulation would significantly alleviate these issues, future work should directly compare the performance of hard-coded and interface-based Jacobian evaluation approaches.
 
