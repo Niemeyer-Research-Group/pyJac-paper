@@ -273,11 +273,11 @@ Chemical kinetics \sep Jacobian \sep SIMD \sep GPU
    \\
 {\em Running time:} Problem dependent; from seconds to tens of minutes depending on the model size. \\
   %Give an indication of the typical running time here.
- \\ 
-{\em Keywords:} Chemical kinetics, Jacobian, SIMD, GPU 
+ \\
+{\em Keywords:} Chemical kinetics, Jacobian, SIMD, GPU
   % Please give some freely chosen keywords that we can use in a
   % cumulative keyword index.
-  
+
 %\begin{thebibliography}{0}
 %\bibitem{1}Reference 1         % This list should only contain those items referenced in the
 %\bibitem{2}Reference 2         % Program Summary section.
@@ -479,7 +479,7 @@ where $p_{\text{atm}}$ is the pressure of one standard atmosphere in the appropr
 
 By combining the expressions for $K_{c, i}$ and $K_{p, i}$, we obtain
 \begin{align}
-K_{c, i} 
+K_{c, i}
 %&= \left( \frac{p_{\text{atm}}}{\mathcal{R} T} \right)^{\sum_{k=1}^{\numsp} \nu_{k i}} \exp \left( \sum_{k=1}^{\numsp} \nu_{k i} \left( \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T} \right) \right)  \nonumber \\
 %  &= \left( \frac{p_{\text{atm}}}{\mathcal{R}} \right)^{\sum_{k=1}^{\numsp} \nu_{k i}} \left( \frac{1}{T} \right)^{\sum_{k=1}^{\numsp} \nu_{k i}} \exp \left( \sum_{k=1}^{\numsp} \nu_{k i} \left( \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T} \right) \right)    \nonumber  \\
 %  &= \left( \frac{p_{\text{atm}}}{\mathcal{R}} \right)^{\sum_{k=1}^{\numsp} \nu_{k i}} \exp \left( \sum_{k=1}^{\numsp} \nu_{k i} \left( -\ln T + \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T} \right) \right)   \nonumber   \\
@@ -487,7 +487,7 @@ K_{c, i}
 \end{align}
 where, expanding the polynomial expressions for $S_k^{\circ}$ and $H_k^{\circ}$ from Eqs.~\eqref{e:sk} and \eqref{e:hk}, respectively,
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-B_k 
+B_k
 %& = & -\ln T + \frac{S_k^{\circ}}{\mathcal{R}} - \frac{H_k^{\circ}}{\mathcal{R} T}  \nonumber  \\
   & = & a_{6,k} - a_{0,k} + \left( a_{0,k} - 1 \right) \ln T \nonumber \\
   & & +\: T \left( \frac{a_{1,k}}{2} + T \left( \frac{a_{2,k}}{6} + T \left( \frac{a_{3,k}}{12} + \frac{a_{4,k}}{20} T \right) \right) \right) - \frac{a_{5,k}}{T} \;. \IEEEeqnarraynumspace
@@ -506,7 +506,7 @@ In this case,
 \begin{equation}
 [X]_i = [M] = \sum_{j=1}^{\numsp} [X_j] = \frac{p}{\mathcal{R} T} = \frac{\rho}{W} \;.
 \end{equation}
-In addition, a single species may act as the third body, in which case 
+In addition, a single species may act as the third body, in which case
 \begin{equation}
 [X]_i = [X_m] \;,
 \end{equation}
@@ -608,13 +608,13 @@ The first line of $\mathcal{J}$ is filled with partial derivatives of the energy
 \end{equation}
 The components of $\mathcal{J}_{1,j}$ are:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\mathcal{J}_{1,1} &=& \dydx{f_1}{T} 
-%= \ddx{T} \left( -\frac{\sum_{k=1}^{\numsp} h_k W_k \dot{\omega}_k}{\rho c_p} \right) 
+\mathcal{J}_{1,1} &=& \dydx{f_1}{T}
+%= \ddx{T} \left( -\frac{\sum_{k=1}^{\numsp} h_k W_k \dot{\omega}_k}{\rho c_p} \right)
 %= -\sum_{k=1}^{\numsp} \ddx{T} \left(\frac{h_k}{c_p} \frac{W_k \dot{\omega}_k}{\rho} \right) \nonumber \\
 %&=& -\sum_{k=1}^{\numsp} \left[ \ddx{T} \left( \frac{h_k}{c_p} \right) \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{T} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] \nonumber \\
 = \frac{-1}{c_p} \sum_{k=1}^{\numsp} \left[ \left( \dydx{h_k}{T} - h_k \dydx{c_p}{T} \right) \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{T} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] , \IEEEeqnarraynumspace \\
 %
-\mathcal{J}_{1, j+1} &=& \dydx{f_1}{Y_j} 
+\mathcal{J}_{1, j+1} &=& \dydx{f_1}{Y_j}
 %= \ddx{Y_j} \left( -\frac{\sum h_k W_k \dot{\omega}_k}{\rho c_p} \right) = -\sum_{k=1}^{\numsp} \ddx{Y_j} \left(\frac{h_k}{c_p} \frac{W_k \dot{\omega}_k}{\rho} \right) \nonumber \\
 %&=& -\sum_{k=1}^{\numsp} \left[ \ddx{Y_j} \left( \frac{h_k}{c_p} \right) \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{Y_j} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] \nonumber \\
 = \frac{-1}{c_p} \sum_{k=1}^{\numsp} \left[ \left( \dydx{h_k}{Y_j} - h_k \dydx{c_p}{Y_j} \right) \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{Y_j} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] , \IEEEeqnarraynumspace
@@ -627,10 +627,10 @@ for $j = 1, \dotsc, \numsp - 1$.
 
 The remaining lines of $\mathcal{J}$ are filled with the partial derivatives of the species equations, with the components
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\mathcal{J}_{k+1, 1} & = & \dydx{f_{k+1}}{T} 
+\mathcal{J}_{k+1, 1} & = & \dydx{f_{k+1}}{T}
 %= \ddx{T} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \nonumber \\
  =  \frac{W_k}{\rho} \left(\dydx{\dot{\omega}_k}{T} - \frac{\dot{\omega}_k}{\rho} \dydx{\rho}{T} \right) \text{ and} \IEEEeqnarraynumspace \\
-\mathcal{J}_{k+1, j+1} & = & \dydx{f_{k+1}}{Y_j} 
+\mathcal{J}_{k+1, j+1} & = & \dydx{f_{k+1}}{Y_j}
 %= \ddx{Y_j} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \nonumber \\
 = \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{Y_j} - \frac{\dot{\omega}_k}{\rho} \dydx{\rho}{Y_j} \right) , \IEEEeqnarraynumspace
 \label{e:jac_spec}
@@ -647,7 +647,7 @@ The partial derivatives of density are
 \dydx{\rho}{T} & = & \ddx{T} \left( \frac{p W}{\mathcal{R} T} \right) \text{ and}
 %= \frac{p W}{\mathcal{R}} \frac{-1}{T^2} \nonumber \\
  =  -\frac{\rho}{T} \\
-\dydx{\rho}{Y_j} & = & \ddx{Y_j} \left( \frac{p W}{\mathcal{R} T} \right) 
+\dydx{\rho}{Y_j} & = & \ddx{Y_j} \left( \frac{p W}{\mathcal{R} T} \right)
 %= \frac{-p W^2}{\mathcal{R} T} \left( \frac{1}{W_j} - \frac{1}{W_{\numsp}} \right) \nonumber \\
 = -\rho W \left( \frac{1}{W_j} - \frac{1}{W_{\numsp}} \right) \;.
 \end{IEEEeqnarray}}%
@@ -656,7 +656,7 @@ The partial derivative of species specific enthalpy with respect to temperature 
 \dydx{h_k}{T} &= c_{p,k} \\
 \dydx{h_k}{Y_j} &= 0 \;.
 \end{align}
-The derivatives of specific heat are expressed by 
+The derivatives of specific heat are expressed by
 \begin{align}
 \dydx{c_p}{T} &= \sum_{k=1}^{\numsp} Y_k \dydx{c_{p,k}}{T} \;, \label{E:dcpdT} \\
 \dydx{c_{p,k}}{T} &= \frac{\mathcal{R}}{W_k} \left( a_{1,k} + T \left( 2 a_{2,k} + T \left( 3 a_{3,k} + 4 a_{4,k} T \right) \right) \right) \;, \text{ and} \\
@@ -671,24 +671,24 @@ Next, the derivatives of species rate-of-production $\dot{\omega}_k$ are given b
 The partial derivatives of $R_i$ vary depending on whether the reaction is reversible.
 For irreversible reactions,
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{R_{f, i}}{T} 
+\dydx{R_{f, i}}{T}
 %&=& \dydx{k_{f, i}}{T} \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right) \nonumber \\
 &=& \dydx{k_{f, i}}{T} \frac{1}{k_{f, i}} R_{f, i} + k_{f, i} \ddx{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right) \; \text{and} \label{E:dRfdT-orig} \\
 \dydx{R_{f, i}}{Y_j} &=& k_{f, i} \ddx{Y_j} \left( \prod_{k=1}^{\numsp} [X_k]^{\nu_{ki}^{\prime}} \right) \;. \label{E:dRfdY-orig}
 \end{IEEEeqnarray}}%
 The partial derivatives of species concentration are
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{[X_i]}{T} &=& \frac{Y_i}{W_i} \dydx{\rho}{T} 
-%= -\frac{Y_i}{W_i} \frac{\rho}{T} 
+\dydx{[X_i]}{T} &=& \frac{Y_i}{W_i} \dydx{\rho}{T}
+%= -\frac{Y_i}{W_i} \frac{\rho}{T}
 = -\frac{[X_i]}{T} \\
-\dydx{[X_i]}{Y_j} &=& \frac{Y_i}{W_i} \dydx{\rho}{Y_j} + \frac{\rho}{W_i} \dydx{Y_i}{Y_j} 
+\dydx{[X_i]}{Y_j} &=& \frac{Y_i}{W_i} \dydx{\rho}{Y_j} + \frac{\rho}{W_i} \dydx{Y_i}{Y_j}
 %= \frac{\rho}{W_i} \left[-Y_i W \left(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \right) + \left( \delta_{i j} - \delta_{i \numsp} \right) \right] \nonumber \\
 = -[X_i] W \left(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \right) + \left( \delta_{i j} - \delta_{i \numsp} \right) \frac{\rho}{W_i} \;,
 \end{IEEEeqnarray}}%
 where $i = 1, \ldots, \numsp$, $j = 1, \ldots, \numsp - 1$, and $\delta_{ij}$ is the Kronecker delta.
 The partial derivatives of the molar concentration product terms are then
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\ddx{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right) 
+\ddx{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right)
 %&=& \sum_{j=1}^{\numsp} \nu_{ji}^{\prime} [X_j]^{\nu_{ji}^{\prime} - 1} \left( \frac{-[X_j]}{T} \right) \prod_{\substack{k=1 \\ k \ne j}}^{\numsp} [X_k]^{\nu_{ki}^{\prime}} \nonumber \\
 %&=& -\frac{1}{T} \sum_{j=1}^{\numsp} \nu_{ji}^{\prime} [X_j]^{\nu_{ji}^{\prime}} \prod_{\substack{k=1 \\ k \ne j}}^{\numsp} [X_k]^{\nu_{ki}^{\prime}} \nonumber \\
 &=& -\frac{1}{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right) \sum_{j=1}^{\numsp} \nu_{ji}^{\prime} \quad \text{ and} \\
@@ -701,7 +701,7 @@ The partial derivatives of the molar concentration product terms are then
 \end{IEEEeqnarray}}%
 and the partial derivative of forward reaction rate coefficient is
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-  \dydx{k_{f, i}}{T} 
+  \dydx{k_{f, i}}{T}
 % & = & \ddx{T} \left( A_i \exp \left( \beta_i \ln T - \frac{T_{a,i}}{T} \right) \right) \nonumber \\
 %  & = & A_i \left( \frac{\beta_i}{T} + \frac{T_{a,i}}{T^2} \right) \exp \left( \beta_i \ln T - \frac{T_{a,i}}{T} \right) \nonumber \\
   & = & \frac{k_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} \right) \;.
@@ -709,7 +709,7 @@ and the partial derivative of forward reaction rate coefficient is
 \end{IEEEeqnarray}}%
 Inserting these into Eqs.~\eqref{E:dRfdT-orig} and \eqref{E:dRfdY-orig} gives
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{R_{f, i}}{T} 
+\dydx{R_{f, i}}{T}
 %&=& \frac{1}{T} \left( \beta_i \frac{T_{a,i}}{T} \right) R_{f,i} - \frac{k_{f,i}}{T} \left( \prod_{j=1}^{\numsp} [X_j]^{\nu_{ji}^{\prime}} \right) \sum_{j=1}^{\numsp} \nu_{ji}^{\prime} \nonumber \\
 &=& \frac{R_{f,i}}{T} \left( \beta_i + \frac{T_{a,i}}{T} - \sum_{j=1}^{\numsp} \nu_{ji}^{\prime} \right) \text{ and} \label{E:dRfdT} \\
 %
@@ -728,7 +728,7 @@ Similarly, $ \frac{1}{ [X_j] } \left( \nu_{ji}^{\prime} R_{f, i} - \nu_{ji}^{\pr
 
 The partial derivative of the reverse reaction rate coefficient, when evaluated using the forward rate coefficient and equilibrium constant using Eq.~\eqref{e:kri}, is more complicated:
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-  \dydx{k_{r, i}}{T} 
+  \dydx{k_{r, i}}{T}
   & = & \ddx{T} \left( \frac{k_{f, i}}{K_{c, i}} \right) = \frac{ \dydx{k_{f, i}}{T} K_{c, i} - \dydx{K_{c, i}}{T} k_{f, i} }{K_{c, i}^2} \label{e:dkrdT_general} \\
   & = & \frac{k_{f, i}}{K_{c, i}} \frac{1}{T} \left( \beta_i + \frac{T_{a, i}}{T} \right) - \frac{1}{K_{c, i}} \dydx{K_{c, i}}{T} \frac{k_{f, i}}{K_{c, i}} \\
   \dydx{K_{c, i}}{T}
@@ -765,8 +765,8 @@ For elementary reactions,
 \end{align}
 For third-body-enhanced reactions,
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{c_i}{T} &=& 
-%\frac{-1}{T} \sum_{j=1}^{\numsp} \alpha_{ij} [X_j] = 
+\dydx{c_i}{T} &=&
+%\frac{-1}{T} \sum_{j=1}^{\numsp} \alpha_{ij} [X_j] =
 -\frac{c_i}{T} \text{ , and} \\
 \dydx{c_i}{Y_j}
 % &=& \sum_{k=1}^{\numsp} \alpha_{i k} \left( -[X_i] W \left(\frac{1}{W_j} - \frac{1}{W_{\numsp}} \right) + \left( \delta_{i j} - \delta_{i \numsp} \right) \frac{\rho}{W_i} \right) \nonumber \\
@@ -838,8 +838,8 @@ For Lindemann reactions,
 For reactions using the Troe falloff formulation,
 \begin{align}
   \dydx{F_i}{T} &= \dydx{F_i}{F_{\text{cent}}} \dydx{F_{\text{cent}}}{T} + \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{T} \text{ and} \\
-  \dydx{F_i}{Y_j} &= 
-  %\dydx{F_i}{F_{\text{cent}}} \cancelto{0}{\dydx{F_{\text{cent}}}{Y_j}} + \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{Y_j} = 
+  \dydx{F_i}{Y_j} &=
+  %\dydx{F_i}{F_{\text{cent}}} \cancelto{0}{\dydx{F_{\text{cent}}}{Y_j}} + \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{Y_j} =
   \dydx{F_i}{P_{r,i}} \dydx{P_{r,i}}{Y_j} \;,
 \end{align}
 where
@@ -889,8 +889,8 @@ where $k_1$ and $k_2$ are given by Eqs.~\eqref{e:plog_k1} and \eqref{e:plog_k2},
 Note that terms such as $k_1$, $k_2$, $p_1$, and $p_2$ are associated with the $i$th reaction alone; we omit the subscript for clarity, and continue this practice with other reaction-specific terms in the following discussion.
 The necessary components can be determined as
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\dydx{(\log k_1)}{T} &=& 
-%\frac{1}{k_1} \dydx{k_1}{T} = 
+\dydx{(\log k_1)}{T} &=&
+%\frac{1}{k_1} \dydx{k_1}{T} =
 \frac{1}{T} \left( \beta_1 + \frac{T_{a,1}}{T} \right) \;, \\
 \dydx{(\log k_2)}{T} &=& \frac{1}{T} \left( \beta_2 + \frac{T_{a,2}}{T} \right) \;, \text{and} \\
 \dydx{(\log p)}{T} &=& \frac{1}{p} \dydx{p}{T} = 0 \;.
@@ -935,7 +935,7 @@ The partial derivative of $k_{r,i}$ with respect to species mass fractions is ze
 The Jacobian matrix can be efficiently filled by arranging the evaluation of elements in an appropriate order.
 First, evaluate the Jacobian entries for partial derivatives of species equations ($\mathcal{J}_{k+1, 1}$ and $\mathcal{J}_{k+1, j+1}$ for $k, j = 1, \dotsc, \numsp - 1$):
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\mathcal{J}_{k+1, 1} 
+\mathcal{J}_{k+1, 1}
 %&=& \frac{W_k}{\rho} \left( \dydx{\dot{\omega}_k}{T} + \frac{\dot{\omega}_k}{T} \right) \nonumber \\
 &=& \frac{W_k}{\rho} \sum_{i=1}^{N_{\text{reac}}} \nu_{ki} \left[ \dydx{c_i}{T} \left( R_{f,i} - R_{r,i} \right) + c_i \left( \dydx{R_i}{T} + \frac{R_{f,i} - R_{r,i}}{T} \right) \right] \;, \IEEEeqnarraynumspace
 \label{e:jac_dydt}
@@ -969,7 +969,7 @@ The remaining columns are given by
 
 Next, the Jacobian entries for partial derivatives of the energy equation ($\mathcal{J}_{1, 1}$ and $\mathcal{J}_{1, j+1}$ for $j = 1, \dotsc, \numsp - 1$) are given by
 {\allowdisplaybreaks \begin{IEEEeqnarray}{rCl}
-\mathcal{J}_{1,1} 
+\mathcal{J}_{1,1}
 %&=& - \sum_{k=1}^{\numsp} \left[ \left( \frac{1}{c_p} \dydx{h_k}{T} - \frac{h_k}{c_p^2} \dydx{c_p}{T} \right) \frac{W_k \dot{\omega}_k}{\rho} + \frac{h_k}{c_p} \ddx{T} \left( \frac{W_k \dot{\omega}_k}{\rho} \right) \right] \nonumber \\
 &=& \frac{-1}{c_p} \left\lbrace \sum_{k=1}^{\numsp - 1} \left[ \left( c_{p,k} - \frac{h_k}{c_p} \dydx{c_p}{T} \right) \frac{W_k \dot{\omega}_k}{\rho} + h_k \mathcal{J}_{k+1,1} \right] \right. \nonumber \\
  && \left. +\: \left( c_{p,\numsp} - \frac{h_{\numsp}}{c_p} \dydx{c_p}{T} \right) \frac{W_{\numsp} \dot{\omega}_{\numsp}}{\rho} + h_{\numsp} \hat{\mathcal{J}}_{\numsp+1,1} \right\rbrace \\
@@ -1314,13 +1314,13 @@ In our experience, numerical Jacobians obtained using multiple-term Richardson e
 We did not explore other options for obtaining highly accurate numerical Jacobian approximations using, e.g., complex-step derivatives~\cite{Martins:2003fv,Shampine:2007gw,Ridout:2009fn}.
 For all test cases, the correctness of the species and reaction rate subroutines were established through comparison with Cantera~\cite{Goodwin:2015aa}.
 
-In reporting the discrepancy between the analytical and automatically differentiated Jacobian matrices, denoted by $\mathcal{J}$ and $\hat{\mathcal{J}}$ respectively, we used the Frobenius norm of the relative errors of matrix elements 
+In reporting the discrepancy between the analytical and automatically differentiated Jacobian matrices, denoted by $\mathcal{J}$ and $\hat{\mathcal{J}}$ respectively, we used the Frobenius norm of the relative errors of matrix elements
 \begin{equation}
 E_\text{rel} = \norm{ \frac{ \hat{\mathcal{J}} - \mathcal{J} }{ \hat{\mathcal{J}} } }_F \;,
 \label{e:error_norm}
 \end{equation}
 to quantify error.
-This differs somewhat from the error metric suggested by Anderson et al.~\cite{Anderson:1999aa} for use quantifying the error of matrices in LAPACK: the relative error Frobenius norm 
+This differs somewhat from the error metric suggested by Anderson et al.~\cite{Anderson:1999aa} for use quantifying the error of matrices in LAPACK: the relative error Frobenius norm
 \begin{equation}
 E_\text{norm} = \frac{ \norm{ \hat{\mathcal{J}} - \mathcal{J} }_F }{ \norm{\hat{\mathcal{J}}}_F } \;.
 \end{equation}
@@ -1465,6 +1465,41 @@ USC-Mech II &  1.56 \\
 $\bar{R}$ indicates the mean evaluation time.}
 \label{t:gpu_comp}
 \end{table}
+
+\begin{figure}[tbp]
+    \centering
+    \begin{subfigure}{0.75\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{cpu_performance_scaling.pdf}
+        \caption{Mean CPU runtime versus the number of CPU cores.
+        Error bars are present, but too small to detect. Note the logarithmic
+        scales of both axes.}
+        \label{F:cpu_scaling_perf}
+    \end{subfigure}%
+    \\
+    \begin{subfigure}{0.75\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{cpu_performance_scaling_par.pdf}
+        \caption{Strong scaling efficiency versus number of CPU cores.}
+        \label{F:cpu_scaling_perf_par}
+    \end{subfigure}
+    \caption{Parallel performance scaling of the CPU-based \texttt{pyJac},
+    with the number of CPU cores varying and the number of states fixed
+    at the values associated with each model given in Table~\ref{T:error}.}
+    \label{F:cpu_scaling}
+\end{figure}
+
+Lastly, Figure~\ref{F:cpu_scaling} shows the scaling of performance with the
+number of cores, ranging from 1 to 32, and the number of conditions fixed at
+the values given for each model in Table~\ref{T:error}.
+Figure~\ref{F:cpu_scaling_perf} shows the mean evaluation time, which exhibits
+a power-law dependence on the number of cores. The functional relationship
+between evaluation time and number of cores is similar for each model, with an
+intercept increasing with model size. Figure~\ref{F:cpu_scaling_perf_par}
+shows the strong scaling efficiency with number of cores. Interestingly,
+the strong scaling efficiency drops most significantly for the smallest and
+largest models (\ce{H2}\slash \ce{CO} and \ce{iC5H11OH}, respectively) with
+increasing number of processors.
 
 The results presented above raise a number of issues that warrant further study.
 The superlinear scaling of \texttt{pyJac} matrix evaluation time with number of reactions in the kinetic models results from the density of the Jacobian matrix, and suggests the potential benefits of a sparse molar-concentration-based Jacobian formulation.
