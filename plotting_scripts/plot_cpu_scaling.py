@@ -59,24 +59,27 @@ def __plot(plotdata, outname):
     pp.close()
     plt.close()
 
+    #num of cores on cpu
+    cutoff = 40
     scalings = []
     #draw scaling lines
     for mech in set(x.mechanism for x in plotdata):
-        per_mech = [x for x in plotdata if x.mechanism == mech]
+        per_mech = [x for x in plotdata if x.mechanism == mech
+            and x.x <= cutoff]
         per_mech = sorted(per_mech, key=lambda x: x.x)
         eff = [np.mean(per_mech[0].y) / (per_mech[i].x * np.mean(per_mech[i].y))
-            for i in range(1, len(per_mech))]
-        eff_x = [per_mech[i].x for i in range(1, len(per_mech))]
-        per_mech = [copy.copy(pd) for pd in per_mech[1:]]
+            for i in range(len(per_mech))]
+        eff_x = [per_mech[i].x for i in range(len(per_mech))]
+        per_mech = [copy.copy(pd) for pd in per_mech[:]]
         for i in range(len(per_mech)):
             per_mech[i].x = eff_x[i]
             per_mech[i].y = eff[i]
         scalings.extend(per_mech)
 
     fig, ax = plt.subplots()
-    minx, miny = plot_scaling(scalings, legend_markers, legend_colors)
+    minx, miny = plot_scaling(scalings, legend_markers, legend_colors, plot_std=False)
     ax.legend(loc=0)
-    ax.set_ylim(ymin=miny*0.85, ymax=1.05)
+    ax.set_ylim(ymin=miny*0.98, ymax=1.05)
     ax.set_xlim(xmin=0, xmax=35)
 
     #ax.legend(loc=0, numpoints=1, frameon=False)

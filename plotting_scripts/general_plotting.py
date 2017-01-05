@@ -108,7 +108,9 @@ def plot_scaling(plotdata, markerlist, colorlist, minx=None, miny=None,
             argdict['yerr'] = err_vals
             line = plt.errorbar(**argdict)
         else:
-            line = plt.plot(**argdict)
+            del argdict['x']
+            del argdict['y']
+            line = plt.plot(x_vals, y_vals, **argdict)
 
         # Rather than legend, place labels above/below series
         if label_locs is not None:
