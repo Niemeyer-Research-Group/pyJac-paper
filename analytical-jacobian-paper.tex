@@ -1394,7 +1394,9 @@ However, we again note that \texttt{TChem}'s lack of thread-safety implies that 
     \caption{CPU-based Jacobian matrix evaluation times using finite differences, \texttt{pyJac}, and \texttt{TChem} for the four kinetic models.
     No performance data were available for the isopentanol model using \texttt{TChem} due to the presence of unsupported reaction types.
     The symbols indicate performance data, while the solid lines represent least-squares best fits based on the number of reactions $N_R$ in the models.
-    Error bars are present, but too small to detect.}
+    Error bars are present, but too small to detect.
+    Data, plotting scripts, and the figure file are available under CC-BY~\cite{paperscript:2017}.
+    }
     \label{F:cpu_perf}
 \end{figure}
 
@@ -1440,7 +1442,9 @@ The current performance, while faster than either a typical finite difference ap
     \end{subfigure}
     \caption{Performance of the GPU-based \texttt{pyJac}.
     Note the logarithmic scales of the ordinate axes.
-    Error bars are present, but too small to detect.}
+    Error bars are present, but too small to detect.
+    Data, plotting scripts, and figure files are available under CC-BY~\cite{paperscript:2017}.
+    }
     \label{F:gpu_perf}
 \end{figure}
 
@@ -1498,7 +1502,9 @@ $\bar{R}$ indicates the mean evaluation time.}
     \end{subfigure}
     \caption{Parallel performance scaling of the CPU-based \texttt{pyJac},
     with the number of CPU cores varying and the number of states fixed
-    at the value associated with each model given in Table~\ref{T:error}.}
+    at the value associated with each model given in Table~\ref{T:error}.
+    Data, plotting scripts, and figure files are available under CC-BY~\cite{paperscript:2017}.
+    }
     \label{F:cpu_scaling}
 \end{figure}
 
@@ -1582,9 +1588,12 @@ In addition, we thank James Sutherland and Mike Hansen of the University of Utah
 \section{Supplementary material}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The most recent version of \texttt{pyJac} can be found at its GitHub repository \url{https://github.com/SLACKHA/pyJac}.
-In addition, the repository contains detailed documentation and an issue-tracking system.
-The full source for this paper is also available at \url{https://github.com/Niemeyer-Research-Group/pyJac-paper}, including the data and scripts needed to reproduce the figures here.
+The results for this paper were obtained using \texttt{pyJac} v1.0.2~\cite{Niemeyer:2016py}.
+The most recent version of \texttt{pyJac} can be found at its GitHub
+repository \url{https://github.com/SLACKHA/pyJac}. In addition, the repository
+contains detailed documentation and an issue-tracking system.
+All figures, and the data and plotting scripts necessary to reproduce them, are
+available openly under the CC-BY license~\cite{paperscript:2017}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Proof of partial derivative of pressure}
@@ -1649,14 +1658,28 @@ adopted from Pope~\cite{Pope:1997wu}.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=.75\textwidth]{CH4_600K_1atm_mean_temperature.pdf}
-\caption{Mean temperature of premixed PaSR combustion for stoichiometric methane\slash air with an unburned temperature of \SI{600}{\kelvin} and at \SI{1}{\atm}, $\tau_{\text{res}} = \SI{5}{\milli\second}$, $\tau_{\text{mix}} = \tau_{\text{pair}} = \SI{1}{\milli\second}$, and using 100 particles.}
+\caption{Mean temperature of premixed PaSR combustion for stoichiometric
+         methane\slash air with an unburned temperature of \SI{600}{\kelvin}
+         and at \SI{1}{\atm}, $\tau_{\text{res}} = \SI{5}{\milli\second}$,
+         $\tau_{\text{mix}} = \tau_{\text{pair}} = \SI{1}{\milli\second}$,
+         and using 100 particles.
+         Data, plotting scripts, and the figure file are available under
+         CC-BY~\cite{paperscript:2017}.
+         }
 \label{F:ch4_meantemp}
 \end{figure}
 
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=.75\textwidth]{CH4_600K_1atm_particle_temperature.pdf}
-\caption{Scatterplot of temperature over time (top) and probability density function (PDF) of temperature (bottom) of premixed PaSR combustion for stoichiometric methane\slash air with an unburned temperature of \SI{600}{\kelvin} and at \SI{1}{\atm}, $\tau_{\text{res}} = \SI{5}{\milli\second}$, $\tau_{\text{mix}} = \tau_{\text{pair}} = \SI{1}{\milli\second}$, and using 100 particles.}
+\caption{Scatterplot of temperature over time (top) and probability density
+         function (PDF) of temperature (bottom) of premixed PaSR combustion for
+         stoichiometric methane\slash air with an unburned temperature of
+         \SI{600}{\kelvin} and at \SI{1}{\atm}, $\tau_{\text{res}} = \SI{5}{\milli\second}$,
+         $\tau_{\text{mix}} = \tau_{\text{pair}} = \SI{1}{\milli\second}$,
+         and using 100 particles. Data, plotting scripts, and the figure file
+         are available under CC-BY~\cite{paperscript:2017}.
+         }
 \label{F:ch4_particle_temp}
 \end{figure}
 
