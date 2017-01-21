@@ -85,9 +85,7 @@ def __plot(plotdata, outname):
     ax.set_ylim(ymin=miny*0.98, ymax=1.02)
     ax.set_xlim(xmin=0, xmax=35)
 
-    ax.legend(loc=0, numpoints=1, fontsize=font_size,
-              shadow=True, fancybox=True
-              )
+    ax.legend(loc=0, numpoints=1, fontsize=font_size,)
     # add some text for labels, title and axes ticks
     ax.set_ylabel('Parallel scaling efficiency', fontsize=font_size)
     ax.set_xlabel('Number of CPU cores', fontsize=font_size)

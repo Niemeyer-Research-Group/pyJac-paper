@@ -8,8 +8,8 @@ import numpy as np
 from performance_comparison import fullscale_comp
 
 # Location of label: (data index, x position multiplier, y position multiplier)
-text_loc = [(3, 0.85, 0.8), #fd
-            (3, 1.0, 0.3), #pyjac
+text_loc = [(3, 0.85, 0.87), #fd
+            (3, 0.9, 0.22), #pyjac
             (2, 1.4, 1.1)  #tchem
             ]
 fit_params, data = fullscale_comp('c', text_loc=text_loc, loc_override=4)

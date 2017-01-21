@@ -221,7 +221,7 @@ def fullscale_comp(lang, plot_std=True, homedir=None,
     ax.set_xlim(xmin=0)
     loc = 0 if loc_override is None else loc_override
     ax.legend(loc=loc, numpoints=1, fontsize=font_size,
-              shadow=True, fancybox=True
+              #shadow=True, fancybox=True
               )
     # add some text for labels, title and axes ticks
     ax.set_ylabel('Mean evaluation time / condition (ms)', fontsize=font_size)

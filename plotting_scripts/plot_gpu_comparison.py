@@ -9,7 +9,7 @@ from performance_comparison import fullscale_comp
 
 # Location of label: (data index, x position multiplier, y position multiplier)
 text_loc = [(3, 0.85, 0.9), #fd
-            (3, 1.0, 0.55), #pyjac
+            (3, 0.87, 0.4), #pyjac
             ]
 
 fit_params, data = fullscale_comp('cuda', text_loc=text_loc, loc_override=4)
