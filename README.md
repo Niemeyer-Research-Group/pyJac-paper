@@ -19,6 +19,7 @@ Then, from the top directory, the five figures in the paper can be generated usi
 $ python plotting_scripts/plot_cpu_comparison.py
 $ python plotting_scripts/plot_gpu_scaling.py
 $ python plotting_scripts/plot_gpu_comparison.py
+$ python plotting_scripts/plot_cpu_scaling.py
 $ python plotting_scripts/plot_ch4_pasr_data.py
 ```
 
