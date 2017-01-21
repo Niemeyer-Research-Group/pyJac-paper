@@ -53,7 +53,7 @@ def __plot(plotdata, outname):
     #ax.legend(loc=0, numpoints=1, frameon=False)
     # add some text for labels, title and axes ticks
     ax.set_ylabel('Mean evaluation time per condition (ms)', fontsize=font_size)
-    ax.set_xlabel('Number of CPU threads', fontsize=font_size)
+    ax.set_xlabel('Number of CPU cores', fontsize=font_size)
     pp = PdfPages(os.path.join(d, outname))
     pp.savefig()
     pp.close()
@@ -90,7 +90,7 @@ def __plot(plotdata, outname):
               )
     # add some text for labels, title and axes ticks
     ax.set_ylabel('Parallel scaling efficiency', fontsize=font_size)
-    ax.set_xlabel('Number of CPU threads', fontsize=font_size)
+    ax.set_xlabel('Number of CPU cores', fontsize=font_size)
     ind = outname.index('.pdf')
     outname = outname[:ind] + '_par' + '.pdf'
     pp = PdfPages(os.path.join(d, outname))
