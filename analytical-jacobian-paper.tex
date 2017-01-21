@@ -1345,7 +1345,7 @@ USC-Mech II           & \num{91800}	  & \num{9.046e-9}  & \num{2.356e-4} \\
 \end{tabular}
 \caption{Summary of Jacobian matrix correctness study results.
 Error statistics are based on the norm of the relative error percentages $E_\text{rel}$ for each sample.
-The sample size for each case depended on the number of particles and relevant timescales used.
+The sample size for each case depends on the number of particles and relevant timescales used.
 }
 \label{T:error}
 \end{table}
@@ -1357,7 +1357,7 @@ Cantera and \texttt{pyJac}, we observed discrepancies in the \texttt{TChem} spec
 production rates that correlated with significant errors in the derivative source term and
 Jacobian matrix. These discrepancies occurred mainly for low species production rates, where the
 (larger) rates for other species agreed closely, and in general for near-equilibrium states.
-Furthermore, during our testing it became apparent that \texttt{TChem} is not thread-safe
+Furthermore, during our testing it became apparent that \texttt{TChem} v0.2 is not thread-safe
 when parallelized with OpenMP. We discuss this issue further in \ref{A:tchem}.
 As a result, we do not present detailed Jacobian matrix comparisons between \texttt{TChem}
 and \texttt{pyJac} here.
@@ -1369,7 +1369,7 @@ and \texttt{pyJac} here.
 The performance of \texttt{pyJac}-generated subroutines for CPU and GPU execution was tested by evaluating Jacobian matrices for the four kinetic models using the previously discussed PaSR thermochemical composition data.
 In both cases, the performance of \texttt{pyJac} was compared with that of a finite-difference-based Jacobian; in addition, the CPU routines were compared with \texttt{TChem}~\cite{TChem:v0.2} for the \ce{H2}\slash \ce{CO}, GRI-Mech 3.0, and USC-Mech II models.
 The CPU Jacobian subroutines were compiled using \texttt{gcc} 4.8.5~\cite{gcc-4.8.5}, and run on four ten-core Intel Xeon E5-4640 v2 processors with \SI{20}{\mega\byte} of L3 cache memory, installed on an Ace Powerworks PW8027R-TRF+ with a Supermicro X9QR7-TF+/X9QRi-F+ baseboard.
-As previously mentioned, our tests found that \texttt{TChem} v0.2 is not thread safe (c.f., \ref{A:tchem}).
+As previously mentioned, our tests found that \texttt{TChem} v0.2 is not thread-safe (c.f., \ref{A:tchem}).
 Therefore, all CPU performance comparisons between \texttt{pyJac}, \texttt{TChem}, and the
 finite-difference method were carried in a single-threaded manner.
 Reported mean evaluation times were computed from the wall-clock run times of ten individual calculations.
@@ -1382,7 +1382,7 @@ For the CPU and GPU finite-difference-based Jacobian calculations, we used a sim
 
 Figure~\ref{F:cpu_perf} shows the performance of the CPU-based \texttt{pyJac} Jacobian matrix evaluations for the four kinetic models, compared with the performance of finite difference calculations and the \texttt{TChem} package~\cite{Safta:2011vn}.
 (\texttt{TChem} does not support pressure-log or Chebyshev pressure-dependent reaction expressions, so we could not evaluate its performance with the isopentanol model.)
-Table~\ref{t:cpu_comp} summarizes the performance ratio between Jacobian matrices calculated using \texttt{pyJac} and finite differences\slash \texttt{TChem}; \texttt{pyJac}-based routines perform approximately \SIrange{1.1}{2.2}{$\times$} faster than \texttt{TChem} on a single-threaded basis, depending on the size of the model.
+Table~\ref{t:cpu_comp} summarizes the performance ratio between Jacobian matrices calculated using \texttt{pyJac} and finite difference\slash \texttt{TChem}; \texttt{pyJac}-based routines perform approximately \SIrange{1.1}{2.2}{$\times$} faster than \texttt{TChem} on a single-threaded basis, depending on the size of the model.
 However, we again note that \texttt{TChem}'s lack of thread-safety implies that calculation of Jacobians for many different thermo-chemical states on a multicore CPU may be much faster using \texttt{pyJac} as the calculations may be accelerated easily using OpenMP.
 \texttt{pyJac} also performs \SIrange{3}{7.5}{$\times$} faster than the first-order finite difference technique.
 
@@ -1408,7 +1408,7 @@ USC-Mech II &  1.07 & 7.51 \\
 \ce{iC5H11OH} & $-$ & 2.96 \\
 \bottomrule
 \end{tabular}
-\caption{Ratio between CPU-based Jacobian matrix evaluation times of \texttt{TChem} and finite differences (FD), and \texttt{pyJac}.
+\caption{Ratio between CPU-based Jacobian matrix evaluation times of \texttt{TChem} and finite difference (FD), and \texttt{pyJac}.
 $\bar{R}$ indicates the mean evaluation time.}
 \label{t:cpu_comp}
 \end{table}
@@ -1484,7 +1484,7 @@ $\bar{R}$ indicates the mean evaluation time.}
         \includegraphics[width=\textwidth]{cpu_performance_scaling.pdf}
         \caption{Mean CPU runtime versus the number of CPU cores.
         Error bars are present, but too small to detect. Note the logarithmic
-        scales of the vertical axis.}
+        scales of the ordinate axis.}
         \label{F:cpu_scaling_perf}
     \end{subfigure}%
     \\
@@ -1496,13 +1496,13 @@ $\bar{R}$ indicates the mean evaluation time.}
     \end{subfigure}
     \caption{Parallel performance scaling of the CPU-based \texttt{pyJac},
     with the number of CPU cores varying and the number of states fixed
-    at the values associated with each model given in Table~\ref{T:error}.}
+    at the value associated with each model given in Table~\ref{T:error}.}
     \label{F:cpu_scaling}
 \end{figure}
 
-Lastly, Figure~\ref{F:cpu_scaling} shows the scaling of performance with the
+Lastly, Fig.~\ref{F:cpu_scaling} shows the scaling of performance with the
 number of cores, ranging from 1 to 32, and the number of conditions fixed at
-the values given for each model in Table~\ref{T:error}.
+the value given for each model in Table~\ref{T:error}.
 Figure~\ref{F:cpu_scaling_perf} shows the mean evaluation time, which exhibits
 a power-law dependence on the number of cores. The functional relationship
 between evaluation time and number of cores is similar for each model, with an
@@ -1510,9 +1510,9 @@ intercept increasing with model size. Figure~\ref{F:cpu_scaling_perf_par}
 shows the strong scaling efficiency with number of cores. Interestingly,
 the strong scaling efficiency drops most significantly for the smallest and
 largest models (\ce{H2}\slash \ce{CO} and \ce{iC5H11OH}, respectively) with
-increasing number of processors. We hypothesize that the reasons for lower
-scaling efficiency of these two models actually differ. The cost of evaluation
-\ce{H2}\slash \ce{CO} is low enough, particularly at increasing numbers of CPU
+increasing number of processors. We hypothesize that the reasons for the sharp
+drop in scaling efficiency of these two models actually differ. The cost of
+evaluation \ce{H2}\slash \ce{CO} is low enough, particularly at increasing numbers of CPU
 cores, that the relative overhead for launching OpenMP threads is larger and
 thus the efficiency drops. Conversely, the much larger size of the \ce{iC5H11OH}
 model requires frequent accesses of larger amounts of memory, and thus possibly
@@ -1530,14 +1530,28 @@ While we expect a sparse Jacobian formulation would significantly alleviate thes
 \section{Conclusions}
 \label{S:conclusions}
 
-This work developed the theory behind an analytical Jacobian matrix evaluation approach for constant-pressure chemical kinetics, including new derivations of partial derivatives with respect to modern reaction pressure-dependence formulations.
-In addition, we detailed strategies for efficient evaluation of the Jacobian matrix, including reordering matrix element evaluations in order to enable the reuse of temporary products.
-We implemented the presented methodology in the open-source software package \texttt{pyJac}~\cite{Niemeyer:2016py}, which generates custom source code files for evaluating chemical kinetics Jacobian matrices on both CPU and GPU systems.
-We established the correctness of the resulting Jacobian matrices through comparison with matrices obtained by automatic differentiation.
-The results agree within \SI{0.001}{\percent} for kinetic models describing the oxidation of hydrogen, methane, ethylene, and isopentanol, with 13 to 360 species (and 27 to 2172 reactions).
-Finally, we investigated the performance of the CPU and GPU matrix evaluation subroutines by evaluating the matrix calculation time for the same kinetic models.
-The \texttt{pyJac} CPU-based Jacobian evaluation performs \numrange{3}{7.5} times faster than a forward-finite-difference approach, while a more modest improvement speedup of \SIrange{1.07}{2.16}{$\times$} was found compared to the existing \texttt{TChem} software on a single-threaded basis.
-We note again that \texttt{TChem} is \textbf{not} thread-safe when parallelized with OpenMP,
+This work developed the theory behind an analytical Jacobian matrix evaluation
+approach for constant-pressure chemical kinetics, including new derivations of
+partial derivatives with respect to modern pressure-dependent reaction formulations.
+In addition, we detailed strategies for efficient evaluation of the Jacobian
+matrix, including reordering matrix element evaluations in order to enable the
+reuse of temporary products.
+We implemented the presented methodology in the open-source software package
+\texttt{pyJac}~\cite{Niemeyer:2016py}, which generates custom source code files
+for evaluating chemical kinetics Jacobian matrices on both CPU and GPU systems.
+We established the correctness of the resulting Jacobian matrices through
+comparison with matrices obtained by automatic differentiation.
+The results agree within \SI{0.001}{\percent} for kinetic models describing the
+oxidation of hydrogen, methane, ethylene, and isopentanol, with 13 to 360
+species (and 27 to 2172 reactions).
+Finally, we investigated the performance of the CPU and GPU matrix evaluation
+subroutines by evaluating the matrix calculation time for the same kinetic models.
+The \texttt{pyJac} CPU-based Jacobian evaluation performs \numrange{3}{7.5}
+times faster than a forward-finite-difference approach, while a more modest
+improvement speedup of \SIrange{1.1}{2.2}{$\times$} was found compared to
+the existing \texttt{TChem} software on a single-threaded basis.
+We note again that \texttt{TChem} is \textbf{not} thread-safe when parallelized
+with OpenMP,
 while \texttt{pyJac} is easily parallelized with the same approach;
 for multicore CPUs \texttt{pyJac} is expected to greatly outperform \texttt{TChem}.
 
@@ -1654,21 +1668,21 @@ Although a large number of particles reside near the equilibrium temperature of 
 
 During testing, it became evident that \texttt{TChem} v0.2~\cite{TChem:v0.2} is not thread-safe for
 parallelization via OpenMP. In other words, when using OpenMP to parallelize the evaluation of multiple
-Jacobian matrices, the results differ compared with those obtained from evaluating the same matrices
+Jacobian matrices, the results differ from those obtained by evaluating the same matrices
 in serial.
 
 To investigate this observed phenomenon further, we created a straightforward test using the
 \ce{H2}\slash \ce{CO} model of Burke et al.~\cite{Burke:2011fh} and a subset of the PaSR data
-discussed elsewhere in this paper. In short, the testing program first uses \texttt{TChem} to
+discussed elsewhere in this paper. In short, the testing program first used \texttt{TChem} to
 evaluate the Jacobian matrices in serial (i.e., in a single-threaded manner)
 for \num{100100} states sampled from the PaSR data described in Table~\ref{T:pasr_parameters}.
-Next, this process is repeated, but with OpenMP parallelization of the outer loop enabled.
-To determine whether \texttt{TChem} is thread safe, the computed Jacobian matrices from
-these two approaches are compared.
+Next, this process was repeated, but with OpenMP parallelization of the outer loop enabled.
+To determine whether \texttt{TChem} is thread-safe, the computed Jacobian matrices from
+these two approaches were compared.
 
 We found significant error between the Jacobian matrices computed in serial and
 with multiple threads for all cases, demonstrating that the current version of
-\texttt{TChem} is not thread safe.
+\texttt{TChem} is not thread-safe.
 This self-contained test is available openly~\cite{Curtis2017:tchem}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
