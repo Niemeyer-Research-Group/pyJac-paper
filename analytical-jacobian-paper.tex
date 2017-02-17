@@ -1010,7 +1010,7 @@ Algorithm~\eqref{p:naive_psuedo} presents pseudocode for a simple implementation
 Although attractive as a straightforward implementation, it neglects potential reuse of computed products and thus unnecessarily recomputes terms.
 Furthermore, this formulation produces source code with substantial numbers of lines even for small kinetic models such as GRI-Mech 3.0~\cite{smith_gri-mech_30} (e.g., $\sim$\num{100000} lines).
 
-Without a strategy to enable the reuse of temporary computed products even reasonably modern compilers (e.g., \texttt{gcc} 4.4.7), struggle to compile the resulting code, resulting in long compilation times, slow execution, and even occasional crashes of the compiler itself.
+Without a strategy to enable the reuse of temporary computed products, even reasonably modern compilers (e.g., \texttt{gcc} 4.4.7) struggle to compile the resulting code, resulting in long compilation times, slow execution, and even occasional crashes of the compiler itself.
 This section lays out a restructuring of Algorithm~\eqref{p:naive_psuedo}, presented in Algorithm~\eqref{p:updated_pseudo}, that greatly accelerates Jacobian evaluation via reuse of temporary products to reduce computational overhead.
 As a side-benefit of this technique, compilation times are greatly reduced and compiler crashes can be avoided.
 
