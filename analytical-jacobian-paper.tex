@@ -874,7 +874,7 @@ where
 $\dydx{P_{r,i}}{T}$ is given by Eq.~\eqref{E:dPridT}, and $\dydx{P_{r,i}}{Y_j}$ is given by Eq.~\eqref{E:dPridY}.
 Note that for both falloff and chemically activated bimolecular reactions, regardless of falloff parameterization, if all species contribute equally to the third-body concentration $[X]_i$ then the partial derivative of $c_i$ with respect to species mass fraction $Y_j$ is zero, since $\dydx{p}{Y_j} = 0$.
 
-The contributions of the logarithmic and Chebyshev pressure-dependent descriptions to the Jacobian matrix entries require more complete descriptions since they do not follow the falloff formulation (e.g., falloff factor $F_i$).
+The contributions of the logarithmic and Chebyshev pressure-dependent descriptions to the Jacobian matrix entries require separate descriptions since they do not follow the falloff formulation (e.g., falloff factor $F_i$).
 Instead, alternative partial derivatives of the reaction rate coefficient with respect to temperature ($\dydx{k_{f,i}}{T}$) must be provided in place of Eq.~\eqref{e:dkfdT} when calculating the partial derivatives of $R_i$ using Eqs.~\eqref{E:dRfdT-orig}, \eqref{e:dRdT_explicit_rev_general}, or \eqref{e:dkrdT_general}.
 Note that in both cases the partial derivatives with respect to species mass fractions ($\dydx{k_{f,i}}{Y_j}$) are zero, because the partial derivative of pressure with respect with species mass fraction is zero.
 In addition, since this treatment assumes a constant-pressure system, the partial derivative of pressure with respect to temperature is also zero.
