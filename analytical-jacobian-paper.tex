@@ -1509,7 +1509,7 @@ $\bar{R}$ indicates the mean evaluation time.}
 \end{figure}
 
 Lastly, Fig.~\ref{F:cpu_scaling} shows the scaling of performance with the
-number of cores, ranging from 1 to 32, and the number of conditions fixed at
+number of CPU cores, ranging from 1 to 32, and the number of conditions fixed at
 the value given for each model in Table~\ref{T:error}.
 Figure~\ref{F:cpu_scaling_perf} shows the mean evaluation time, which exhibits
 a power-law dependence on the number of cores. The functional relationship
@@ -1532,7 +1532,7 @@ However, while \texttt{pyJac} outperforms \texttt{TChem} in all cases, the perfo
 Although it appears from these results that the performance of a hard-coded Jacobian subroutine can surpass that of an interface-based Jacobian evaluation, the hard-coded method has additional difficulties due to the size and number of files created.
 For example, the CPU Jacobian evaluation subroutine for USC-Mech II comprises over \num{360000} total lines spread across 22 files (not including the supporting files for, e.g., species and reaction rate evaluations)---attempting to incorporate the entire matrix evaluation in a single file crashed an older version of the \texttt{gcc} compiler (4.4.7).
 This not only causes longer source code compilation times (on the order of ten minutes to an hour when using 24 parallel compiler instances), but could cause compiler crashes and inexplicable behavior, particularly for the less mature \texttt{nvcc} compiler.
-While we expect a sparse Jacobian formulation would significantly alleviate these issues, future work should directly compare the performance of hard-coded and interface-based Jacobian evaluation approaches.
+While we expect a sparse Jacobian formulation would significantly alleviate these issues, future work should directly compare the performance of comparable hard-coded and interface-based Jacobian evaluation approaches.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
