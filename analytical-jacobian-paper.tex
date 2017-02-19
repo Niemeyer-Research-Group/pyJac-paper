@@ -1563,7 +1563,7 @@ with OpenMP,
 while \texttt{pyJac} is easily parallelized with the same approach;
 for multicore CPUs \texttt{pyJac} is expected to greatly outperform \texttt{TChem}.
 
-Planned development work for \texttt{pyJac} will include support for constant-volume assumption, and the capability to generate Fortran and Matlab source codes.
+Planned development work for \texttt{pyJac} includes adding support for the constant-volume assumption, and the capability to generate Fortran and Matlab source codes.
 Further study will be performed into the benefits of the current custom source-code, compiled Jacobian evaluation subroutine approach versus a loop\slash branch-based approach, in order to determine how to obtain the best performance scaling with kinetic model size.
 Finally, we will investigate the performance benefits of converting from a differential system based on species mass fractions to molar concentrations, which offers a marked improvement in matrix sparsity.
 
