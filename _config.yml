@@ -8,7 +8,12 @@
 #
 
 title: "pyJac: analytical Jacobian generator for chemical kinetics"
-abstract: "This site displays an automated build of the LaTeX source of the paper, which is hosted on GitHub. The arXiv URL is http://arxiv.org/abs/1605.03262"
+abstract: >
+This site displays an automated build of the LaTeX source of the paper, which is
+hosted on GitHub. The arXiv URL is http://arxiv.org/abs/1605.03262.
+
+The peer-reviewed, published paper is available via *Computer Physics Communications* at
+https://doi.org/10.1016/j.cpc.2017.02.004
 
 # This controls which file is shown on the right-hand side of the published
 # HTML page.  By default it will take the first PDF or HTML file that it
