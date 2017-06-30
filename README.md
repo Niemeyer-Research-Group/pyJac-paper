@@ -2,11 +2,20 @@ pyJac: analytical Jacobian generator for chemical kinetics
 ==========================================================
 
 This repository contains the source for our paper describing an analytical Jacobian generator for chemical kinetic models.
-It makes use of the [`pyJac`](http://github.com/kyleniemeyer/pyjac/) package, which has been developed concurrently. The paper has been submitted to *Computer Physics Communication*, and a preprint is available at [`arXiv:1605.03262 [physics.comp-ph]`](http://arxiv.org/abs/1605.03262).
+It makes use of the [`pyJac`](https://github.com/SLACKHA/pyJac) package, which has been developed concurrently. The paper was published in *Computer Physics Communications*:
+
+    Kyle E. Niemeyer, Nicholas J. Curtis, and Chih-Jen Sung. 2017. "pyJac: analytical Jacobian generator for chemical kinetics." Computer Physics Communications, 215:188–203. https://doi.org/10.1016/j.cpc.2017.02.004
+
+and a preprint is available at [`arXiv:1605.03262 [physics.comp-ph]`](http://arxiv.org/abs/1605.03262).
+
+All of the data, plotting scripts, and figures associated with the paper can be found on Figshare:
+
+    Niemeyer, Kyle; Curtis, Nick; Sung, Chih-Jen (2017): Data, plotting scripts, and figures for "pyJac: analytical Jacobian generator for chemical kinetics". figshare. https://doi.org/10.6084/m9.figshare.4578010.v1
 
 To see a current build of the paper from the master branch of this repository, refer to https://niemeyer-research-group.github.io/pyJac-paper/ (powered by [gh-publisher](https://github.com/ewanmellor/gh-publisher) and inspired by the [multiband_LS repository](http://jakevdp.github.io/multiband_LS)).
 
 Feel free to submit comments or feedback via the Issues tab on this repository.
+
 
 Reproducing the Paper
 ---------------------
@@ -22,6 +31,29 @@ $ python plotting_scripts/plot_gpu_comparison.py
 $ python plotting_scripts/plot_cpu_scaling.py
 $ python plotting_scripts/plot_ch4_pasr_data.py
 ```
+
+The underlying data can be reproduced by installing the pyjac package, available multiple ways:
+
+1. The easiest way is to install via [`conda`](https://conda.io/):
+```
+$ conda install -c slackha pyjac
+```
+
+2. You can also install using `pip`:
+```
+$ pip install pyjac
+```
+
+3. If neither of the previous methods are available, you can also download the source code from GitHub (https://github.com/SLACKHA/pyJac) and install using `setuptools`:
+```
+$ wget https://github.com/SLACKHA/pyJac/archive/master.zip
+$ unzip master.zip
+$ cd pyJac-master
+$ python setup.py install
+```
+
+Then, all of the functional and performance test results can be reproduced (albeit on different systems for the latter, which will alter values) by using the model and PaSR input files given in the data repository mentioned above (https://doi.org/10.6084/m9.figshare.4578010.v1).
+
 
 Demonstrating TChem's Lack of Thread-Safety
 -------------------------------------------
